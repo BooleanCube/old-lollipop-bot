@@ -1,8 +1,6 @@
 package lollipop;
 
-import lollipop.commands.Gif;
-import lollipop.commands.Help;
-import lollipop.commands.Ping;
+import lollipop.commands.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
@@ -17,6 +15,8 @@ public class Manager {
         addCommand(new Help(this));
         addCommand(new Gif());
         addCommand(new Ping());
+        addCommand(new SearchManga());
+        addCommand(new SearchAnime());
     }
 
     private void addCommand(Command c) {
