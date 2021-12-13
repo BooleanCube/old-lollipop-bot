@@ -24,4 +24,4 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 ### TODO
 - [ ] Fix Help Command
 - [ ] Add Fun Roleplay Commands
-- [ ] Add Command Cooldowns
+- [ ] Change Anime Searches to Web Scraping too
