@@ -22,12 +22,12 @@ public class Gif implements Command {
 
     @Override
     public String getHelp() {
-        return "Sends a random GIF about anime or among us!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
+        return "Shows you a picture of lickilicky!\nUsage: `" + CONSTANT.PREFIX + "pokemon`";
     }
 
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
-        String[] queries = {"lickilick", "anime", "pokemon", "among%20us", "jjba", "attack%20on%20titan", "demon%20slayer", "tokyo%20ghoul", "jujutsu%20kaisen", "naruto", "black%20clover", "mob%20psycho", "adventure%20time", "my%20hero%20academia", "darling%20in%20the%20franxx", "konosuba", "deathnote", "evangelion", "fire%20force", "dr%20stone"};
+        String[] queries = {"anime", "pokemon", "among%20us", "jjba", "attack%20on%20titan", "demon%20slayer", "tokyo%20ghoul", "jujutsu%20kaisen", "naruto", "black%20clover", "mob%20psycho", "adventure%20time", "my%20hero%20academia", "darling%20in%20the%20franxx", "konosuba", "deathnote", "evangelion", "fire%20force", "dr%20stone"};
         String query = queries[(int)(Math.random()*queries.length)];
         Jiphy jiphy = Jiphy.builder()
             .apiKey(JiphyConstants.API_KEY_BETA)
