@@ -2,6 +2,8 @@ package lollipop;
 
 import awatch.AParser;
 import awatch.Anime;
+import awatch.CParser;
+import awatch.Character;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.json.JSONObject;
 
@@ -25,6 +27,18 @@ public class AnimeAPI {
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         JSONObject data = new JSONObject(bf.readLine());
         return AParser.parseData(data);
+    }
+
+    public Character searchForCharacter(String query) throws IOException {
+        Character r = new Character();
+        URL web = new URL(apiPath+"/search/character?q=" + query.replaceAll(" ", "%20"));
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        JSONObject data = new JSONObject(bf.readLine());
+        return CParser.parseData(data);
     }
 
 }

@@ -17,6 +17,7 @@ public class Manager {
         addCommand(new Ping());
         addCommand(new SearchManga());
         addCommand(new SearchAnime());
+        addCommand(new SearchCharacter());
     }
 
     private void addCommand(Command c) {

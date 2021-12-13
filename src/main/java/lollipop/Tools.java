@@ -1,6 +1,7 @@
 package lollipop;
 
 import awatch.Anime;
+import awatch.Character;
 import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -41,6 +42,22 @@ public class Tools {
                 .addField("Status", a.status, true)
                 .addField("Epsiode Count", Integer.toString(a.episodeCount), true)
                 .setImage(a.art);
+        return msg;
+    }
+
+    public static EmbedBuilder characterToEmbed(Character c) {
+        if(c==null) {
+            EmbedBuilder msg = new EmbedBuilder()
+                    .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
+            return msg;
+        }
+        EmbedBuilder msg = new EmbedBuilder()
+                .setAuthor("ID: " + c.malID, c.url)
+                .setTitle(c.name)
+                .addField("Alternative Names", c.alternativeNames, false)
+                .addField("Anime", c.anime, false)
+                .addField("Manga", c.manga, false)
+                .setImage(c.art);
         return msg;
     }
 

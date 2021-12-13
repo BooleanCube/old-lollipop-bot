@@ -5,13 +5,13 @@ import java.util.List;
 public class Anime {
 
     public int malID;
-    public String rating;
+    public String rating = "Unknown";
     public String title;
     public String art;
     public String url;
     public int episodeCount;
     public int score;
-    public String status;
+    public String status = "Unkown";
     public String summary;
     public String author;
     public List<String> tags;
