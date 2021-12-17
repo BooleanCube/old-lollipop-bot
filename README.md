@@ -3,7 +3,7 @@
 
 > konnichiwa, watashi wa loli desu
 
-lollipop is a fun discord bot that is mainly about anime and manga. <br>
+lollipop is an anime/manga discord bot which provides with fun commands! <br>
 [Bot Invite Link](https://discord.com/oauth2/authorize?client_id=919061572649910292&permissions=8&scope=bot) - [Discord Server](https://discord.gg/3ZDpPyR)
 
 ### Features
