@@ -28,4 +28,3 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 - [ ] Add Fun Roleplay Commands
 - [ ] Change Anime Searches to Web Scraping instead of REST API (because 30 requests per minute is way too low) (test spam control first though)
 - [ ] add features
-- [ ] eval and stats command (owner only)
