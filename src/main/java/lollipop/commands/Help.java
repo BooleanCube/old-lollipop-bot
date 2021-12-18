@@ -11,14 +11,19 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Help implements Command {
+
     Manager manager;
     public Help(Manager m) {
         this.manager = m;
     }
+
     @Override
     public String getCommand() {
         return "help";
     }
+
+    @Override
+    public String getCategory() { return "Miscellaneous"; }
 
     @Override
     public String getHelp() {
@@ -33,11 +38,26 @@ public class Help implements Command {
             return;
         }
         if(args.isEmpty()) {
+            StringBuilder anime = new StringBuilder();
+            manager.getCommands("Anime").forEach(command -> anime.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
+            StringBuilder fun = new StringBuilder();
+            manager.getCommands("Fun").forEach(command -> fun.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
+            StringBuilder roleplay = new StringBuilder();
+            manager.getCommands("Roleplay").forEach(command -> roleplay.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
+            StringBuilder misc = new StringBuilder();
+            manager.getCommands("Miscellaneous").forEach(command -> misc.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
             EmbedBuilder e = new EmbedBuilder()
-                    .setTitle("A list of all my commands:");
-            manager.getCommands().forEach(command -> {
-                e.appendDescription("`").appendDescription(command.getCommand()).appendDescription("`\n");
-            });
+                    .setAuthor(event.getMember().getUser().getName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
+                    .setTitle("lollipop commands");
+            e.addField("Anime/Manga", anime.toString(), true);
+            e.addField("Fun", fun.toString(), true);
+            e.addField("Roleplay", roleplay.toString(), true);
+            e.addField("Misc", misc.toString(), true);
+            if(event.getMember().getIdLong() == CONSTANT.OWNERID) {
+                StringBuilder owner = new StringBuilder();
+                manager.getCommands("Owner").forEach(command -> owner.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
+                e.addField("Owner", owner.toString(), true);
+            }
             event.getChannel().sendMessageEmbeds(e.build()).queue();
             return;
         }
@@ -47,7 +67,10 @@ public class Help implements Command {
                     "Use `" + CONSTANT.PREFIX + command.getCommand() + "` for a list of all my commands!").queue();
             return;
         }
-        event.getChannel().sendMessage("Command help for `" + command.getCommand() + "`\n" +
-                command.getHelp()).queue();
+        event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                        .setTitle("Command Help: `" + command.getCommand() + "`")
+                        .setDescription(command.getHelp())
+                        .build()
+        ).queue();
     }
 }

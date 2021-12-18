@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Manager {
 
@@ -18,6 +19,10 @@ public class Manager {
         addCommand(new SearchManga());
         addCommand(new SearchAnime());
         addCommand(new SearchCharacter());
+        addCommand(new BotInfo());
+        addCommand(new Avatar());
+        addCommand(new Eval());
+        addCommand(new Statistics());
     }
 
     private void addCommand(Command c) {
@@ -27,8 +32,8 @@ public class Manager {
         }
     }
 
-    public Collection<Command> getCommands() {
-        return commands.values();
+    public Collection<Command> getCommands(String category) {
+        return commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
     }
 
     public Command getCommand(String commandName) {

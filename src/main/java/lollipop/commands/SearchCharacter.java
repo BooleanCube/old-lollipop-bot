@@ -12,9 +12,15 @@ import java.io.IOException;
 import java.util.List;
 
 public class SearchCharacter implements Command {
+
     @Override
     public String getCommand() {
         return "searchc";
+    }
+
+    @Override
+    public String getCategory() {
+        return "Anime";
     }
 
     @Override
@@ -36,4 +42,5 @@ public class SearchCharacter implements Command {
             e.printStackTrace();
         }
     }
+
 }

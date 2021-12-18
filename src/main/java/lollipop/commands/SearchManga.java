@@ -18,6 +18,11 @@ public class SearchManga implements Command {
     }
 
     @Override
+    public String getCategory() {
+        return "Anime";
+    }
+
+    @Override
     public String getHelp() {
         return "Searches for a manga with the given arguments!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
     }

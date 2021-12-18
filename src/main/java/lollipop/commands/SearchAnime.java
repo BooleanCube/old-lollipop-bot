@@ -18,6 +18,11 @@ public class SearchAnime implements Command {
     }
 
     @Override
+    public String getCategory() {
+        return "Anime";
+    }
+
+    @Override
     public String getHelp() {
         return "This command finds an anime with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
     }

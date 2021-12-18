@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface Command {
     String getCommand();
+    String getCategory();
     String getHelp();
     void run(List<String> args, MessageReceivedEvent event);
 }

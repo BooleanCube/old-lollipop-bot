@@ -16,6 +16,11 @@ public class Ping implements Command {
     }
 
     @Override
+    public String getCategory() {
+        return "Miscellaneous";
+    }
+
+    @Override
     public String getHelp() {
         return "Gives you the gateway and rest ping of the bot.\n" +
                 "Usage: `" + CONSTANT.PREFIX + getCommand() + "`";
