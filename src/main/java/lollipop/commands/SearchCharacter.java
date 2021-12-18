@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,8 +39,7 @@ public class SearchCharacter implements Command {
             msg.editMessageEmbeds(Tools.characterToEmbed(api.searchForCharacter(query)).build()).queue();
         }
         catch (IOException e) {
-            msg.editMessageEmbeds(new EmbedBuilder().setDescription("Could not find an anime with that search query! Please try again with a valid anime!").build()).queue();
-            e.printStackTrace();
+            msg.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find an anime with that search query! Please try again with a valid anime!").build()).queue();
         }
     }
 

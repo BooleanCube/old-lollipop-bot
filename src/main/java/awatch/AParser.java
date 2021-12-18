@@ -6,6 +6,9 @@ public class AParser {
 
     public static Anime parseData(JSONObject data) {
         Anime anime = new Anime();
+        try {
+            data.getJSONArray("results");
+        } catch(Exception e) { return null; }
         if(data.getJSONArray("results").length() == 0) return null;
         JSONObject firstResult = data.getJSONArray("results").getJSONObject(0);
         anime.art = firstResult.getString("image_url");

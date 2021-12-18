@@ -7,6 +7,7 @@ import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class MangaAPI implements RListener {
 
     @Override
     public void setMangas(List<Manga> mangas) {
-        if(mangas.isEmpty()) { messageToEdit.editMessageEmbeds(new EmbedBuilder().setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
+        if(mangas.isEmpty()) { messageToEdit.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
         for(Manga manga : mangas) mangaSearched.add(manga);
         messageToEdit.editMessageEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
     }

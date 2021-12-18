@@ -24,8 +24,11 @@ public class AnimeAPI {
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
+        con.setReadTimeout(5000); // Sets Connection Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         JSONObject data = new JSONObject(bf.readLine());
+        System.out.println(data.toString());
         return AParser.parseData(data);
     }
 
@@ -36,6 +39,8 @@ public class AnimeAPI {
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         JSONObject data = new JSONObject(bf.readLine());
         return CParser.parseData(data);

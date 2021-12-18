@@ -62,6 +62,7 @@ public class Tools {
     public static EmbedBuilder animeToEmbed(Anime a) {
         if(a==null) {
             EmbedBuilder msg = new EmbedBuilder()
+                    .setColor(Color.red)
                     .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
             return msg;
         }
@@ -80,6 +81,7 @@ public class Tools {
     public static EmbedBuilder characterToEmbed(Character c) {
         if(c==null) {
             EmbedBuilder msg = new EmbedBuilder()
+                    .setColor(Color.red)
                     .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
             return msg;
         }
@@ -87,8 +89,8 @@ public class Tools {
                 .setAuthor("ID: " + c.malID, c.url)
                 .setTitle(c.name)
                 .addField("Alternative Names", c.alternativeNames, false)
-                .addField("Anime", c.anime, false)
-                .addField("Manga", c.manga, false)
+                .addField("Latest Anime", c.anime, false)
+                .addField("Latest Manga", c.manga, false)
                 .setImage(c.art);
         return msg;
     }

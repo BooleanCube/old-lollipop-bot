@@ -8,8 +8,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class SearchAnime implements Command {
     @Override
@@ -34,7 +37,14 @@ public class SearchAnime implements Command {
         try {
             String query = String.join(" ", args);
             Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            msg.editMessageEmbeds(Tools.animeToEmbed(api.searchForAnime(query)).build()).queue(); }
+            ScheduledFuture timeout = msg.editMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
+                    .build()
+            ).queueAfter(5, TimeUnit.SECONDS);
+            msg.editMessageEmbeds(Tools.animeToEmbed(api.searchForAnime(query)).build()).queue();
+            timeout.cancel(true);
+        }
         catch (IOException e) {}
     }
 }
