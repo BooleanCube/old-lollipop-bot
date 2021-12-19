@@ -27,7 +27,7 @@ public class SearchAnime implements Command {
 
     @Override
     public String getHelp() {
-        return "This command finds an anime with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for an anime with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
     }
 
     @Override

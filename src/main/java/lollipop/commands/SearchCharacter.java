@@ -26,7 +26,7 @@ public class SearchCharacter implements Command {
 
     @Override
     public String getHelp() {
-        return "Search for a character with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for a character with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
     }
 
     @Override

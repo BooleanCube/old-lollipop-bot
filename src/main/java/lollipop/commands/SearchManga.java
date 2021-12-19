@@ -24,7 +24,7 @@ public class SearchManga implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for a manga with the given arguments!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for a manga with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
     }
 
     @Override

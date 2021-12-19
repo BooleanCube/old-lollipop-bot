@@ -23,6 +23,12 @@ public class Manager {
         addCommand(new Avatar());
         addCommand(new Eval());
         addCommand(new Statistics());
+        addCommand(new OraOraOra());
+        addCommand(new Janken());
+        addCommand(new Mudae());
+        addCommand(new Hentai());
+        addCommand(new Baka());
+        addCommand(new RandomQuote());
     }
 
     private void addCommand(Command c) {

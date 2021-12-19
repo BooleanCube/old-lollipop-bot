@@ -4,7 +4,7 @@ import awatch.AParser;
 import awatch.Anime;
 import awatch.CParser;
 import awatch.Character;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -28,7 +28,6 @@ public class AnimeAPI {
         con.setReadTimeout(5000); // Sets Connection Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         JSONObject data = new JSONObject(bf.readLine());
-        System.out.println(data.toString());
         return AParser.parseData(data);
     }
 

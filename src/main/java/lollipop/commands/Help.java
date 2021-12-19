@@ -48,10 +48,10 @@ public class Help implements Command {
             manager.getCommands("Miscellaneous").forEach(command -> misc.append("**`").append(command.getCommand()).append("`**\n> ").append(command.getHelp().split("\n")[0]).append("\n"));
             EmbedBuilder e = new EmbedBuilder()
                     .setAuthor(event.getMember().getUser().getName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
-                    .setTitle("lollipop commands");
-            e.addField("Anime/Manga", anime.toString(), true);
-            e.addField("Fun", fun.toString(), true);
+                    .setTitle("Lollipop Commands");
             e.addField("Roleplay", roleplay.toString(), true);
+            e.addField("Fun", fun.toString(), true);
+            e.addField("Anime/Manga", anime.toString(), false);
             e.addField("Misc", misc.toString(), true);
             if(event.getMember().getIdLong() == CONSTANT.OWNERID) {
                 StringBuilder owner = new StringBuilder();

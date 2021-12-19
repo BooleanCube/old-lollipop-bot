@@ -24,7 +24,7 @@ public class Gif implements Command {
 
     @Override
     public String getHelp() {
-        return "Sends a random GIF about anime or among us!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
+        return "Sends a random GIF about anime!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
     }
 
     @Override
