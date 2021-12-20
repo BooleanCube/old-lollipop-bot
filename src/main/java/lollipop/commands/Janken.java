@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Janken implements Command {
     @Override
-    public String getCommand() {
-        return "janken";
+    public String[] getAliases() {
+        return new String[] {"janken"};
     }
 
     @Override
@@ -22,7 +22,7 @@ public class Janken implements Command {
 
     @Override
     public String getHelp() {
-        return "Play jankenpon with me!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [rock/paper/scissors]`";
+        return "Play jankenpon with me!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [rock/paper/scissors]`";
     }
 
     @Override
@@ -51,22 +51,22 @@ public class Janken implements Command {
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.yellow);
             } else if(random == 0 && num == 2) {
-                e.setDescription(loss[(int)(Math.random()*victory.length)]);
+                e.setDescription(loss[(int)(Math.random()*loss.length)]);
                 e.addField("Your Hand", choice, true);
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.red);
             } else if(random == 2 && num == 0) {
-                e.setDescription(victory[(int)(Math.random()*loss.length)]);
+                e.setDescription(victory[(int)(Math.random()*victory.length)]);
                 e.addField("Your Hand", choice, true);
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.green);
             } else if(random > num) {
-                e.setDescription(loss[(int)(Math.random()*victory.length)]);
+                e.setDescription(loss[(int)(Math.random()*loss.length)]);
                 e.addField("Your Hand", choice, true);
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.red);
             } else if(num > random) {
-                e.setDescription(victory[(int)(Math.random()*loss.length)]);
+                e.setDescription(victory[(int)(Math.random()*victory.length)]);
                 e.addField("Your Hand", choice, true);
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.green);

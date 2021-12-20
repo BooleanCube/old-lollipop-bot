@@ -11,8 +11,8 @@ import java.util.List;
 public class Ping implements Command {
 
     @Override
-    public String getCommand() {
-        return "ping";
+    public String[] getAliases() {
+        return new String[] {"ping"};
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Ping implements Command {
     @Override
     public String getHelp() {
         return "Gives you the gateway and rest ping of the bot.\n" +
-                "Usage: `" + CONSTANT.PREFIX + getCommand() + "`";
+                "Usage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

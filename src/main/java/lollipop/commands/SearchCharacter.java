@@ -15,8 +15,8 @@ import java.util.List;
 public class SearchCharacter implements Command {
 
     @Override
-    public String getCommand() {
-        return "searchc";
+    public String[] getAliases() {
+        return new String[] {"searchcharacter", "searchc", "sc"};
     }
 
     @Override
@@ -26,7 +26,7 @@ public class SearchCharacter implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for a character with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for a character with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [query]`";
     }
 
     @Override

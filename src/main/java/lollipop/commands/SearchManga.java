@@ -13,8 +13,8 @@ import java.util.List;
 public class SearchManga implements Command {
 
     @Override
-    public String getCommand() {
-        return "searchm";
+    public String[] getAliases() {
+        return new String[] {"searchmanga", "searchm", "sm"};
     }
 
     @Override
@@ -24,7 +24,7 @@ public class SearchManga implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for a manga with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for a manga with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [query]`";
     }
 
     @Override

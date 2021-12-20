@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Avatar implements Command {
     @Override
-    public String getCommand() {
-        return "avatar";
+    public String[] getAliases() {
+        return new String[] {"avatar"};
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Avatar implements Command {
 
     @Override
     public String getHelp() {
-        return "Displays the mentioned user's avatar!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [user]`";
+        return "Displays the mentioned user's avatar!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override

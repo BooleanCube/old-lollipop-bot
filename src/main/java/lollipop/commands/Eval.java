@@ -29,8 +29,8 @@ public class Eval implements Command {
     }
 
     @Override
-    public String getCommand() {
-        return "eval";
+    public String[] getAliases() {
+        return new String[] {"eval"};
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Eval implements Command {
 
     @Override
     public String getHelp() {
-        return "Evaluates the given expression!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [expression]`";
+        return "Evaluates the given expression!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [expression]`";
     }
 
     @Override

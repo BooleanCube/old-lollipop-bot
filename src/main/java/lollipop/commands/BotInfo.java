@@ -9,8 +9,8 @@ import java.util.List;
 
 public class BotInfo implements Command {
     @Override
-    public String getCommand() {
-        return "botinfo";
+    public String[] getAliases() {
+        return new String[] {"botinfo"};
     }
 
     @Override
@@ -20,7 +20,7 @@ public class BotInfo implements Command {
 
     @Override
     public String getHelp() {
-        return "Displays information about the bot!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
+        return "Displays information about the bot!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

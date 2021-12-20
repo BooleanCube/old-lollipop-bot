@@ -11,8 +11,8 @@ import java.util.List;
 
 public class RandomQuote implements Command {
     @Override
-    public String getCommand() {
-        return "quote";
+    public String[] getAliases() {
+        return new String[] {"quote"};
     }
 
     @Override
@@ -22,7 +22,7 @@ public class RandomQuote implements Command {
 
     @Override
     public String getHelp() {
-        return "Throws back a random anime related quote at you!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
+        return "Throws back a random anime related quote at you!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

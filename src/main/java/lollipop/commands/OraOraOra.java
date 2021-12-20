@@ -12,8 +12,8 @@ import java.util.List;
 
 public class OraOraOra implements Command {
     @Override
-    public String getCommand() {
-        return "ora";
+    public String[] getAliases() {
+        return new String[] {"ora"};
     }
 
     @Override
@@ -23,7 +23,7 @@ public class OraOraOra implements Command {
 
     @Override
     public String getHelp() {
-        return "Ora Ora Ora Ora\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [user]`";
+        return "Ora Ora Ora Ora\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override

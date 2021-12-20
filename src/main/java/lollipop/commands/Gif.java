@@ -13,8 +13,8 @@ import java.util.List;
 
 public class Gif implements Command {
     @Override
-    public String getCommand() {
-        return "gif";
+    public String[] getAliases() {
+        return new String[] {"gif"};
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Gif implements Command {
 
     @Override
     public String getHelp() {
-        return "Sends a random GIF about anime!\nUsage: `" + CONSTANT.PREFIX + getCommand() + "`";
+        return "Sends a random GIF about anime!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

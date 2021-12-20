@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Hentai implements Command {
     @Override
-    public String getCommand() {
-        return "hentai";
+    public String[] getAliases() {
+        return new String[] {"hentai"};
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Hentai implements Command {
 
     @Override
     public String getHelp() {
-        return "Calls somebody a Hentai!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [user]`";
+        return "Calls somebody a Hentai!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Hentai implements Command {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage(target.getAsMention() + " was called a **hentai** by " + event.getMember().getAsMention()).queue();
+        event.getChannel().sendMessage("**HENTAAAAIIIIIIIIIIIIIIIIIIIIIII**\n" + target.getAsMention() + " was called a **hentai** by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
     }
 }

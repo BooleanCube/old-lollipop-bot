@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Mudae implements Command {
     @Override
-    public String getCommand() {
-        return "mudae";
+    public String[] getAliases() {
+        return new String[] {"mudae"};
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Mudae implements Command {
 
     @Override
     public String getHelp() {
-        return "Mudae Mudae Mudae\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [user]`";
+        return "Mudae Mudae Mudae\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override

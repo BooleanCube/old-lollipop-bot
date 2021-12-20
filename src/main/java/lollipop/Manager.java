@@ -16,30 +16,41 @@ public class Manager {
         addCommand(new Help(this));
         addCommand(new Gif());
         addCommand(new Ping());
-        addCommand(new SearchManga());
-        addCommand(new SearchAnime());
-        addCommand(new SearchCharacter());
+        addCommand(new Search());
         addCommand(new BotInfo());
         addCommand(new Avatar());
         addCommand(new Eval());
-        addCommand(new Statistics());
+        addCommand(new StatisticsInfo());
         addCommand(new OraOraOra());
         addCommand(new Janken());
-        addCommand(new Mudae());
         addCommand(new Hentai());
         addCommand(new Baka());
         addCommand(new RandomQuote());
+        addCommand(new BitesTheDust());
+        addCommand(new Pat());
+        addCommand(new Rasengan());
+        addCommand(new Onigiri());
+        addCommand(new Eat());
+        addCommand(new Hinokami());
+        addCommand(new InfiniteVoid());
     }
 
     private void addCommand(Command c) {
-        if (!commands.containsKey(c.getCommand())) {
-            commands.put(c.getCommand(), c);
-            System.out.println("added " + c.getCommand() + " command");
-        }
+        if (!commands.containsKey(c.getAliases()[0])) for(String cmd : c.getAliases()) commands.put(cmd, c);
     }
 
     public Collection<Command> getCommands(String category) {
-        return commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+        ArrayList<Command> r = new ArrayList<>();
+        List<Command> values = commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+        for(Command c : values) if(!r.contains(c)) r.add(c);
+        return r;
+    }
+
+    public Collection<Command> getCommands() {
+        ArrayList<Command> r = new ArrayList<>();
+        List<Command> values = new ArrayList<>(commands.values());
+        for(Command c : values) if(!r.contains(c)) r.add(c);
+        return r;
     }
 
     public Command getCommand(String commandName) {

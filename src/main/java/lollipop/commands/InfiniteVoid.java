@@ -10,10 +10,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.awt.*;
 import java.util.List;
 
-public class Baka implements Command {
+public class InfiniteVoid implements Command {
     @Override
     public String[] getAliases() {
-        return new String[] {"baka"};
+        return new String[] {"infinitevoid"};
     }
 
     @Override
@@ -23,19 +23,19 @@ public class Baka implements Command {
 
     @Override
     public String getHelp() {
-        return "Calls somebody a baka!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
+        return "Domain Expansion: Infinite Void!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
         if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://c.tenor.com/G4zCaHnNxysAAAAC/anime-boy-baka-baka.gif", "https://tenor.com/view/baka-anime-gif-12908346", "https://tenor.com/view/baka-anime-gif-22001672", "https://tenor.com/view/baka-gif-19268094", "https://tenor.com/view/sasuke-naruto-anime-mad-baka-gif-17737654", "https://tenor.com/view/anime-fiduka-no-baka-blah-gif-12414850"};
+        String[] gifs = {"https://tenor.com/view/infinite-void-gojo-satoru-gojo-jjk-jujutsu-kaisen-gif-19219956", "https://tenor.com/view/satoru-gojo-domain-expansion-infinite-void-unlimited-void-gif-20411471", "https://tenor.com/view/gojo-blindfold-eyes-gojo-eyes-jujutsu-kaisen-gif-19192192", "https://tenor.com/view/sawunn-gif-21249141", "https://tenor.com/view/jjk-gojo-gif-23192148", "https://tenor.com/view/jujustu-kaisen-satoru-gojo-infinite-void-strongest-domain-expansion-gif-19191941", "https://tenor.com/view/anime-gif-19444090"};
         Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
         if(target == null) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage("**Bakana no?**\n" + target.getAsMention() + " was called a **baka** by " + event.getMember().getAsMention()).queue();
+        event.getChannel().sendMessage("**Domain Expansion: Infinite Void**\n" + target.getAsMention() + " is stuck in the infinite void casted by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
     }
 }

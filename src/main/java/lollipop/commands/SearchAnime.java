@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SearchAnime implements Command {
     @Override
-    public String getCommand() {
-        return "searcha";
+    public String[] getAliases() {
+        return new String[] {"searchanime", "searcha", "sa"};
     }
 
     @Override
@@ -27,7 +27,7 @@ public class SearchAnime implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for an anime with the given search query!\nUsage: `" + CONSTANT.PREFIX + getCommand() + " [query]`";
+        return "Searches for an anime with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [query]`";
     }
 
     @Override
