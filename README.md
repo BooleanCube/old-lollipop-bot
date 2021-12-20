@@ -25,7 +25,7 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 <img src="https://user-images.githubusercontent.com/47650058/145756282-b63eb9bc-f895-41d7-a995-43ad4fd020aa.png" width=250 /> <br>
 
 ### TODO
-- [ ] Add Fun Roleplay Commands
+- [ ] Add Fun Commands
 - [ ] Change Anime Searches to Web Scraping instead of REST API (because 30 requests per minute is way too low) (test spam control first though)
 - [ ] pokemon stats
 - [ ] anime stats
