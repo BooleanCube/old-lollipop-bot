@@ -31,5 +31,4 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 - [ ] anime stats
 - [ ] pictures, anime, manga, charcter
 - [ ] news anime/manga
-- [ ] organize search into 1 command
 - [ ] aliases
