@@ -7,13 +7,11 @@ lollipop is an anime/manga discord bot which provides with fun commands! <br>
 [Bot Invite Link](https://discord.com/oauth2/authorize?client_id=919061572649910292&permissions=8&scope=bot) - [Discord Server](https://discord.gg/3ZDpPyR)
 
 ### Features
-- Anime/Manga Search Command
-- Character Search Command
+- Anime/Manga/Character Search Command
 - Random Anime GIF Command
 - Random Anime Quote Command
-- Pokemon Statistics
 - Anime Series Statistics
-- Character Pictures
+- Anime/Manga/Character Pictures
 - Anime/Manga News
 
 ### Commands
