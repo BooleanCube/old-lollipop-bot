@@ -1,6 +1,9 @@
 package awatch;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class CParser {
 
@@ -17,6 +20,22 @@ public class CParser {
         character.url = firstResult.getString("url");
         if(firstResult.getJSONArray("anime").length() > 0)character.anime = "[" + firstResult.getJSONArray("anime").getJSONObject(0).get("name") + "](" + firstResult.getJSONArray("anime").getJSONObject(0).get("url") + ")";
         return character;
+    }
+
+    public static String getRandomPictureChar(JSONObject data) {
+        if(data.getJSONArray("pictures").length() == 0) return null;
+        JSONArray urlData = data.getJSONArray("pictures");
+        ArrayList<String> urls = new ArrayList<>();
+        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getString("image_url"));
+        return urls.get((int)(Math.random()*urls.size()));
+    }
+
+    public static String getRandomPicture(JSONObject data) {
+        if(data.getJSONArray("pictures").length() == 0) return null;
+        JSONArray urlData = data.getJSONArray("pictures");
+        ArrayList<String> urls = new ArrayList<>();
+        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getString("large"));
+        return urls.get((int)(Math.random()*urls.size()));
     }
 
 }

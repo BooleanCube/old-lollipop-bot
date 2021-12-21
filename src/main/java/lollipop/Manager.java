@@ -17,6 +17,7 @@ public class Manager {
         addCommand(new Gif());
         addCommand(new Ping());
         addCommand(new Search());
+        addCommand(new Picture());
         addCommand(new BotInfo());
         addCommand(new Avatar());
         addCommand(new Eval());

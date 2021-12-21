@@ -38,7 +38,7 @@ public class Search implements Command {
                 msg.editMessageEmbeds(Tools.characterToEmbed(api.searchForCharacter(query)).build()).queue();
             }
             catch (IOException e) {
-                msg.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find an anime with that search query! Please try again with a valid anime!").build()).queue();
+                msg.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find a character with that search query! Please try again with a valid character!").build()).queue();
             }
         }
         else if(args.get(0).equalsIgnoreCase("a") || args.get(0).equalsIgnoreCase("anime")) {

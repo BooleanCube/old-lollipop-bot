@@ -82,7 +82,7 @@ public class Tools {
         if(c==null) {
             EmbedBuilder msg = new EmbedBuilder()
                     .setColor(Color.red)
-                    .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
+                    .setDescription("Could not find a character with that search query! Please try again with a valid character!");
             return msg;
         }
         EmbedBuilder msg = new EmbedBuilder()
@@ -92,6 +92,18 @@ public class Tools {
                 .addField("Latest Anime", c.anime, false)
                 .addField("Latest Manga", c.manga, false)
                 .setImage(c.art);
+        return msg;
+    }
+
+    public static EmbedBuilder pictureEmbed(String url) {
+        if(url == null) {
+            EmbedBuilder error = new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("Could not find any pictures related to that ID! Check for any typos.");
+            return error;
+        }
+        EmbedBuilder msg = new EmbedBuilder()
+                .setImage(url);
         return msg;
     }
 
