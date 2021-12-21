@@ -23,3 +23,5 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 - [ ] pokemon stats
 - [ ] anime stats
 - [ ] news anime/manga
+- [ ] use sharding
+- [ ] switch to slash commands
