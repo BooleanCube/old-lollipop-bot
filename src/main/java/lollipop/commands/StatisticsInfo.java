@@ -3,14 +3,18 @@ package lollipop.commands;
 import lollipop.CONSTANT;
 import lollipop.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import java.lang.management.RuntimeMXBean;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StatisticsInfo implements Command {
@@ -39,9 +43,11 @@ public class StatisticsInfo implements Command {
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Statistics")
                 .addField("System", osInfo(), true)
-                .addField("Memory", memInfo(), false)
-                .addField("CPU", cpuInfo(), true)
-                .addField("Uptime", uptimeInfo(), false);
+                .addField("Memory", memInfo(), true)
+                .addField("CPU", cpuInfo(), false)
+                .addField("Shards", shardInfo(event), false)
+                .addField("Discord", botInfo(event), true)
+                .addField("Uptime", uptimeInfo(), true);
         event.getChannel().sendMessageEmbeds(msg.build()).queue();
     }
 
@@ -85,6 +91,25 @@ public class StatisticsInfo implements Command {
         long numberOfSeconds = uptimeInSeconds % 60;
         StringBuilder sb = new StringBuilder();
         sb.append(numberOfHours).append(" hour(s), ").append(numberOfMinutes).append(" minute(s), ").append(numberOfSeconds).append(" second(s)");
+        return sb.toString();
+    }
+    public String botInfo(MessageReceivedEvent event) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getUsers().size()).append("`\nPing: `")
+                .append(event.getJDA().getGatewayPing()).append("`");
+        return sb.toString();
+    }
+    public String shardInfo(MessageReceivedEvent event) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Average Ping: `").append(event.getJDA().getShardManager().getAverageGatewayPing()).append("`\nCurrent Shard ID: `").append(event.getJDA().getShardInfo().getShardId()).append("`\nTotal Shards: `")
+        .append(event.getJDA().getShardInfo().getShardTotal()).append("`\nShard Statuses: \n");
+        ArrayList<JDA> shards = new ArrayList<>(event.getJDA().getShardManager().getShards());
+        Collections.reverse(shards);
+        for(JDA shard : shards) {
+            sb.append("> Shard ID **").append(shard.getShardInfo().getShardId()).append("** Status = `")
+                    .append(shard.getShardManager().getStatus(shard.getShardInfo().getShardId())).append("`\n");
+        }
+
         return sb.toString();
     }
 
