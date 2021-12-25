@@ -1,7 +1,7 @@
 # lollipop-bot
 <img src="https://i.imgur.com/CF6ogNL.jpeg" width=200/>
 
-> konnichiwa, watashi wa loli desu
+> konnichiwa, watashi wa lollipop desu
 
 lollipop is an anime/manga discord bot which provides with fun commands! <br>
 [Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=919061572649910292&permissions=414467877952&scope=bot) - [Discord Server](https://discord.gg/3ZDpPyR)
