@@ -25,7 +25,7 @@ public class Picture implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives you a random picture related to the query!\n*Note: You must pass in the `ID` instead of a name. The `ID` can be located at the top of a `search` command.*\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/manga/character] [ID]";
+        return "Gives you a random picture related to the query!\n*Note: You must pass in the `ID` instead of a name. The `ID` can be located at the top of a `search` command.*\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/character] [ID]`";
     }
 
     @Override

@@ -4,6 +4,7 @@ import lollipop.commands.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,10 @@ public class Manager {
         final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(CONSTANT.PREFIX), "").split("\\s+");
         final String command = split[0].toLowerCase();
         if (commands.containsKey(command)) {
+            if(event.getMember().getUser().isBot()) {
+                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                return;
+            }
             final List<String> args = Arrays.asList(split).subList(1, split.length);
             commands.get(command).run(args, event);
         }
