@@ -45,7 +45,7 @@ public class Tools {
     }
 
     public static EmbedBuilder mangaToEmbed(Manga m) {
-        if(m.summary.length() > 2000) m.summary = m.summary.substring(0, 1000) + "... (Click the title to read more)";
+        if(m.summary.length() > 2000) m.summary = m.summary.substring(0, 1000) + "... [Read More!](" + m.url + ")";
         EmbedBuilder msg = new EmbedBuilder()
                 .setAuthor(m.title, MangaAPI.apiPath+m.url)
                 .setDescription(m.summary.replaceAll("SUMMARY", "").trim())
@@ -68,7 +68,7 @@ public class Tools {
         }
         EmbedBuilder msg = new EmbedBuilder()
                 .setAuthor("ID: " + a.malID, a.url)
-                .setDescription(a.summary + " (Click on the ID to read more!)")
+                .setDescription(a.summary + " [Read More!](" + a.url + ")")
                 .setTitle(a.title)
                 .addField("Rating", a.rating, true)
                 .addField("Score", Integer.toString(a.score), true)
