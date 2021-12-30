@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 public class InfiniteVoid implements Command {
     @Override
@@ -33,6 +34,10 @@ public class InfiniteVoid implements Command {
         Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
         if(target == null) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
+            return;
+        }
+        if(Objects.requireNonNull(event.getMember()).getIdLong() == target.getIdLong()) {
+            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
         event.getChannel().sendMessage("**Domain Expansion: Infinite Void**\n" + target.getAsMention() + " is stuck in the infinite void casted by " + event.getMember().getAsMention()).queue();
