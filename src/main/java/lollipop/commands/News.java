@@ -54,7 +54,11 @@ public class News implements Command {
             messageToPage.put(m.getIdLong(), new Newspaper(articles, 1, m, event.getAuthor()));
 
             m.editMessageComponents()
-                    c
+                    .setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled(),
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled()
+                    )
                     .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
