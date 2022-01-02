@@ -1,12 +1,17 @@
 package lollipop.commands;
 
+import awatch.models.Anime;
 import lollipop.*;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +32,8 @@ public class Search implements Command {
         return "Searches for an anime/manga/charcater with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
+    public static HashMap<Long, SearchPage> messageToPage = new HashMap<>();
+
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
         if(args.size()<2) { Tools.wrongUsage(event.getTextChannel(), this); return; }
@@ -46,15 +53,22 @@ public class Search implements Command {
             try {
                 String query = String.join(" ", args.subList(1, args.size()));
                 Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-                ScheduledFuture timeout = msg.editMessageEmbeds(new EmbedBuilder()
+                ScheduledFuture<?> timeout = msg.editMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
                         .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
-                msg.editMessageEmbeds(Tools.animeToEmbed(api.searchForAnime(query)).build()).queue();
+                ArrayList<Anime> animes = api.searchForAnime(query);
+                if(animes == null) throw new IOException();
+                Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                ).complete();
+                messageToPage.put(m.getIdLong(), new SearchPage(animes, m, 1, event.getAuthor()));
                 timeout.cancel(true);
+                m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES);
             }
-            catch (IOException e) {}
+            catch(IOException ignored) {}
         }
         else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
             MangaAPI api = new MangaAPI();

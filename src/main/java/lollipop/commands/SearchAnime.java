@@ -42,7 +42,7 @@ public class SearchAnime implements Command {
                     .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
                     .build()
             ).queueAfter(5, TimeUnit.SECONDS);
-            msg.editMessageEmbeds(Tools.animeToEmbed(api.searchForAnime(query)).build()).queue();
+            msg.editMessageEmbeds(Tools.animeToEmbed(api.searchForAnime(query).get(0)).build()).queue();
             timeout.cancel(true);
         }
         catch (IOException e) {}

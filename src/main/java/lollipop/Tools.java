@@ -1,7 +1,8 @@
 package lollipop;
 
-import awatch.Anime;
-import awatch.Character;
+import awatch.models.Anime;
+import awatch.models.Article;
+import awatch.models.Character;
 import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -70,10 +71,12 @@ public class Tools {
                 .setAuthor("ID: " + a.malID, a.url)
                 .setDescription(a.summary + " [Read More!](" + a.url + ")")
                 .setTitle(a.title)
+                .addField("Type", a.type, true)
                 .addField("Rating", a.rating, true)
-                .addField("Score", Integer.toString(a.score), true)
+                .addField("Score", Double.toString(a.score), true)
                 .addField("Status", a.status, true)
-                .addField("Epsiode Count", Integer.toString(a.episodeCount), true)
+                .addField("Rank", Integer.toString(a.rank), true)
+                .addField("Trailer", !a.trailer.equals("Unkown") ? "[Trailer](" + a.trailer + ")" : "Not found", true)
                 .setImage(a.art);
         return msg;
     }
@@ -104,6 +107,23 @@ public class Tools {
         }
         EmbedBuilder msg = new EmbedBuilder()
                 .setImage(url);
+        return msg;
+    }
+
+    public static EmbedBuilder newsEmbed(Article article) {
+        if(article == null) {
+            EmbedBuilder error = new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("Could not find any news related to that ID! Check for any typos.");
+            return error;
+        }
+        EmbedBuilder msg = new EmbedBuilder()
+                .setAuthor(article.title, article.url)
+                .setDescription(article.desc)
+                .setImage(article.image)
+                .addField("Author", "[" + article.author + "](" + article.authorUrl + ")", false)
+                .addField("Forum", article.forum, false)
+                .addField("----------------------------------------------------------------", article.date + " | " + article.comments + " comments", false);
         return msg;
     }
 

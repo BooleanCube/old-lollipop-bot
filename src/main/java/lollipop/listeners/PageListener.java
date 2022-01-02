@@ -1,0 +1,87 @@
+package lollipop.listeners;
+
+import lollipop.Newspaper;
+import lollipop.SearchPage;
+import lollipop.Tools;
+import lollipop.commands.News;
+import lollipop.commands.Search;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+public class PageListener extends ListenerAdapter {
+
+    @Override
+    public void onButtonClick(@NotNull ButtonClickEvent event) {
+        if(Objects.requireNonNull(event.getUser()).isBot()) return;
+        long id = event.getMessageIdLong();
+        if(News.messageToPage.containsKey(id)) {
+            Newspaper page = News.messageToPage.get(id);
+            if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                if(page.pageNumber>1)
+                    event.editMessageEmbeds(
+                            Tools.newsEmbed(page.articles.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
+                    ).queue();
+                else
+                    event.editMessageEmbeds(
+                            Tools.newsEmbed(page.articles.get(0)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
+                    ).queue();
+            } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                if(page.pageNumber<page.articles.size())
+                    event.editMessageEmbeds(
+                            Tools.newsEmbed(page.articles.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
+                    ).queue();
+                else
+                    event.editMessageEmbeds(
+                            Tools.newsEmbed(page.articles.get(page.articles.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
+                    ).queue();
+            }
+        }
+        if(Search.messageToPage.containsKey(id)) {
+            SearchPage page = Search.messageToPage.get(id);
+            if(page.mangas == null) {
+                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                    if(page.pageNumber>1)
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                    if(page.pageNumber<page.animes.size())
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                }
+            } else if(page.animes == null) {
+                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                    if(page.pageNumber>1)
+                        event.editMessageEmbeds(
+                                Tools.mangaToEmbed(page.mangas.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.mangaToEmbed(page.mangas.get(0)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                        ).queue();
+                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                    if(page.pageNumber<page.animes.size())
+                        event.editMessageEmbeds(
+                                Tools.mangaToEmbed(page.mangas.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.mangaToEmbed(page.mangas.get(page.mangas.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                        ).queue();
+                }
+            }
+        }
+    }
+}

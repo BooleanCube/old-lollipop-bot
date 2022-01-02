@@ -35,6 +35,8 @@ public class Manager {
         addCommand(new Eat());
         addCommand(new Hinokami());
         addCommand(new InfiniteVoid());
+        addCommand(new Headbutt());
+        addCommand(new News());
     }
 
     private void addCommand(Command c) {

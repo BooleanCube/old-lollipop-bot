@@ -1,5 +1,6 @@
 package awatch;
 
+import awatch.models.Character;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,18 +24,18 @@ public class CParser {
     }
 
     public static String getRandomPictureChar(JSONObject data) {
-        if(data.getJSONArray("pictures").length() == 0) return null;
-        JSONArray urlData = data.getJSONArray("pictures");
+        if(data.getJSONArray("data").length() == 0) return null;
+        JSONArray urlData = data.getJSONArray("data");
         ArrayList<String> urls = new ArrayList<>();
-        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getString("image_url"));
+        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getJSONObject("jpg").getString("image_url"));
         return urls.get((int)(Math.random()*urls.size()));
     }
 
     public static String getRandomPicture(JSONObject data) {
-        if(data.getJSONArray("pictures").length() == 0) return null;
-        JSONArray urlData = data.getJSONArray("pictures");
+        if(data.getJSONArray("data").length() == 0) return null;
+        JSONArray urlData = data.getJSONArray("data");
         ArrayList<String> urls = new ArrayList<>();
-        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getString("large"));
+        for(int i=0; i<urlData.length(); i++) urls.add(urlData.getJSONObject(i).getJSONObject("jpg").getString("image_url"));
         return urls.get((int)(Math.random()*urls.size()));
     }
 

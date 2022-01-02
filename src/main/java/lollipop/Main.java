@@ -1,6 +1,7 @@
 package lollipop;
 
 import lollipop.listeners.LollipopReaction;
+import lollipop.listeners.PageListener;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -20,6 +21,7 @@ public class Main {
                 .setActivity(Activity.watching("anime | l!help"))
                 .setShardsTotal(4)
                 .addEventListeners(new Listener())
+                .addEventListeners(new PageListener())
                 .addEventListeners(new LollipopReaction());
         ShardManager bot = lollipop.build();
     }
