@@ -23,6 +23,10 @@ public class PageListener extends ListenerAdapter {
         long id = event.getMessageIdLong();
         if(News.messageToPage.containsKey(id)) {
             Newspaper page = News.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't move the pages because you didn't use this command! Use the `news` command to be able to move pages!").setEphemeral(false).queue();
+                return;
+            }
             if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
                 if(page.pageNumber>1)
                     event.editMessageEmbeds(
@@ -45,6 +49,10 @@ public class PageListener extends ListenerAdapter {
         }
         if(Search.messageToPage.containsKey(id)) {
             SearchPage page = Search.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't move the pages because you didn't use this command! Use the `news` command to be able to move pages!").setEphemeral(false).queue();
+                return;
+            }
             if(page.mangas == null) {
                 if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
                     if(page.pageNumber>1)
