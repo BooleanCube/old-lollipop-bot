@@ -14,12 +14,16 @@ Lollipop is an anime/manga discord bot which allows any user to search for an an
 - Anime/Manga/Character Search Command
 - Random Anime GIF Command
 - Random Anime Quote Command
+- Random Anime Command
+- Top 10 Anime Command
 - Anime Series Statistics
-- Anime/Manga/Character Pictures
-- Anime/Manga News
+- Anime/Character Pictures
+- Anime News
+- Etc.
 
 ### Commands
 Typing `l!help` in a server will send you a list of the commands that lollipop provides!
+
 
 ### TODO
 - [ ] Add Fun Commands
