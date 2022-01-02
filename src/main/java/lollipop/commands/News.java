@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class News implements Command {
 
@@ -51,7 +52,10 @@ public class News implements Command {
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
             messageToPage.put(m.getIdLong(), new Newspaper(articles, 1, m, event.getAuthor()));
-            m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
+
+            m.editMessageComponents()
+                    c
+                    .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
             msg.editMessageEmbeds(

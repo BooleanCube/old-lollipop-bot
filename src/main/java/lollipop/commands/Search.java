@@ -59,7 +59,7 @@ public class Search implements Command {
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
                 ArrayList<Anime> animes = api.searchForAnime(query);
-                if(animes == null) throw new IOException();
+                if(animes == null || animes.isEmpty()) throw new Exception();
                 Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")),
                         Button.secondary("right", Emoji.fromUnicode("➡")),
@@ -67,9 +67,15 @@ public class Search implements Command {
                 ).complete();
                 messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getAuthor()));
                 timeout.cancel(true);
-                m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
+                m.editMessageComponents()
+                        .setActionRow(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled(),
+                                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled()
+                        )
+                        .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
             }
-            catch(IOException ignored) {}
+            catch(Exception ignored) {}
         }
         else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
             MangaAPI api = new MangaAPI();

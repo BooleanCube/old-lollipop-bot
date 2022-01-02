@@ -22,6 +22,7 @@ public class Listener extends ListenerAdapter {
             event.getJDA().shutdown();
             System.exit(0);
         }
+        //if(event.getGuild().getIdLong() != 921530290046926858L) return;
         m.run(event);
     }
 

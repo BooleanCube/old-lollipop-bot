@@ -53,7 +53,13 @@ public class Top implements Command {
             ).complete();
             messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getAuthor()));
             timeout.cancel(true);
-            m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
+            m.editMessageComponents()
+                    .setActionRow(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                            Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled(),
+                            Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled()
+                    )
+                    .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
         }
         catch(IOException ignored) {}
     }
