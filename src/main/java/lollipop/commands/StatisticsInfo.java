@@ -23,7 +23,7 @@ public class StatisticsInfo implements Command {
 
     @Override
     public String[] getAliases() {
-        return new String[] {"statinfo"};
+        return new String[] {"dash", "statinfo"};
     }
 
     @Override
@@ -41,7 +41,8 @@ public class StatisticsInfo implements Command {
         if(event.getAuthor().getIdLong() != CONSTANT.OWNERID) return;
 
         EmbedBuilder msg = new EmbedBuilder()
-                .setTitle("Lollipop Statistics")
+                .setTitle("Lollipop Dashboard")
+                .setFooter("lollipop v4.0")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)

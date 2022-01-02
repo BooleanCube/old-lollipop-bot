@@ -2,20 +2,23 @@ package lollipop.listeners;
 
 import awatch.models.Anime;
 import lollipop.Newspaper;
-import lollipop.SearchPage;
+import lollipop.AnimePage;
 import lollipop.Tools;
 import lollipop.commands.News;
+import lollipop.commands.Random;
 import lollipop.commands.Search;
-import net.dv8tion.jda.api.entities.Emoji;
+import lollipop.commands.Top;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.ButtonStyle;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class PageListener extends ListenerAdapter {
+
+    public HashMap<Long, InteractionHook> trailerMessage = new HashMap<>();
 
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
@@ -24,7 +27,7 @@ public class PageListener extends ListenerAdapter {
         if(News.messageToPage.containsKey(id)) {
             Newspaper page = News.messageToPage.get(id);
             if(event.getUser() != page.user) {
-                event.reply("You can't move the pages because you didn't use this command! Use the `news` command to be able to move pages!").setEphemeral(false).queue();
+                event.reply("You can't use the buttons because you didn't use this command! Use the `news` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
             }
             if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
@@ -48,9 +51,9 @@ public class PageListener extends ListenerAdapter {
             }
         }
         if(Search.messageToPage.containsKey(id)) {
-            SearchPage page = Search.messageToPage.get(id);
+            AnimePage page = Search.messageToPage.get(id);
             if(event.getUser() != page.user) {
-                event.reply("You can't move the pages because you didn't use this command! Use the `news` command to be able to move pages!").setEphemeral(false).queue();
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
             }
             if(page.mangas == null) {
@@ -64,43 +67,99 @@ public class PageListener extends ListenerAdapter {
                                 Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                 } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
-                    if(page.pageNumber<page.animes.size())
+                    if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
-                    else
+                    }
+                    else {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
-                } else if(Objects.equals(event.getButton().getId(), "trailer") && event.getButton().getStyle() != ButtonStyle.SUCCESS) {
+                    }
+                } else if(Objects.equals(event.getButton().getId(), "trailer")) {
                     Anime a = page.animes.get(page.pageNumber-1);
-                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).queue();
-                    event.editButton(Button.success("trailer", Emoji.fromUnicode("▶"))).queue();
+                    if(trailerMessage.containsKey(id)) {
+                        trailerMessage.get(id).deleteOriginal().complete();
+                        trailerMessage.remove(id);
+                    }
+                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).complete();
+                    trailerMessage.put(id, m);
                 }
             } else if(page.animes == null) {
                 if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
-                    if(page.pageNumber>1)
+                    if(page.pageNumber>1) {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                Tools.mangaToEmbed(page.mangas.get(--page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
-                    else
+                    }
+                    else {
                         event.editMessageEmbeds(
                                 Tools.mangaToEmbed(page.mangas.get(0)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
+                    }
                 } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
-                    if(page.pageNumber<page.animes.size())
+                    if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                Tools.mangaToEmbed(page.mangas.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
-                    else
+                    }
+                    else {
                         event.editMessageEmbeds(
                                 Tools.mangaToEmbed(page.mangas.get(page.mangas.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
-                } else if(Objects.equals(event.getButton().getId(), "trailer") && event.getButton().getStyle() != ButtonStyle.SUCCESS) {
-                    Anime a = page.animes.get(page.pageNumber-1);
-                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).queue();
-                    event.editButton(Button.success("trailer", Emoji.fromUnicode("▶"))).queue();
+                    }
                 }
+            }
+        }
+        if(Top.messageToPage.containsKey(id)) {
+            AnimePage page = Top.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(page.mangas == null) {
+                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                    if(page.pageNumber>1)
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                    if(page.pageNumber<page.animes.size()) {
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    }
+                    else {
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    }
+                } else if(Objects.equals(event.getButton().getId(), "trailer")) {
+                    Anime a = page.animes.get(page.pageNumber-1);
+                    if(trailerMessage.containsKey(id)) {
+                        trailerMessage.get(id).deleteOriginal().complete();
+                        trailerMessage.remove(id);
+                    }
+                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).complete();
+                    trailerMessage.put(id, m);
+                }
+            }
+        }
+        if(Random.messageToPage.containsKey(id)) {
+            AnimePage page = Random.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "trailer")) {
+                Anime a = page.animes.get(0);
+                event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).queue();
+                event.editButton(event.getButton().asDisabled()).queue();
             }
         }
     }

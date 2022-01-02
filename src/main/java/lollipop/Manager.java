@@ -1,6 +1,7 @@
 package lollipop;
 
 import lollipop.commands.*;
+import lollipop.commands.Random;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
@@ -37,6 +38,8 @@ public class Manager {
         addCommand(new InfiniteVoid());
         addCommand(new Headbutt());
         addCommand(new News());
+        addCommand(new Random());
+        addCommand(new Top());
     }
 
     private void addCommand(Command c) {

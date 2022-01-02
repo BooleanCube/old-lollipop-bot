@@ -60,7 +60,6 @@ public class News implements Command {
                             .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
                             .build()
             ).queue();
-            e.printStackTrace();
         }
     }
 }

@@ -32,7 +32,7 @@ public class Search implements Command {
         return "Searches for an anime/manga/charcater with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
-    public static HashMap<Long, SearchPage> messageToPage = new HashMap<>();
+    public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
@@ -63,9 +63,9 @@ public class Search implements Command {
                 Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")),
                         Button.secondary("right", Emoji.fromUnicode("➡")),
-                        Button.primary("trailer", Emoji.fromUnicode("▶"))
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
                 ).complete();
-                messageToPage.put(m.getIdLong(), new SearchPage(animes, m, 1, event.getAuthor()));
+                messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getAuthor()));
                 timeout.cancel(true);
                 m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
             }

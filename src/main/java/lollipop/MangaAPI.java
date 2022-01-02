@@ -1,5 +1,7 @@
 package lollipop;
 
+import awatch.AParser;
+import awatch.models.Anime;
 import awatch.models.Article;
 import mread.controller.RClient;
 import mread.controller.RListener;

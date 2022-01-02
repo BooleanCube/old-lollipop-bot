@@ -35,6 +35,53 @@ public class AParser {
         return animes;
     }
 
+    public static ArrayList<Anime> parseTop(JSONObject data) {
+        ArrayList<Anime> animes = new ArrayList<>();
+        JSONArray arr = null;
+        try {
+            arr = data.getJSONArray("data");
+        } catch(Exception e) { return null; }
+        for(int i=0; i<10; i++) {
+            JSONObject result = arr.getJSONObject(i);
+            Anime anime = new Anime();
+            try { anime.art = result.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
+            try { anime.malID = result.getInt("mal_id"); } catch(Exception ignored) {}
+            try { anime.status = result.getString("status"); } catch(Exception ignored) {}
+            try { anime.rating = result.getString("rating"); } catch(Exception ignored) {}
+            try { anime.score = result.getDouble("score"); } catch(Exception ignored) {}
+            try { anime.summary = result.getString("synopsis"); } catch(Exception ignored) {}
+            try { anime.title = result.getString("title"); } catch(Exception ignored) {}
+            try { anime.url = result.getString("url"); } catch(Exception ignored) {}
+            try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
+            try { anime.type = result.getString("type"); } catch(Exception ignored) {}
+            try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
+            try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
+            animes.add(anime);
+        }
+        return animes;
+    }
+
+    public static Anime parseAnime(JSONObject data) {
+        Anime anime = new Anime();
+        JSONObject result = null;
+        try {
+            result = data.getJSONObject("data");
+        } catch(Exception e) { return null; }
+        try { anime.art = result.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
+        try { anime.malID = result.getInt("mal_id"); } catch(Exception ignored) {}
+        try { anime.status = result.getString("status"); } catch(Exception ignored) {}
+        try { anime.rating = result.getString("rating"); } catch(Exception ignored) {}
+        try { anime.score = result.getDouble("score"); } catch(Exception ignored) {}
+        try { anime.summary = result.getString("synopsis"); } catch(Exception ignored) {}
+        try { anime.title = result.getString("title"); } catch(Exception ignored) {}
+        try { anime.url = result.getString("url"); } catch(Exception ignored) {}
+        try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
+        try { anime.type = result.getString("type"); } catch(Exception ignored) {}
+        try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
+        try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
+        return anime;
+    }
+
     public static ArrayList<Article> getNews(JSONObject data) {
         ArrayList<Article> articles = new ArrayList<>();
         JSONArray arr = null;

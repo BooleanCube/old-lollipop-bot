@@ -69,7 +69,7 @@ public class Tools {
         }
         EmbedBuilder msg = new EmbedBuilder()
                 .setAuthor("ID: " + a.malID, a.url)
-                .setDescription(a.summary + " [Read More!](" + a.url + ")")
+                .setDescription(a.summary != null ? a.summary + " [Read More!](" + a.url + ")" : "[Read Here](" + a.url + ")")
                 .setTitle(a.title)
                 .addField("Type", a.type, true)
                 .addField("Rating", a.rating, true)
