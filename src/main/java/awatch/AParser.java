@@ -29,6 +29,7 @@ public class AParser {
             try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
             try { anime.type = result.getString("type"); } catch(Exception ignored) {}
             try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
+            try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
             animes.add(anime);
         }
         return animes;

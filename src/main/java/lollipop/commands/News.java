@@ -45,12 +45,13 @@ public class News implements Command {
         try {
             ArrayList<Article> articles = api.animeNews(id);
             if(articles == null) throw new Exception();
+            Collections.reverse(articles);
             Message m = msg.editMessageEmbeds(Tools.newsEmbed(articles.get(0)).setFooter("Page 1/" + articles.size()).build()).setActionRow(
                     Button.secondary("left", Emoji.fromUnicode("⬅")),
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
             messageToPage.put(m.getIdLong(), new Newspaper(articles, 1, m, event.getAuthor()));
-            m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES);
+            m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
             msg.editMessageEmbeds(
@@ -59,6 +60,7 @@ public class News implements Command {
                             .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
                             .build()
             ).queue();
+            e.printStackTrace();
         }
     }
 }

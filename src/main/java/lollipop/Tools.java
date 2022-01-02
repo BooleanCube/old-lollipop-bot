@@ -76,7 +76,7 @@ public class Tools {
                 .addField("Score", Double.toString(a.score), true)
                 .addField("Status", a.status, true)
                 .addField("Rank", Integer.toString(a.rank), true)
-                .addField("Trailer", !a.trailer.equals("Unkown") ? "[Trailer](" + a.trailer + ")" : "Not found", true)
+                .addField("Episode Count", Integer.toString(a.episodeCount), true)
                 .setImage(a.art);
         return msg;
     }

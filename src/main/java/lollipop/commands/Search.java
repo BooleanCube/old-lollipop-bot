@@ -62,11 +62,12 @@ public class Search implements Command {
                 if(animes == null) throw new IOException();
                 Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")),
-                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                        Button.secondary("right", Emoji.fromUnicode("➡")),
+                        Button.primary("trailer", Emoji.fromUnicode("▶"))
                 ).complete();
                 messageToPage.put(m.getIdLong(), new SearchPage(animes, m, 1, event.getAuthor()));
                 timeout.cancel(true);
-                m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES);
+                m.editMessageComponents().queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
             }
             catch(IOException ignored) {}
         }

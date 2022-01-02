@@ -1,12 +1,16 @@
 package lollipop.listeners;
 
+import awatch.models.Anime;
 import lollipop.Newspaper;
 import lollipop.SearchPage;
 import lollipop.Tools;
 import lollipop.commands.News;
 import lollipop.commands.Search;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -60,6 +64,10 @@ public class PageListener extends ListenerAdapter {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
+                } else if(Objects.equals(event.getButton().getId(), "trailer") && event.getButton().getStyle() != ButtonStyle.SUCCESS) {
+                    Anime a = page.animes.get(page.pageNumber-1);
+                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).queue();
+                    event.editButton(Button.success("trailer", Emoji.fromUnicode("▶"))).queue();
                 }
             } else if(page.animes == null) {
                 if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
@@ -80,6 +88,10 @@ public class PageListener extends ListenerAdapter {
                         event.editMessageEmbeds(
                                 Tools.mangaToEmbed(page.mangas.get(page.mangas.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
+                } else if(Objects.equals(event.getButton().getId(), "trailer") && event.getButton().getStyle() != ButtonStyle.SUCCESS) {
+                    Anime a = page.animes.get(page.pageNumber-1);
+                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).queue();
+                    event.editButton(Button.success("trailer", Emoji.fromUnicode("▶"))).queue();
                 }
             }
         }
