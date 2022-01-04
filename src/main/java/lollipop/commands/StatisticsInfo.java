@@ -8,9 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
-import net.dv8tion.jda.api.sharding.ShardManager;
 
-import javax.annotation.processing.SupportedSourceVersion;
 import java.lang.management.RuntimeMXBean;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -39,10 +37,10 @@ public class StatisticsInfo implements Command {
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
         if(event.getAuthor().getIdLong() != CONSTANT.OWNERID) return;
-
+        if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v4.1")
+                .setFooter("lollipop v4.5")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)
@@ -106,11 +104,9 @@ public class StatisticsInfo implements Command {
         .append(event.getJDA().getShardInfo().getShardTotal()).append("`\nShard Statuses: \n");
         ArrayList<JDA> shards = new ArrayList<>(event.getJDA().getShardManager().getShards());
         Collections.reverse(shards);
-        for(JDA shard : shards) {
+        for(JDA shard : shards)
             sb.append("> Shard ID **").append(shard.getShardInfo().getShardId()).append("** Status = `")
                     .append(shard.getShardManager().getStatus(shard.getShardInfo().getShardId())).append("`\n");
-        }
-
         return sb.toString();
     }
 

@@ -3,13 +3,13 @@ package lollipop;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
 
     public final Manager m = new Manager();
+    public final TestCM testM = new TestCM();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
@@ -22,8 +22,8 @@ public class Listener extends ListenerAdapter {
             event.getJDA().shutdown();
             System.exit(0);
         }
-        //if(event.getGuild().getIdLong() != 921530290046926858L) return;
-        m.run(event);
+        if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) testM.run(event);
+        else m.run(event);
     }
 
 }

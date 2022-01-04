@@ -46,20 +46,21 @@ public class Help implements Command {
             manager.getCommands("Roleplay").forEach(command -> roleplay.append("**`").append(command.getAliases()[0]).append("`**, "));
             StringBuilder misc = new StringBuilder();
             manager.getCommands("Miscellaneous").forEach(command -> misc.append("**`").append(command.getAliases()[0]).append("`**, "));
-            StringBuilder utility = new StringBuilder();
-            manager.getCommands("Utility").forEach(command -> utility.append("**`").append(command.getAliases()[0]).append("`**, "));
             EmbedBuilder e = new EmbedBuilder()
                     .setAuthor(Objects.requireNonNull(event.getMember()).getUser().getName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
+                    .setFooter("Use l!help [command] to get more information about a command!")
                     .setTitle("Lollipop Commands");
+            //lmao
+            if(event.getJDA().getSelfUser().getIdLong() != CONSTANT.TESTID)
+                e.setImage("https://user-images.githubusercontent.com/47650058/147891305-58aa09b6-2053-4180-9a9a-8c09826567f1.png");
             e.addField("Anime/Manga", anime.substring(0, anime.length()-2), true);
-            e.addField("Roleplay", roleplay.substring(0, roleplay.length()-2), true);
-            e.addField("Utility", utility.substring(0, utility.length()-2), true);
             e.addField("Fun", fun.substring(0, fun.length()-2), true);
             e.addField("Misc", misc.substring(0, misc.length()-2), true);
+            e.addField("Roleplay", roleplay.substring(0, roleplay.length()-2), true);
             if(event.getMember().getIdLong() == CONSTANT.OWNERID) {
                 StringBuilder owner = new StringBuilder();
                 manager.getCommands("Owner").forEach(command -> owner.append("**`").append(command.getAliases()[0]).append("`**, "));
-                e.addField("Owner", owner.substring(0, owner.length()-2), true);
+                e.addField("Owner", owner.substring(0, owner.length()-2), false);
             }
             event.getChannel().sendMessageEmbeds(e.build()).queue();
             return;

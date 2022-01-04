@@ -21,7 +21,7 @@ public class BitesTheDust implements Command {
 
     @Override
     public String getCategory() {
-        return "Utility";
+        return "Fun";
     }
 
     @Override
