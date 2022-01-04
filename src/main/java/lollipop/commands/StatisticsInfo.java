@@ -40,7 +40,7 @@ public class StatisticsInfo implements Command {
         if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v4.5")
+                .setFooter("lollipop v4.6")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)
