@@ -48,8 +48,8 @@ public class Top implements Command {
             ArrayList<Anime> animes = api.topAnime();
             if(animes == null) throw new IOException();
             Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
-                    net.dv8tion.jda.api.interactions.components.Button.secondary("left", Emoji.fromUnicode("⬅")),
-                    net.dv8tion.jda.api.interactions.components.Button.secondary("right", Emoji.fromUnicode("➡")),
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.secondary("right", Emoji.fromUnicode("➡")),
                     Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
             ).complete();
             messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getAuthor()));

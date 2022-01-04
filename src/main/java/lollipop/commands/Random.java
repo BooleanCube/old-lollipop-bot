@@ -36,8 +36,9 @@ public class Random implements Command {
         if(args.isEmpty()) try {
             Anime a = api.randomAnime();
             Message msg = event.getChannel().sendMessageEmbeds(Tools.animeToEmbed(a).build())
-                    .setActionRow(Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"))
-                    .complete();
+                    .setActionRow(
+                            Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
+                    ).complete();
             messageToPage.put(msg.getIdLong(), new AnimePage(a, msg, event.getAuthor()));
         } catch(IOException ignored) {}
         else Tools.wrongUsage(event.getTextChannel(), this);
