@@ -1,10 +1,11 @@
 package lollipop;
 
 import lollipop.commands.*;
-import lollipop.commands.Random;
+import lollipop.commands.duel.Duel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -15,7 +16,8 @@ public class TestCM {
 
     TestCM() {
         //new commands
-
+        addCommand(new Ping());
+        addCommand(new Duel());
     }
 
     private void addCommand(Command c) {

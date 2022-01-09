@@ -85,7 +85,7 @@ public class PageListener extends ListenerAdapter {
                     Anime a = page.animes.get(page.pageNumber-1);
                     if(trailerMessage.containsKey(id))
                         try { trailerMessage.get(id).deleteOriginal().complete(); trailerMessage.remove(id); } catch(ErrorResponseException ignored) {}
-                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).complete();
+                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).complete();
                     m.editOriginalComponents().setActionRow(
                             Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
                     ).queue();

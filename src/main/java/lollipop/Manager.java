@@ -2,6 +2,7 @@ package lollipop;
 
 import lollipop.commands.*;
 import lollipop.commands.Random;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
@@ -40,6 +41,7 @@ public class Manager {
         addCommand(new News());
         addCommand(new Random());
         addCommand(new Top());
+        addCommand(new Punch());
     }
 
     private void addCommand(Command c) {
@@ -68,11 +70,14 @@ public class Manager {
     void run(MessageReceivedEvent event) {
         final String msg = event.getMessage().getContentRaw();
         if (!msg.startsWith(CONSTANT.PREFIX)) return;
+        if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&
+           !event.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) return;
         final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(CONSTANT.PREFIX), "").split("\\s+");
         final String command = split[0].toLowerCase();
         if (commands.containsKey(command)) {
-            if(event.getMember().getUser().isBot()) {
-                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+            if(Objects.requireNonNull(event.getMember()).getUser().isBot()) {
+                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!")
+                        .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
             final List<String> args = Arrays.asList(split).subList(1, split.length);

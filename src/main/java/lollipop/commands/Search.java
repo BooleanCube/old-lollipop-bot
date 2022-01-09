@@ -64,8 +64,7 @@ public class Search implements Command {
                 Message m = msg.editMessageEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")),
                         Button.secondary("right", Emoji.fromUnicode("➡")),
-                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
-                        Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
                 ).complete();
                 messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getAuthor()));
                 timeout.cancel(true);
@@ -73,8 +72,7 @@ public class Search implements Command {
                         .setActionRow(
                                 Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                                 Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled(),
-                                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
-                                Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
+                                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled()
                         )
                         .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
             }
