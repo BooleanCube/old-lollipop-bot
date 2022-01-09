@@ -26,6 +26,8 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 
 
 ### TODO
-- [ ] Add Fun Commands
+- [ ] duels command
+- [ ] move command ( for duels command )
 - [ ] anime stats
 - [ ] switch to slash commands
+- [ ] waifu command?
