@@ -25,6 +25,7 @@ public class Main {
                 .setActivity(Activity.watching("anime | l!help"))
                 .setShardsTotal(4)
                 .addEventListeners(new Listener())
+                .addEventListeners(new DuelsListener())
                 .addEventListeners(new PageListener())
                 .addEventListeners(new LollipopReaction());
         ShardManager bot = lollipop.build();
