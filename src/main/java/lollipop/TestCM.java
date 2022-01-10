@@ -18,7 +18,7 @@ public class TestCM {
     TestCM() {
         //new commands
         addCommand(new Ping());
-
+        addCommand(new Duel());
     }
 
     private void addCommand(Command c) {

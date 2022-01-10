@@ -107,12 +107,22 @@ public class Game {
                     lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
                 }
             } else {
-                EmbedBuilder e = new EmbedBuilder()
-                        .setDescription("**" + move + "**\n" +
-                                "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                                "> Computer's HP: `" + opposingPlayer.HP + "`")
-                        .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
-                lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                if(opposingPlayer.member == null) {
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**\n" +
+                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
+                                    "> Computer's HP: `" + opposingPlayer.HP + "`")
+                            .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
+                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                } else {
+                    String oppoPName = opposingPlayer.member.getEffectiveName();
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**\n" +
+                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
+                                    "> " + oppoPName + "'s HP: `" + opposingPlayer.HP + "`")
+                            .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
+                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                }
             }
         }
         if(playerNotTurn.member != null && !playerNotTurn.isTimedOut()) {

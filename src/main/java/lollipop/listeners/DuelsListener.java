@@ -25,7 +25,7 @@ public class DuelsListener extends ListenerAdapter {
                 ).setEphemeral(true).queue();
                 return;
             }
-            game.timeout.cancel(true);
+            game.timeout.cancel(false);
             game.sendSelectMove(event.getTextChannel(), null);
             game.setupTimeout(event.getChannel());
             game.switchTurns();
@@ -46,7 +46,7 @@ public class DuelsListener extends ListenerAdapter {
             String move = null;
             if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("ff")) {
                 game.surrender(event.getChannel(), game.playerTurn);
-                game.timeout.cancel(true);
+                game.timeout.cancel(false);
                 return;
             }
             else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("attack")) {
@@ -140,12 +140,12 @@ public class DuelsListener extends ListenerAdapter {
                 if(game.playerNotTurn.strengthGain < -5) game.playerNotTurn.strengthGain = -5;
                 move = "yare yare daze...\nORA! " + game.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
             }
-            game.timeout.cancel(true);
+            game.timeout.cancel(false);
             game.sendSelectMove(event.getTextChannel(), move);
-            game.setupTimeout(event.getChannel());
             game.switchTurns();
+            game.setupTimeout(event.getChannel());
             if(game.checkWin(event.getChannel())) {
-                game.timeout.cancel(true);
+                game.timeout.cancel(false);
                 return;
             }
             if(game.playerTurn.isTimedOut()) {
@@ -160,12 +160,12 @@ public class DuelsListener extends ListenerAdapter {
                         .setFooter("Quick! You have 15 seconds to react!")
                         .build()
                 ).setActionRow(
-                        game.moveButtons[x],
-                        game.moveButtons[y],
-                        game.moveButtons[z],
+                        Game.moveButtons[x],
+                        Game.moveButtons[y],
+                        Game.moveButtons[z],
                         game.surrenderButton
                 ).complete());
-                game.timeout.cancel(true);
+                game.timeout.cancel(false);
                 game.setupTimeout(event.getChannel());
             } else if(game.playerTurn.member == null) {
                 //AI
@@ -191,9 +191,9 @@ public class DuelsListener extends ListenerAdapter {
                             .setFooter("Quick! You have 15 seconds to react!")
                             .build()
                     ).setActionRow(
-                            game.moveButtons[x],
-                            game.moveButtons[y],
-                            game.moveButtons[z],
+                            Game.moveButtons[x],
+                            Game.moveButtons[y],
+                            Game.moveButtons[z],
                             game.surrenderButton
                     ).complete());
                 } else game.switchTurns();
