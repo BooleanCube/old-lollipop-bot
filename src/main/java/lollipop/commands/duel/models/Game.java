@@ -55,7 +55,7 @@ public class Game {
         if(name.equalsIgnoreCase("hinokami")) return "**Slice your opponent's head off**\n(Does `13-18 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
         if(name.equalsIgnoreCase("rasengan")) return "**Blast your opponents with some chakra!**\n(Does `14-19 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
         if(name.equalsIgnoreCase("ora")) return "**Pound your opponents with multiple powerful shots in a very short amount of time!**\n(Does `15-20 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
-        if(name.equalsIgnoreCase("serious punch") || name.equalsIgnoreCase("seriouspunch")) return "**Punch your opponent... *seriously*!**\n(Does `20-25 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("serious punch") || name.equalsIgnoreCase("seriouspunch")) return "**Punch your opponent... *seriously*!**\n(Does `30-40 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
         if(name.equalsIgnoreCase("za warudo") || name.equalsIgnoreCase("zawarudo") || name.equalsIgnoreCase("the world")) return "**Freeze your opponent in time!**\n(This freezes the opponent for `5 seconds` allowing for the attacker to use as many moves as they can in 5 seconds!)\n> `Type`: Ultimate\n> `Blockable`: False";
         if(name.equalsIgnoreCase("yare yare daze") || name.equalsIgnoreCase("yare") || name.equalsIgnoreCase("yareyaredaze")) return "**yare yare daze**\n(Say *yare yare daze*, pound your opponent with an ora and make them weaker. Their attacks will `5-15 HP` weaker and take `15-20 HP` damage by default)\n> `Type`: Ultimate\n> `Blockable`: False";
         return null;
@@ -210,7 +210,7 @@ public class Game {
                 playerNotTurn.isDefending = false;
                 return name + " blocked `Computer`'s serious punch!";
             } else {
-                int damage = (int)(Math.random()*6)+20+playerTurn.strengthGain;
+                int damage = (int)(Math.random()*11)+30+playerTurn.strengthGain;
                 playerNotTurn.HP -= damage;
                 return "Anybody in my way... gets punched.\n`Computer` punched their opponent and did `" + damage + " HP` damage!";
             }

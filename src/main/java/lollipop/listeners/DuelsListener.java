@@ -90,7 +90,7 @@ public class DuelsListener extends ListenerAdapter {
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s serious punch!";
                     game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+20+game.playerTurn.strengthGain;
+                    int damage = (int)(Math.random()*11)+30+game.playerTurn.strengthGain;
                     game.playerNotTurn.HP -= damage;
                     move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
                 }
@@ -142,8 +142,11 @@ public class DuelsListener extends ListenerAdapter {
             }
             game.timeout.cancel(false);
             game.sendSelectMove(event.getTextChannel(), move);
+            if(game.playerTurn.member == null)
+                game.setupTimeout(event.getChannel());
             game.switchTurns();
-            game.setupTimeout(event.getChannel());
+            if(game.playerTurn.member != null)
+                game.setupTimeout(event.getChannel());
             if(game.checkWin(event.getChannel())) {
                 game.timeout.cancel(false);
                 return;
