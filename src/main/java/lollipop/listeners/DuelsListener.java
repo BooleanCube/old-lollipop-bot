@@ -136,8 +136,8 @@ public class DuelsListener extends ListenerAdapter {
             else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("yare")) {
                 int damage = (int)(Math.random()*6)+15+game.playerTurn.strengthGain;
                 game.playerNotTurn.HP -= damage;
-                game.playerNotTurn.strengthGain -= (int)(Math.random()*3)+3;
-                if(game.playerNotTurn.strengthGain < -10) game.playerNotTurn.strengthGain = -10;
+                game.playerNotTurn.strengthGain -= (int)(Math.random()*16)+5;
+                if(game.playerNotTurn.strengthGain < -5) game.playerNotTurn.strengthGain = -5;
                 move = "yare yare daze...\nORA! " + game.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
             }
             game.timeout.cancel(true);

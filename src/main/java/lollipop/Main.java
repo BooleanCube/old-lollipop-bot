@@ -27,7 +27,7 @@ public class Main {
                 .addEventListeners(new Listener())
                 .addEventListeners(new PageListener())
                 .addEventListeners(new LollipopReaction());
-        //ShardManager bot = lollipop.build();
+        ShardManager bot = lollipop.build();
 
 
         //testing

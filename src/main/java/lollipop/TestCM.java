@@ -2,6 +2,7 @@ package lollipop;
 
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
+import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
@@ -17,7 +18,7 @@ public class TestCM {
     TestCM() {
         //new commands
         addCommand(new Ping());
-        addCommand(new Duel());
+
     }
 
     private void addCommand(Command c) {

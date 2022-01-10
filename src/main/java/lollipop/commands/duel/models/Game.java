@@ -17,7 +17,7 @@ public class Game {
     public Player playerNotTurn = new Player();
     public ScheduledFuture<?> timeout = null;
     public ArrayList<Message> lastDisplay = new ArrayList<>();
-    public Button[] moveButtons = {
+    public static Button[] moveButtons = {
             Button.secondary("attack1", "punch"),
             Button.secondary("attack2", "kick"),
             Button.secondary("attack3", "headbutt"),
@@ -35,6 +35,31 @@ public class Game {
             Button.secondary("yare", "yare yare daze")
     };
     public Button surrenderButton = Button.danger("ff", "surrender");
+
+    public static String getAvailableMoves() {
+        StringBuilder sb = new StringBuilder();
+        for(Button b : moveButtons) sb.append("`").append(b.getLabel()).append("`, ");
+        return sb.substring(0, sb.length()-2);
+    }
+
+    public static String moveDescription(String name) {
+        if(name.equalsIgnoreCase("punch")) return "**Punch your opponent... *unseriously*!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("kick")) return "**Kick your opponent with power!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("headbutt")) return "**Headbutt your opponent like Tanjiro!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("chop")) return "**Chop your opponent with a knifehand!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("eat")) return "**Eat some food to regenerate your health!**\n(Regenerates your health by `20-30 HP`)\n> `Type`: Regenerate\n> `Blockable`: False";
+        if(name.equalsIgnoreCase("breathe")) return "**Take in a deep breath and become stronger!**\n(Increases your damage strength by `3-5 HP`)\n> `Type`: Strength Gain\n> `Blockable`: False";
+        if(name.equalsIgnoreCase("shield")) return "**Use a shield to cover yourself!**\n(Lasts until the opponent uses a blockable move)\n> `Type`: Defense\n> `Blockable`: False";
+        if(name.equalsIgnoreCase("block")) return "**Dodge the opponent's next attack!**\n(Lasts until the opponent uses a blockable move)\n> `Type`: Defense\n> `Blockable`: False";
+        if(name.equalsIgnoreCase("4th gear") || name.equalsIgnoreCase("4thgear")) return "**Bounce your opponent back to hell...**\n(Does `13-18 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("hinokami")) return "**Slice your opponent's head off**\n(Does `13-18 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("rasengan")) return "**Blast your opponents with some chakra!**\n(Does `14-19 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("ora")) return "**Pound your opponents with multiple powerful shots in a very short amount of time!**\n(Does `15-20 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("serious punch") || name.equalsIgnoreCase("seriouspunch")) return "**Punch your opponent... *seriously*!**\n(Does `20-25 HP` to the opponent by default)\n> `Type`: Ultimate\n> `Blockable`: True";
+        if(name.equalsIgnoreCase("za warudo") || name.equalsIgnoreCase("zawarudo") || name.equalsIgnoreCase("the world")) return "**Freeze your opponent in time!**\n(This freezes the opponent for `5 seconds` allowing for the attacker to use as many moves as they can in 5 seconds!)\n> `Type`: Ultimate\n> `Blockable`: False";
+        if(name.equalsIgnoreCase("yare yare daze") || name.equalsIgnoreCase("yare") || name.equalsIgnoreCase("yareyaredaze")) return "**yare yare daze**\n(Say *yare yare daze*, pound your opponent with an ora and make them weaker. Their attacks will `5-15 HP` weaker and take `15-20 HP` damage by default)\n> `Type`: Ultimate\n> `Blockable`: False";
+        return null;
+    }
 
     public void sendSelectMove(TextChannel c, String move) {
         if(homePlayer.HP < 0) homePlayer.HP = 0;

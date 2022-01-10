@@ -22,8 +22,9 @@ public class Listener extends ListenerAdapter {
             event.getJDA().shutdown();
             System.exit(0);
         }
-        if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) testM.run(event);
-        else m.run(event);
+        //if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) testM.run(event);
+        //else
+        m.run(event);
     }
 
 }

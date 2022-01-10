@@ -2,6 +2,8 @@ package lollipop;
 
 import lollipop.commands.*;
 import lollipop.commands.Random;
+import lollipop.commands.duel.Duel;
+import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -42,6 +44,8 @@ public class Manager {
         addCommand(new Random());
         addCommand(new Top());
         addCommand(new Punch());
+        addCommand(new Duel());
+        addCommand(new Move());
     }
 
     private void addCommand(Command c) {
