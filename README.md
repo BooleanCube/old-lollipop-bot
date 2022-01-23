@@ -27,5 +27,4 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 
 ### TODO
 - [ ] anime stats
-- [ ] switch to slash commands
 - [ ] nsfw enable/disable
