@@ -1,10 +1,13 @@
 package lollipop.commands.duel;
 
+import lollipop.CONSTANT;
 import lollipop.Command;
 import lollipop.Tools;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
@@ -22,14 +25,20 @@ public class Move implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives detail about a specific move that is available in a duel!";
+        return "Gives detail about a specific move that is available in a duel!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [move(optional)]`";
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this)
+                .addOption(OptionType.STRING, "move", "available move name", false);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if(args.size() >= 1) {
             if(args.size() == 1 && args.get(0).equalsIgnoreCase("all")) {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                event.replyEmbeds(new EmbedBuilder()
                         .setDescription(Game.getAvailableMoves())
                         .build()
                 ).queue();
@@ -37,13 +46,13 @@ public class Move implements Command {
             }
             String moveDesc = Game.moveDescription(String.join(" ", args));
             if(moveDesc == null) {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                event.replyEmbeds(new EmbedBuilder()
                         .setDescription("I could not find an available move under that name! Please try again with a different input or do `l!move all` to get a list of all the available moves!")
                         .setColor(Color.red)
                         .build()
                 ).queue();
             } else {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                event.replyEmbeds(new EmbedBuilder()
                         .setDescription(moveDesc)
                         .build()
                 ).queue();

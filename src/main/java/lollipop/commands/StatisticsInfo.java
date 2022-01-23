@@ -2,12 +2,16 @@ package lollipop.commands;
 
 import lollipop.CONSTANT;
 import lollipop.Command;
+import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.lang.management.RuntimeMXBean;
 import java.text.NumberFormat;
@@ -35,8 +39,13 @@ public class StatisticsInfo implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        if(event.getAuthor().getIdLong() != CONSTANT.OWNERID) return;
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
+        if(event.getUser().getIdLong() != CONSTANT.OWNERID) return;
         if(event.getJDA().getSelfUser().getIdLong() == CONSTANT.TESTID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
@@ -47,7 +56,7 @@ public class StatisticsInfo implements Command {
                 .addField("Shards", shardInfo(event), false)
                 .addField("Discord", botInfo(event), true)
                 .addField("Uptime", uptimeInfo(), true);
-        event.getChannel().sendMessageEmbeds(msg.build()).queue();
+        event.replyEmbeds(msg.build()).queue();
     }
 
     public String memInfo() {
@@ -92,13 +101,13 @@ public class StatisticsInfo implements Command {
         sb.append(numberOfHours).append(" hour(s), ").append(numberOfMinutes).append(" minute(s), ").append(numberOfSeconds).append(" second(s)");
         return sb.toString();
     }
-    public String botInfo(MessageReceivedEvent event) {
+    public String botInfo(SlashCommandEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getUsers().size()).append("`\nPing: `")
                 .append(event.getJDA().getGatewayPing()).append("`");
         return sb.toString();
     }
-    public String shardInfo(MessageReceivedEvent event) {
+    public String shardInfo(SlashCommandEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Average Ping: `").append(event.getJDA().getShardManager().getAverageGatewayPing()).append("`\nCurrent Shard ID: `").append(event.getJDA().getShardInfo().getShardId()).append("`\nTotal Shards: `")
         .append(event.getJDA().getShardInfo().getShardTotal()).append("`\nShard Statuses: \n");

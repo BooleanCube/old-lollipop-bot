@@ -4,7 +4,10 @@ import lollipop.CONSTANT;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
@@ -26,7 +29,13 @@ public class Janken implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this)
+                .addOption(OptionType.STRING, "hand", "rock / paper / scissors", true);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if(args.size() == 1) {
             String choice = args.get(0);
             int num = 0;
@@ -71,7 +80,7 @@ public class Janken implements Command {
                 e.addField("My Hand", myChoice, true);
                 e.setColor(Color.green);
             }
-            event.getChannel().sendMessageEmbeds(e.build()).queue();
+            event.replyEmbeds(e.build()).queue();
         } else Tools.wrongUsage(event.getTextChannel(), this);
     }
 }

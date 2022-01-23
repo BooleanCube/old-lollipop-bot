@@ -5,7 +5,10 @@ import lollipop.*;
 import lollipop.models.AnimePage;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.io.IOException;
@@ -28,10 +31,15 @@ public class Random implements Command {
         return "Get a random anime!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
     }
 
+    @Override
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this);
+    }
+
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public void run(List<String> args, SlashCommandEvent event) {
         API api = new API();
         if(args.isEmpty()) try {
             Anime a = api.randomAnime();
@@ -39,7 +47,7 @@ public class Random implements Command {
                     .setActionRow(
                             Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
                     ).complete();
-            messageToPage.put(msg.getIdLong(), new AnimePage(a, msg, event.getAuthor()));
+            messageToPage.put(msg.getIdLong(), new AnimePage(a, msg, event.getUser()));
         } catch(IOException ignored) {}
         else Tools.wrongUsage(event.getTextChannel(), this);
     }

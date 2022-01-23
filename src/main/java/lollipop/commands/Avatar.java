@@ -5,7 +5,9 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
@@ -27,11 +29,17 @@ public class Avatar implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this)
+                .addOption(OptionType.USER, "user", "specified member", true);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if(args.isEmpty()) {
             Member target = event.getMember();
             assert target != null;
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+            event.replyEmbeds(new EmbedBuilder()
                     .setImage(target.getEffectiveAvatarUrl() + "?size=512")
                     .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
                     .build()
@@ -39,10 +47,10 @@ public class Avatar implements Command {
         } else {
             Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
             if(target == null) {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
+                event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
                 return;
             }
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+            event.replyEmbeds(new EmbedBuilder()
                     .setImage(target.getEffectiveAvatarUrl() + "?size=512")
                     .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
                     .build()

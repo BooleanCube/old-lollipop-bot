@@ -2,8 +2,12 @@ package lollipop.commands;
 
 import lollipop.CONSTANT;
 import lollipop.Command;
+import lollipop.Tools;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.brunocvcunha.jiphy.Jiphy;
 import org.brunocvcunha.jiphy.JiphyConstants;
 import org.brunocvcunha.jiphy.requests.JiphySearchRequest;
@@ -29,8 +33,12 @@ public class Gif implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        if(event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) event.getMessage().delete().queue();
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         String[] queries = {"lickilick", "anime", "pokemon", "jjba", "attack%20on%20titan", "demon%20slayer", "tokyo%20ghoul", "jujutsu%20kaisen", "naruto", "black%20clover", "mob%20psycho", "my%20hero%20academia", "darling%20in%20the%20franxx", "konosuba", "deathnote", "evangelion", "fire%20force", "dr%20stone", "your%20lie%20in%20april"};
         String query = queries[(int)(Math.random()*queries.length)];
         Jiphy jiphy = Jiphy.builder()

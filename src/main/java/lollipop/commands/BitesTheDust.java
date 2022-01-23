@@ -6,7 +6,10 @@ import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
@@ -30,13 +33,18 @@ public class BitesTheDust implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if (!args.isEmpty()) {
             Tools.wrongUsage(event.getTextChannel(), this);
             return;
         }
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            event.getChannel().sendMessageEmbeds(
+            event.replyEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("This command can't be used because I don't have the `MESSAGE_MANAGE` permission in this server!")
@@ -44,7 +52,6 @@ public class BitesTheDust implements Command {
             ).queue();
             return;
         }
-        event.getMessage().delete().complete();
         List<Message> msgList = event.getChannel().getHistory().retrievePast(31).complete().stream().filter(m -> m.getMember().getIdLong() == event.getMember().getIdLong()).collect(Collectors.toList());
         try {
             if(msgList.isEmpty()) throw new Exception();

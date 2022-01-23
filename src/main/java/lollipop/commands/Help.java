@@ -5,7 +5,10 @@ import lollipop.Command;
 import lollipop.Manager;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +35,13 @@ public class Help implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this)
+                .addOption(OptionType.STRING, "command", "command name", false);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if(args.size() > 1) {
             Tools.wrongUsage(event.getTextChannel(), this);
             return;
@@ -62,7 +71,7 @@ public class Help implements Command {
                 manager.getCommands("Owner").forEach(command -> owner.append("**`").append(command.getAliases()[0]).append("`**, "));
                 e.addField("Owner", owner.substring(0, owner.length()-2), false);
             }
-            event.getChannel().sendMessageEmbeds(e.build()).queue();
+            event.replyEmbeds(e.build()).queue();
             return;
         }
         Command command = manager.getCommand(String.join("", args));
@@ -71,7 +80,7 @@ public class Help implements Command {
                     "Use `" + CONSTANT.PREFIX + getAliases()[0] + "` for a list of all my commands!").queue();
             return;
         }
-        event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+        event.replyEmbeds(new EmbedBuilder()
                         .setTitle("Command Help: `" + command.getAliases()[0] + "`")
                         .setDescription(command.getHelp())
                         .build()

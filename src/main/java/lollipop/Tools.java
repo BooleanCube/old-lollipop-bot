@@ -8,10 +8,15 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 
 public class Tools {
+
+    public static CommandData defaultSlashCmd(Command c) {
+        return new CommandData(c.getAliases()[0], c.getHelp().split("\n")[0]);
+    }
 
     public static Member getEffectiveMember(Guild g, String s) {
         Member m;

@@ -3,6 +3,7 @@ package lollipop;
 import lollipop.listeners.DuelsListener;
 import lollipop.listeners.LollipopReaction;
 import lollipop.listeners.PageListener;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -30,7 +31,6 @@ public class Main {
                 .addEventListeners(new LollipopReaction());
         ShardManager bot = lollipop.build();
 
-
         //testing
         JDABuilder testClient = JDABuilder.createDefault(Secret.TESTTOKEN)
                 .setChunkingFilter(ChunkingFilter.ALL)
@@ -38,8 +38,10 @@ public class Main {
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.watching("anime | l!help"))
                 .addEventListeners(new Listener())
-                .addEventListeners(new DuelsListener());
-        testClient.build();
+                .addEventListeners(new DuelsListener())
+                .addEventListeners(new PageListener())
+                .addEventListeners(new LollipopReaction());
+        JDA test = testClient.build();
 
     }
 

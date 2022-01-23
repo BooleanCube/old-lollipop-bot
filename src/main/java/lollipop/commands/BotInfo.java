@@ -2,8 +2,13 @@ package lollipop.commands;
 
 import lollipop.CONSTANT;
 import lollipop.Command;
+import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
 
@@ -22,8 +27,13 @@ public class BotInfo implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
+        event.replyEmbeds(new EmbedBuilder()
                 .setTitle("Bot Information")
                 .setDescription("lollipop is an anime/manga discord bot which provides with fun commands!\n" +
                         "> [Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=919061572649910292&permissions=414467877952&scope=bot)\n" +

@@ -6,7 +6,11 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.io.IOException;
@@ -29,16 +33,22 @@ public class Picture implements Command {
     }
 
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
+    public CommandData getSlashCmd() {
+        return Tools.defaultSlashCmd(this)
+                .addOption(OptionType.NUMBER, "id", "MAL ID (available in the search command)", true);
+    }
+
+    @Override
+    public void run(List<String> args, SlashCommandEvent event) {
         if(args.size() != 2) { Tools.wrongUsage(event.getTextChannel(), this); return; }
         if(args.get(0).equalsIgnoreCase("anime") || args.get(0).equalsIgnoreCase("a")) {
             API api = new API();
             long id = 0;
             try { id = Long.parseLong(args.get(1)); }
             catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-            Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
+            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         Tools.pictureEmbed(
                                 api.pictureAnime(id))
                                         .setAuthor(event.getMember().getEffectiveName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
@@ -46,7 +56,7 @@ public class Picture implements Command {
                 ).queue();
             }
             catch (IOException e) {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         new EmbedBuilder()
                                 .setColor(Color.red)
                                 .setDescription("Could not find any pictures related to that ID! Check for any typos.")
@@ -58,9 +68,9 @@ public class Picture implements Command {
             long id = 0;
             try { id = Long.parseLong(args.get(1)); }
             catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-            Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
+            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         Tools.pictureEmbed(
                                  api.pictureManga(id))
                                         .setAuthor(event.getMember().getEffectiveName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
@@ -68,7 +78,7 @@ public class Picture implements Command {
                 ).queue();
             }
             catch (IOException e) {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         new EmbedBuilder()
                                 .setColor(Color.red)
                                 .setDescription("Could not find any pictures related to that ID! Check for any typos.")
@@ -80,9 +90,9 @@ public class Picture implements Command {
             long id = 0;
             try { id = Long.parseLong(args.get(1)); }
             catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-            Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
+            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         Tools.pictureEmbed(
                                 api.pictureCharacter(id))
                                         .setAuthor(event.getMember().getEffectiveName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
@@ -90,7 +100,7 @@ public class Picture implements Command {
                 ).queue();
             }
             catch (IOException e) {
-                msg.editMessageEmbeds(
+                msg.editOriginalEmbeds(
                         new EmbedBuilder()
                                 .setColor(Color.red)
                                 .setDescription("Could not find any pictures related to that ID! Check for any typos.")

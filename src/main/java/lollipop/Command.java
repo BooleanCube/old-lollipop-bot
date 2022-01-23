@@ -1,6 +1,7 @@
 package lollipop;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
 
@@ -8,5 +9,6 @@ public interface Command {
     String[] getAliases();
     String getCategory();
     String getHelp();
-    void run(List<String> args, MessageReceivedEvent event);
+    CommandData getSlashCmd();
+    void run(List<String> args, SlashCommandEvent event);
 }

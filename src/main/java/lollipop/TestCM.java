@@ -2,13 +2,13 @@ package lollipop;
 
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
-import lollipop.commands.duel.Move;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TestCM {
@@ -44,17 +44,19 @@ public class TestCM {
         return commands.get(commandName);
     }
 
-    void run(MessageReceivedEvent event) {
-        final String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(CONSTANT.PREFIX)) return;
-        final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(CONSTANT.PREFIX), "").split("\\s+");
-        final String command = split[0].toLowerCase();
+    void run(SlashCommandEvent event) {
+        final String msg = event.getCommandString();
+        if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&
+                !event.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) return;
+        final String command = event.getName();
         if (commands.containsKey(command)) {
-            if(event.getMember().getUser().isBot()) {
-                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!").queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+            if(event.getUser().isBot()) {
+                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!")
+                        .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
-            final List<String> args = Arrays.asList(split).subList(1, split.length);
+            final List<OptionMapping> options = event.getOptions();
+            final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
             commands.get(command).run(args, event);
         }
     }
