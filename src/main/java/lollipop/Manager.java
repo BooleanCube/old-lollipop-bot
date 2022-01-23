@@ -6,8 +6,10 @@ import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -22,39 +24,37 @@ public class Manager {
     }
 
     public void reloadCommands(JDA jda) {
-        //delete all current slash commands
-        jda.updateCommands().queue();
         //add all slash commands
-        jda.updateCommands()
-                .addCommands(new Help(this).getSlashCmd())
-                .addCommands(new Gif().getSlashCmd())
-                .addCommands(new Ping().getSlashCmd())
-                .addCommands(new Search().getSlashCmd())
-                .addCommands(new Picture().getSlashCmd())
-                .addCommands(new BotInfo().getSlashCmd())
-                .addCommands(new Avatar().getSlashCmd())
-                .addCommands(new Eval().getSlashCmd())
-                .addCommands(new StatisticsInfo().getSlashCmd())
-                .addCommands(new OraOraOra().getSlashCmd())
-                .addCommands(new Janken().getSlashCmd())
-                .addCommands(new Hentai().getSlashCmd())
-                .addCommands(new Baka().getSlashCmd())
-                .addCommands(new RandomQuote().getSlashCmd())
-                .addCommands(new BitesTheDust().getSlashCmd())
-                .addCommands(new Pat().getSlashCmd())
-                .addCommands(new Rasengan().getSlashCmd())
-                .addCommands(new Onigiri().getSlashCmd())
-                .addCommands(new Eat().getSlashCmd())
-                .addCommands(new Hinokami().getSlashCmd())
-                .addCommands(new InfiniteVoid().getSlashCmd())
-                .addCommands(new Headbutt().getSlashCmd())
-                .addCommands(new News().getSlashCmd())
-                .addCommands(new Random().getSlashCmd())
-                .addCommands(new Top().getSlashCmd())
-                .addCommands(new Punch().getSlashCmd())
-                .addCommands(new Duel().getSlashCmd())
-                .addCommands(new Move().getSlashCmd())
-                .queue();
+        jda.updateCommands().addCommands(
+                new Help(this).getSlashCmd(),
+                new Gif().getSlashCmd(),
+                new Ping().getSlashCmd(),
+                new Search().getSlashCmd(),
+                new Picture().getSlashCmd(),
+                new BotInfo().getSlashCmd(),
+                new Avatar().getSlashCmd(),
+                new Eval().getSlashCmd(),
+                new StatisticsInfo().getSlashCmd(),
+                new OraOraOra().getSlashCmd(),
+                new Janken().getSlashCmd(),
+                new Hentai().getSlashCmd(),
+                new Baka().getSlashCmd(),
+                new RandomQuote().getSlashCmd(),
+                new BitesTheDust().getSlashCmd(),
+                new Pat().getSlashCmd(),
+                new Rasengan().getSlashCmd(),
+                new Onigiri().getSlashCmd(),
+                new Eat().getSlashCmd(),
+                new Hinokami().getSlashCmd(),
+                new InfiniteVoid().getSlashCmd(),
+                new Headbutt().getSlashCmd(),
+                new News().getSlashCmd(),
+                new Random().getSlashCmd(),
+                new Top().getSlashCmd(),
+                new Punch().getSlashCmd(),
+                new Duel().getSlashCmd(),
+                new Move().getSlashCmd()
+        ).queue();
     }
 
     public void reloadCommand(JDA jda, Command c) {
@@ -93,7 +93,7 @@ public class Manager {
     }
 
     private void addCommand(Command c) {
-        if (!commands.containsKey(c.getAliases()[0])) for(String cmd : c.getAliases()) commands.put(cmd, c);
+        if(!commands.containsKey(c.getAliases()[0])) for(String cmd : c.getAliases()) commands.put(cmd, c);
     }
 
     public Collection<Command> getCommands(String category) {
@@ -123,8 +123,8 @@ public class Manager {
         final String command = event.getName();
         if (commands.containsKey(command)) {
             if(event.getMember().getUser().isBot()) {
-                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!")
-                        .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                event.reply("Nice try, you lowly peasant! Only my masters can command me!")
+                        .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
             final List<OptionMapping> options = event.getOptions();

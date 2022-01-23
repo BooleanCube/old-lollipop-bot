@@ -89,7 +89,7 @@ public class Game {
                     lastDisplay.add(c.sendMessageEmbeds(new EmbedBuilder()
                             .setAuthor(playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
-                            .setFooter("Quick! You have 15 seconds to react!")
+                            .setFooter("Quick! You have 30 seconds to react!")
                             .build()
                     ).setActionRow(
                             moveButtons[x],
@@ -132,7 +132,7 @@ public class Game {
             lastDisplay.add(c.sendMessageEmbeds(new EmbedBuilder()
                     .setAuthor(playerNotTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerNotTurn.member.getEffectiveAvatarUrl())
                     .setDescription("What is your move?")
-                    .setFooter("Quick! You have 15 seconds to react!")
+                    .setFooter("Quick! You have 30 seconds to react!")
                     .build()
             ).setActionRow(
                     moveButtons[x],
@@ -268,7 +268,7 @@ public class Game {
         else e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the game!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
         e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
         e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
-        timeout = c.sendMessageEmbeds(e.build()).queueAfter(15, TimeUnit.SECONDS, me -> {
+        timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
             deleteDisplayMessagesFull();
             Duel.memberToGame.remove(playerTurn.member.getIdLong());
             if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());

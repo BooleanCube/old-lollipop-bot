@@ -14,8 +14,8 @@ public class DuelsListener extends ListenerAdapter {
 
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
-        if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "accept")) {
-            if(!Duel.memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) return;
+        if(Objects.equals(event.getButton().getId(), "accept")) {
+            if(!Duel.memberToGame.containsKey(event.getMember().getIdLong())) return;
             Game game = Duel.memberToGame.get(event.getMember().getIdLong());
             if(event.getMember() != game.playerTurn.member) {
                 event.replyEmbeds(new EmbedBuilder()
@@ -44,12 +44,12 @@ public class DuelsListener extends ListenerAdapter {
             if(event.getMessage().getIdLong() != game.lastDisplay.get(game.lastDisplay.size()-1).getIdLong()) return;
             if(game.lastDisplay != null) game.deleteDisplayMessagesFull();
             String move = null;
-            if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("ff")) {
+            if(Objects.requireNonNull(event.getButton().getId()).startsWith("ff")) {
                 game.surrender(event.getChannel(), game.playerTurn);
                 game.timeout.cancel(false);
                 return;
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("attack")) {
+            else if(event.getButton().getId().startsWith("attack")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s attack!";
@@ -60,20 +60,20 @@ public class DuelsListener extends ListenerAdapter {
                     move = game.playerTurn.member.getAsMention() + " attacked their opponent and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("defend")) {
+            else if(event.getButton().getId().startsWith("defend")) {
                 move = game.playerTurn.member.getAsMention() + " is defending himself!";
                 game.playerTurn.isDefending = true;
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("heal")) {
+            else if(event.getButton().getId().startsWith("heal")) {
                 int health = (int)(Math.random()*11)+20;
                 game.playerTurn.HP += health;
                 move = game.playerTurn.member.getAsMention() + " healed himself and gained `" + health + " HP`!";
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("strength")) {
+            else if(event.getButton().getId().startsWith("strength")) {
                 game.playerTurn.strengthGain += (int)(Math.random()*3)+3;
                 move = game.playerTurn.member.getAsMention() + " took a deep breath and became much stronger! They're attacks will do more damage..";
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("ora")) {
+            else if(event.getButton().getId().startsWith("ora")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s ORA!";
@@ -84,7 +84,7 @@ public class DuelsListener extends ListenerAdapter {
                     move = "ORA ORA ORA ORA ORRAAAA\n" + game.playerTurn.member.getAsMention() + " pounded their opponent and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("seriouspunch")) {
+            else if(event.getButton().getId().startsWith("seriouspunch")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s serious punch!";
@@ -95,12 +95,12 @@ public class DuelsListener extends ListenerAdapter {
                     move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("zawarudo")) {
+            else if(event.getButton().getId().startsWith("zawarudo")) {
                 game.playerNotTurn.timeoutStart = System.currentTimeMillis();
                 game.playerNotTurn.timeoutDuration = Math.random()+5;
                 move = "ZA WARUDO!\n" + game.playerTurn.member.getAsMention() + " stopped time. Their opponent is frozen for `5 seconds`.";
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("rasengan")) {
+            else if(event.getButton().getId().startsWith("rasengan")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s Rasengan!";
@@ -111,7 +111,7 @@ public class DuelsListener extends ListenerAdapter {
                     move = "RASENGAN!\n" + game.playerTurn.member.getAsMention() + " hit their opponent with a rasengan and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("4thgear")) {
+            else if(event.getButton().getId().startsWith("4thgear")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s Gum-Gum Kong Gun!";
@@ -122,7 +122,7 @@ public class DuelsListener extends ListenerAdapter {
                     move = "*boing* 4th GEAR *boing*\n" + game.playerTurn.member.getAsMention() + " blasted their opponents away with Gum-Gum Kong Gun and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("hinokami")) {
+            else if(event.getButton().getId().startsWith("hinokami")) {
                 if(game.playerNotTurn.isDefending) {
                     String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
                     move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s hinokami attack!";
@@ -133,7 +133,7 @@ public class DuelsListener extends ListenerAdapter {
                     move = "HINOKAMI KAGURA!\n" + game.playerTurn.member.getAsMention() + " sliced the opponent's head off and did `" + damage + " HP` damage!";
                 }
             }
-            else if(Objects.requireNonNull(Objects.requireNonNull(event.getButton()).getId()).startsWith("yare")) {
+            else if(event.getButton().getId().startsWith("yare")) {
                 int damage = (int)(Math.random()*6)+15+game.playerTurn.strengthGain;
                 game.playerNotTurn.HP -= damage;
                 game.playerNotTurn.strengthGain -= (int)(Math.random()*16)+5;
@@ -160,7 +160,7 @@ public class DuelsListener extends ListenerAdapter {
                 game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                         .setDescription("What is your move?")
-                        .setFooter("Quick! You have 15 seconds to react!")
+                        .setFooter("Quick! You have 30 seconds to react!")
                         .build()
                 ).setActionRow(
                         Game.moveButtons[x],
@@ -191,7 +191,7 @@ public class DuelsListener extends ListenerAdapter {
                     game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                             .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
-                            .setFooter("Quick! You have 15 seconds to react!")
+                            .setFooter("Quick! You have 30 seconds to react!")
                             .build()
                     ).setActionRow(
                             Game.moveButtons[x],

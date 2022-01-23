@@ -49,7 +49,7 @@ public class Headbutt implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage("\uD83D\uDCAB **BANG** \uD83D\uDCAB \n" + target.getAsMention() + " was headbutted by " + event.getMember().getAsMention()).queue();
+        event.reply("\uD83D\uDCAB **BANG** \uD83D\uDCAB \n" + target.getAsMention() + " was headbutted by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
     }
 }

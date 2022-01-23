@@ -53,6 +53,7 @@ public class BitesTheDust implements Command {
             return;
         }
         List<Message> msgList = event.getChannel().getHistory().retrievePast(31).complete().stream().filter(m -> m.getMember().getIdLong() == event.getMember().getIdLong()).collect(Collectors.toList());
+        event.deferReply().queue();
         try {
             if(msgList.isEmpty()) throw new Exception();
             event.getChannel().purgeMessages(msgList);

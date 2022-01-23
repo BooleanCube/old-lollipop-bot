@@ -75,8 +75,8 @@ public class Eval implements Command {
             }
             String script = imports + event.getCommandString().split("\\s+", 2)[1];
             Object out = engine.evaluate(script);
-            event.getChannel().sendMessage(out == null ? "Executed without error" : out.toString()).queue();
-        } catch (Exception e) {event.getChannel().sendMessage(e.getMessage()).queue();}
+            event.reply(out == null ? "Executed without error" : out.toString()).queue();
+        } catch (Exception e) {event.reply(e.getMessage()).queue();}
     }
 
 }

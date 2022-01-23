@@ -34,7 +34,7 @@ public class PageListener extends ListenerAdapter {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `news` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
             }
-            if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+            if(Objects.equals(event.getButton().getId(), "left")) {
                 if(page.pageNumber>1)
                     event.editMessageEmbeds(
                             Tools.newsEmbed(page.articles.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
@@ -43,7 +43,7 @@ public class PageListener extends ListenerAdapter {
                     event.editMessageEmbeds(
                             Tools.newsEmbed(page.articles.get(0)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
                     ).queue();
-            } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
                 if(page.pageNumber<page.articles.size())
                     event.editMessageEmbeds(
                             Tools.newsEmbed(page.articles.get(++page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.articles.size()).build()
@@ -61,7 +61,7 @@ public class PageListener extends ListenerAdapter {
                 return;
             }
             if(page.mangas == null) {
-                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1)
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
@@ -70,7 +70,7 @@ public class PageListener extends ListenerAdapter {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
-                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
@@ -93,7 +93,7 @@ public class PageListener extends ListenerAdapter {
                     trailerToUser.put(m.retrieveOriginal().complete().getIdLong(), page.user.getIdLong());
                 }
             } else if(page.animes == null) {
-                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1) {
                         event.editMessageEmbeds(
                                 Tools.mangaToEmbed(page.mangas.get(--page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
@@ -104,7 +104,7 @@ public class PageListener extends ListenerAdapter {
                                 Tools.mangaToEmbed(page.mangas.get(0)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                         ).queue();
                     }
-                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
                                 Tools.mangaToEmbed(page.mangas.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
@@ -125,7 +125,7 @@ public class PageListener extends ListenerAdapter {
                 return;
             }
             if(page.mangas == null) {
-                if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "left")) {
+                if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1)
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
@@ -134,7 +134,7 @@ public class PageListener extends ListenerAdapter {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
-                } else if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "right")) {
+                } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
                                 Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
@@ -164,7 +164,7 @@ public class PageListener extends ListenerAdapter {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
             }
-            if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "trailer")) {
+            if(Objects.equals(event.getButton().getId(), "trailer")) {
                 Anime a = page.animes.get(0);
                 InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).complete();
                 m.editOriginalComponents().setActionRow(
@@ -175,7 +175,7 @@ public class PageListener extends ListenerAdapter {
                 event.editButton(event.getButton().asDisabled()).queue();
             }
         }
-        if(Objects.equals(Objects.requireNonNull(event.getButton()).getId(), "delete")) {
+        if(Objects.equals(event.getButton().getId(), "delete")) {
             if(trailerToUser.get(event.getMessageIdLong()) != event.getUser().getIdLong()) {
                 event.reply("You can't use the delete button because you didn't use this command! Type `l!help` for a list of commands!").setEphemeral(true).queue();
                 return;

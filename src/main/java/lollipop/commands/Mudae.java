@@ -44,7 +44,7 @@ public class Mudae implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage("**MUDAE MUDAE MUDAE MUDAAAEEEEEEE**\n" + target.getAsMention() + " was powdered by " + event.getMember().getAsMention()).queue();
+        event.reply("**MUDAE MUDAE MUDAE MUDAAAEEEEEEE**\n" + target.getAsMention() + " was powdered by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(mudaegifs[(int)(Math.random()*mudaegifs.length)]).queue();
     }
 }

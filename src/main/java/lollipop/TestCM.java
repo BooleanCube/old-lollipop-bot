@@ -51,8 +51,8 @@ public class TestCM {
         final String command = event.getName();
         if (commands.containsKey(command)) {
             if(event.getUser().isBot()) {
-                event.getChannel().sendMessage("Nice try, you lowly peasant! Only my masters can command me!")
-                        .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                event.reply("Nice try, you lowly peasant! Only my masters can command me!")
+                        .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
             final List<OptionMapping> options = event.getOptions();

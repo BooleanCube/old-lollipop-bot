@@ -49,7 +49,7 @@ public class Onigiri implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage("**PURGATORY ONIGIRI!**\n" + target.getAsMention() + " was sliced up by " + event.getMember().getAsMention()).queue();
+        event.reply("**PURGATORY ONIGIRI!**\n" + target.getAsMention() + " was sliced up by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
     }
 }

@@ -44,11 +44,11 @@ public class Baka implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
         }
-        if(Objects.requireNonNull(event.getMember()).getIdLong() == target.getIdLong()) {
+        if(event.getMember().getIdLong() == target.getIdLong()) {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.getChannel().sendMessage("**Bakana no?**\n" + target.getAsMention() + " was called a **baka** by " + event.getMember().getAsMention()).queue();
+        event.reply("**Bakana no?**\n" + target.getAsMention() + " was called a **baka** by " + event.getMember().getAsMention()).queue();
         event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
     }
 }

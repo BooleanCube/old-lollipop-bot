@@ -98,11 +98,11 @@ public class Duel implements Command {
                         .build()
                 ).queueAfter(30, TimeUnit.SECONDS, m -> {
                     game.deleteDisplayMessagesFull();
-                    Duel.memberToGame.remove(Objects.requireNonNull(event.getMember()).getIdLong());
-                    Duel.memberToGame.remove(Objects.requireNonNull(target).getIdLong());
+                    Duel.memberToGame.remove(event.getMember().getIdLong());
+                    Duel.memberToGame.remove(target.getIdLong());
                 });
-                Duel.memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
-                Duel.memberToGame.put(Objects.requireNonNull(target).getIdLong(), game);
+                Duel.memberToGame.put(event.getMember().getIdLong(), game);
+                Duel.memberToGame.put(target.getIdLong(), game);
             }
         }
     }

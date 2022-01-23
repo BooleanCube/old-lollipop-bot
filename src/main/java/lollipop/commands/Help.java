@@ -76,7 +76,7 @@ public class Help implements Command {
         }
         Command command = manager.getCommand(String.join("", args));
         if(command == null) {
-            event.getChannel().sendMessage("The command `" + String.join("", args) + "` does not exist!\n" +
+            event.reply("The command `" + String.join("", args) + "` does not exist!\n" +
                     "Use `" + CONSTANT.PREFIX + getAliases()[0] + "` for a list of all my commands!").queue();
             return;
         }
