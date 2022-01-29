@@ -1,12 +1,10 @@
 package lollipop.commands;
 
 import lollipop.API;
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.io.IOException;
@@ -25,7 +23,7 @@ public class RandomQuote implements Command {
 
     @Override
     public String getHelp() {
-        return "Throws back a random anime related quote at you!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
+        return "Throws back a random anime related quote at you!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

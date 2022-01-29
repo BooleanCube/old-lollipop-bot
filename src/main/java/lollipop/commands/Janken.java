@@ -1,11 +1,10 @@
 package lollipop.commands;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -25,7 +24,7 @@ public class Janken implements Command {
 
     @Override
     public String getHelp() {
-        return "Play jankenpon with me!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [rock/paper/scissors]`";
+        return "Play jankenpon with me!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [rock/paper/scissors]`";
     }
 
     @Override
@@ -50,7 +49,7 @@ public class Janken implements Command {
             }
             int random = (int)(Math.random()*10)%mychoices.length;
             String myChoice = mychoices[random];
-            String[] victory = {"I admit defeat! You are too powerful...", "How are you this strong?", "I can not match this power!", "I surrender! You are too powerful!", "I might need some backup."};
+            String[] victory = {"I admit defeat! You are too powerful...", "How are you this strong?", "I can not match this power!", "I surrender! You are too powerfu" + Constant.PREFIX + "", "I might need some backup."};
             String[] loss = {"Pathetic!", "Mudae!", "Piece of trash!", "Practice is key...", "Come at me with your full strength!", "Is that all you got?"};
             String[] tie = {"A worthy opponent!", "You are indeed powerful, but can you match my next move...", "Kuso! That was close!", "Try your hardest on me!", "Don't get afraid now..."};
             EmbedBuilder e = new EmbedBuilder();

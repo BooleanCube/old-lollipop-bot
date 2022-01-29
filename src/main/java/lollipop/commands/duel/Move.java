@@ -1,6 +1,6 @@
 package lollipop.commands.duel;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import lollipop.commands.duel.models.Game;
@@ -25,7 +25,7 @@ public class Move implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives detail about a specific move that is available in a duel!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [move(optional)]`";
+        return "Gives detail about a specific move that is available in a due" + Constant.PREFIX + "\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [move(optional)]`";
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Move implements Command {
             String moveDesc = Game.moveDescription(String.join(" ", args));
             if(moveDesc == null) {
                 event.replyEmbeds(new EmbedBuilder()
-                        .setDescription("I could not find an available move under that name! Please try again with a different input or do `l!move all` to get a list of all the available moves!")
+                        .setDescription("I could not find an available move under that name! Please try again with a different input or do `" + Constant.PREFIX + "move all` to get a list of all the available moves!")
                         .setColor(Color.red)
                         .build()
                 ).queue();

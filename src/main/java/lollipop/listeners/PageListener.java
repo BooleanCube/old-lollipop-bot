@@ -1,6 +1,7 @@
 package lollipop.listeners;
 
 import awatch.models.Anime;
+import lollipop.Constant;
 import lollipop.models.Newspaper;
 import lollipop.models.AnimePage;
 import lollipop.Tools;
@@ -177,7 +178,7 @@ public class PageListener extends ListenerAdapter {
         }
         if(Objects.equals(event.getButton().getId(), "delete")) {
             if(trailerToUser.get(event.getMessageIdLong()) != event.getUser().getIdLong()) {
-                event.reply("You can't use the delete button because you didn't use this command! Type `l!help` for a list of commands!").setEphemeral(true).queue();
+                event.reply("You can't use the delete button because you didn't use this command! Type `" + Constant.PREFIX + "help` for a list of commands!").setEphemeral(true).queue();
                 return;
             }
             event.getMessage().delete().queue();

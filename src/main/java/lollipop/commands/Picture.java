@@ -1,13 +1,11 @@
 package lollipop.commands;
 
 import lollipop.API;
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -29,7 +27,7 @@ public class Picture implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives you a random picture related to the query!\n*Note: You must pass in the `ID` instead of a name. The `ID` can be located at the top of a `search` command.*\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/character] [ID]`";
+        return "Gives you a random picture related to the query!\n*Note: You must pass in the `ID` instead of a name. The `ID` can be located at the top of a `search` command.*\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/character] [ID]`";
     }
 
     @Override

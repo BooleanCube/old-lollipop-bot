@@ -1,12 +1,9 @@
 package lollipop.commands;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.brunocvcunha.jiphy.Jiphy;
 import org.brunocvcunha.jiphy.JiphyConstants;
@@ -29,7 +26,7 @@ public class Gif implements Command {
 
     @Override
     public String getHelp() {
-        return "Sends a random GIF about anime!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
+        return "Sends a random GIF about anime!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
     }
 
     @Override
@@ -51,7 +48,7 @@ public class Gif implements Command {
             );
         } catch (IOException e) {}
         if(gifs.size() == 0) return;
-        else event.getChannel().sendMessage(gifs.get((int)(Math.random()*gifs.size()))).queue();
+        else event.reply(gifs.get((int)(Math.random()*gifs.size()))).queue();
     }
 
 }

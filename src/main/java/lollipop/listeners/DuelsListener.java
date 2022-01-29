@@ -1,5 +1,6 @@
 package lollipop.listeners;
 
+import lollipop.Constant;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -36,7 +37,7 @@ public class DuelsListener extends ListenerAdapter {
                 event.replyEmbeds(new EmbedBuilder()
                         .setDescription("**It is not your turn! Please wait for the other player to finish his turn!**")
                         .setColor(Color.red)
-                        .setFooter("If you have not started a duel yet, you can do so by typing l!duel")
+                        .setFooter("If you have not started a duel yet, you can do so by typing " + Constant.PREFIX + "duel")
                         .build()
                 ).setEphemeral(true).queue();
                 return;

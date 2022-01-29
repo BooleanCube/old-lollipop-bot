@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
@@ -19,25 +20,10 @@ public class Tools {
     }
 
     public static Member getEffectiveMember(Guild g, String s) {
-        Member m;
-        try {
-            long id = Long.parseLong(s.replaceAll("[<@!>]",""));
-            m = g.getMemberById(id);
-        } catch(Exception e) {
-            try {
-                m = g.getMemberByTag(s);
-            } catch(Exception e2) {
-                try {
-                    m = g.getMembersByEffectiveName(s, true).get(0);
-                } catch(Exception e3) {
-                    try {
-                        m = g.getMembersByName(s, true).get(0);
-                    } catch(Exception e4) {
-                        return null;
-                    }
-                }
-            }
-        }
+        Member m = g.getMemberById(s.replaceAll("[<@!>]", ""));
+        if (m == null && User.USER_TAG.matcher(s).matches()) m = g.getMemberByTag(s);
+        if (m == null) m = g.getMembersByEffectiveName(s, true).get(0);
+        if (m == null) m = g.getMembersByName(s, true).get(0);
         return m;
     }
 

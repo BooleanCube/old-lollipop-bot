@@ -4,6 +4,7 @@ import awatch.models.Anime;
 import mread.model.Manga;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.util.ArrayList;
 

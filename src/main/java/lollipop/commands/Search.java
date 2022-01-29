@@ -33,7 +33,7 @@ public class Search implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for an anime/manga/charcater with the given search query!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
+        return "Searches for an anime/manga/charcater with the given search query!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
@@ -48,19 +48,18 @@ public class Search implements Command {
     @Override
     public void run(List<String> args, SlashCommandEvent event) {
         if(args.size()<2) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+        API api = new API();
         if(args.get(0).equalsIgnoreCase("c") || args.get(0).equalsIgnoreCase("character")) {
-            API api = new API();
             String query = String.join(" ", args.subList(1, args.size()));
-            Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
+            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
             try {
-                msg.editMessageEmbeds(Tools.characterToEmbed(api.searchForCharacter(query)).build()).queue();
+                msg.editOriginalEmbeds(Tools.characterToEmbed(api.searchForCharacter(query)).build()).queue();
             }
             catch (IOException e) {
-                msg.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find a character with that search query! Please try again with a valid character!").build()).queue();
+                msg.editOriginalEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find a character with that search query! Please try again with a valid character!").build()).queue();
             }
         }
         else if(args.get(0).equalsIgnoreCase("a") || args.get(0).equalsIgnoreCase("anime")) {
-            API api = new API();
             try {
                 String query = String.join(" ", args.subList(1, args.size()));
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
@@ -89,10 +88,9 @@ public class Search implements Command {
             catch(Exception ignored) {}
         }
         else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
-            API api = new API();
             String query = String.join(" ", args.subList(1, args.size()));
-            Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            api.searchMangas(query, msg);
+            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
+            api.searchMangas(query, msg.retrieveOriginal().complete());
         }
         else Tools.wrongUsage(event.getTextChannel(), this);
     }

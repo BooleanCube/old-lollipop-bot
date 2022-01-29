@@ -1,5 +1,6 @@
 package lollipop.commands.duel.models;
 
+import lollipop.Constant;
 import lollipop.commands.duel.Duel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -262,8 +263,8 @@ public class Game {
     }
 
     public void setupTimeout(MessageChannel c) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
-        EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type l!duel to start another duel with me!");
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
         else e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the game!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
         e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
@@ -276,11 +277,11 @@ public class Game {
     }
 
     public boolean checkWin(MessageChannel c) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         if(homePlayer.HP <= 0) {
             deleteDisplayMessagesFull();
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
-            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type l!duel to start another duel with me!");
+            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
             if(opposingPlayer.member == null) {
                 e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
@@ -302,8 +303,8 @@ public class Game {
                 deleteDisplayMessagesFull();
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
-                        .setFooter("Type l!duel to start another duel with me!")
-                        .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
+                        .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
+                        .setAuthor(homePlayer.member.getEffectiveName() + " won the due" + Constant.PREFIX + "", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `0`");
@@ -312,8 +313,8 @@ public class Game {
                 deleteDisplayMessagesFull();
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
-                        .setFooter("Type l!duel to start another duel with me!")
-                        .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
+                        .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
+                        .setAuthor(homePlayer.member.getEffectiveName() + " won the due" + Constant.PREFIX + "", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> Computer's HP: `0`");
@@ -325,17 +326,17 @@ public class Game {
     }
 
     public void surrender(MessageChannel c, Player p) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         Duel.memberToGame.remove(playerTurn.member.getIdLong());
-        EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type l!duel to start another duel with me!");
+        EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) {
             e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
-            e.setDescription(p.member.getEffectiveName() + " ran away from the duel!");
+            e.setDescription(p.member.getEffectiveName() + " ran away from the due" + Constant.PREFIX + "");
         } else {
             e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the game!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
-            e.setDescription(p.member.getAsMention() + " ran away from the duel!");
+            e.setDescription(p.member.getAsMention() + " ran away from the due" + Constant.PREFIX + "");
             Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
         }
         c.sendMessageEmbeds(e.build()).queue();

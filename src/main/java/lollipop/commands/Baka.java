@@ -1,6 +1,6 @@
 package lollipop.commands;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Objects;
 
 public class Baka implements Command {
     @Override
@@ -26,7 +25,7 @@ public class Baka implements Command {
 
     @Override
     public String getHelp() {
-        return "Call somebody a baka!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
+        return "Call somebody a baka!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override

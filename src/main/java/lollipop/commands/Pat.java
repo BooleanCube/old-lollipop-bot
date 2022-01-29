@@ -1,12 +1,11 @@
 package lollipop.commands;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -27,7 +26,7 @@ public class Pat implements Command {
 
     @Override
     public String getHelp() {
-        return "Pat somebody!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
+        return "Pat somebody!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override

@@ -1,12 +1,11 @@
 package lollipop.commands;
 
 import groovy.lang.GroovyShell;
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -43,7 +42,7 @@ public class Eval implements Command {
 
     @Override
     public String getHelp() {
-        return "Evaluates the given expression!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [expression]`";
+        return "Evaluates the given expression!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [expression]`";
     }
 
     @Override
@@ -54,7 +53,7 @@ public class Eval implements Command {
 
     @Override
     public void run(List<String> args, SlashCommandEvent event) {
-        if(event.getUser().getIdLong() != CONSTANT.OWNERID) return;
+        if(event.getUser().getIdLong() != Constant.OWNER_ID) return;
         if(args.isEmpty()) {
             Tools.wrongUsage(event.getTextChannel(), this);
             return;

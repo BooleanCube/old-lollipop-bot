@@ -32,7 +32,7 @@ public class Top implements Command {
 
     @Override
     public String getHelp() {
-        return "Gets the top 10 anime in the world!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + "`";
+        return "Gets the top 10 anime in the world!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

@@ -1,13 +1,12 @@
 package lollipop.commands.duel;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -31,7 +30,7 @@ public class Duel implements Command {
 
     @Override
     public String getHelp() {
-        return "Duel somebody (or an AI) in a small fun and competitive battle game!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user(optional)]`";
+        return "Duel somebody (or an AI) in a small fun and competitive battle game!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user(optional)]`";
     }
 
     @Override
@@ -46,7 +45,7 @@ public class Duel implements Command {
     public void run(List<String> args, SlashCommandEvent event) {
         if(memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) {
             event.replyEmbeds(new EmbedBuilder()
-                    .setDescription("You are already in a duel! Finish your current duel to be able to start a new one...")
+                    .setDescription("You are already in a due" + Constant.PREFIX + " Finish your current duel to be able to start a new one...")
                     .setColor(Color.red)
                     .build()
             ).queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
@@ -79,7 +78,7 @@ public class Duel implements Command {
                 game.playerNotTurn = game.homePlayer;
                 if(target == null) {
                     event.replyEmbeds(new EmbedBuilder()
-                            .setDescription("I couldn't find the specified member! Try mentioning them in the command...\n> Example: `l!duel @bool`")
+                            .setDescription("I couldn't find the specified member! Try mentioning them in the command...\n> Example: `" + Constant.PREFIX + "duel @bool`")
                             .setColor(Color.red)
                             .build()
                     ).queue();

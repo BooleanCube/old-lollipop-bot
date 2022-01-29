@@ -6,10 +6,10 @@ import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -24,36 +24,35 @@ public class Manager {
     }
 
     public void reloadCommands(JDA jda) {
-        //add all slash commands
+        //update all commands
         jda.updateCommands().addCommands(
-                new Help(this).getSlashCmd(),
-                new Gif().getSlashCmd(),
-                new Ping().getSlashCmd(),
-                new Search().getSlashCmd(),
-                new Picture().getSlashCmd(),
-                new BotInfo().getSlashCmd(),
+                new Duel().getSlashCmd(),
+                new Move().getSlashCmd(),
                 new Avatar().getSlashCmd(),
-                new Eval().getSlashCmd(),
-                new StatisticsInfo().getSlashCmd(),
-                new OraOraOra().getSlashCmd(),
-                new Janken().getSlashCmd(),
-                new Hentai().getSlashCmd(),
                 new Baka().getSlashCmd(),
-                new RandomQuote().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
-                new Pat().getSlashCmd(),
-                new Rasengan().getSlashCmd(),
-                new Onigiri().getSlashCmd(),
+                new BotInfo().getSlashCmd(),
+                new Dashboard().getSlashCmd().setDefaultEnabled(false),
                 new Eat().getSlashCmd(),
+                new Eval().getSlashCmd().setDefaultEnabled(false),
+                new Gif().getSlashCmd(),
+                new Headbutt().getSlashCmd(),
+                new Help(this).getSlashCmd(),
+                new Hentai().getSlashCmd(),
                 new Hinokami().getSlashCmd(),
                 new InfiniteVoid().getSlashCmd(),
-                new Headbutt().getSlashCmd(),
-                new News().getSlashCmd(),
-                new Random().getSlashCmd(),
-                new Top().getSlashCmd(),
+                new Janken().getSlashCmd(),
+                new Onigiri().getSlashCmd(),
+                new OraOraOra().getSlashCmd(),
+                new Pat().getSlashCmd(),
+                new Picture().getSlashCmd(),
+                new Ping().getSlashCmd(),
                 new Punch().getSlashCmd(),
-                new Duel().getSlashCmd(),
-                new Move().getSlashCmd()
+                new Random().getSlashCmd(),
+                new RandomQuote().getSlashCmd(),
+                new Rasengan().getSlashCmd(),
+                new Search().getSlashCmd(),
+                new Top().getSlashCmd()
         ).queue();
     }
 
@@ -70,7 +69,7 @@ public class Manager {
         addCommand(new BotInfo());
         addCommand(new Avatar());
         addCommand(new Eval());
-        addCommand(new StatisticsInfo());
+        addCommand(new Dashboard());
         addCommand(new OraOraOra());
         addCommand(new Janken());
         addCommand(new Hentai());

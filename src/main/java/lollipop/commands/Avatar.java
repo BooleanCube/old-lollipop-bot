@@ -1,6 +1,6 @@
 package lollipop.commands;
 
-import lollipop.CONSTANT;
+import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -25,13 +25,13 @@ public class Avatar implements Command {
 
     @Override
     public String getHelp() {
-        return "Displays the mentioned user's avatar!\nUsage: `" + CONSTANT.PREFIX + getAliases()[0] + " [user]`";
+        return "Displays the mentioned user's avatar!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.USER, "user", "specified member", true);
+                .addOption(OptionType.USER, "user", "specified member", false);
     }
 
     @Override
