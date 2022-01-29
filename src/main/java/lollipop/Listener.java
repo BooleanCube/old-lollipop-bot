@@ -37,7 +37,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if(event.getMessage().getContentRaw().startsWith("" + Constant.PREFIX + "reload") && event.getAuthor().getIdLong() == Constant.OWNER_ID) {
+        if(event.getMessage().getContentRaw().startsWith("l!reload") && event.getAuthor().getIdLong() == Constant.OWNER_ID) {
             String[] possible = event.getMessage().getContentRaw().split(" ", 2);
             List<String> args = new ArrayList<>();
             if(possible.length == 2) args = Arrays.asList(possible[1].split(" "));

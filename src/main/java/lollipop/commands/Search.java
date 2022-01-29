@@ -10,9 +10,10 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.Button;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +42,11 @@ public class Search implements Command {
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.STRING, "type", "(a)nime / (m)anga / (c)haracter", true)
+                .addOptions(new OptionData(OptionType.STRING, "type", "(a)nime / (m)anga / (c)haracter", true)
+                        .addChoice("anime", "anime")
+                        .addChoice("character", "character")
+                        .addChoice("manga", "manga")
+                )
                 .addOption(OptionType.STRING, "query", "search query", true);
     }
 
