@@ -25,6 +25,3 @@ Lollipop is an anime/manga discord bot which allows any user to search for an an
 Typing `l!help` in a server will send you a list of the commands that lollipop provides!
 
 
-### TODO
-- [ ] anime stats
-- [ ] nsfw enable/disable
