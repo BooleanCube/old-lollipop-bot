@@ -3,20 +3,22 @@ package lollipop;
 import awatch.models.Anime;
 import awatch.models.Article;
 import awatch.models.Character;
+import awatch.models.Statistic;
 import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 
 import java.awt.*;
 
 public class Tools {
 
-    public static CommandData defaultSlashCmd(Command c) {
-        return new CommandData(c.getAliases()[0], c.getHelp().split("\n")[0]);
+    public static SlashCommandData defaultSlashCmd(Command c) {
+        return Commands.slash(c.getAliases()[0], c.getHelp().split("\n")[0]);
     }
 
     public static Member getEffectiveMember(Guild g, String s) {
@@ -27,8 +29,8 @@ public class Tools {
         return m;
     }
 
-    public static void wrongUsage(TextChannel tc, Command c) {
-        tc.sendMessageEmbeds(new EmbedBuilder()
+    public static void wrongUsage(SlashCommandInteractionEvent event, Command c) {
+        event.replyEmbeds(new EmbedBuilder()
                 .setTitle("Wrong Command Usage!")
                 .setDescription(c.getHelp())
                 .setColor(Color.red)
@@ -66,6 +68,21 @@ public class Tools {
                 .addField("Rank", Integer.toString(a.rank), true)
                 .addField("Episode Count", Integer.toString(a.episodeCount), true)
                 .setImage(a.art);
+    }
+
+    public static EmbedBuilder statsToEmbed(Statistic s) {
+        if(s==null) {
+            return new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
+        }
+        return new EmbedBuilder()
+                .addField("Watching", String.valueOf(s.watching), true)
+                .addField("Completed", String.valueOf(s.completed), true)
+                .addField("On Hold", String.valueOf(s.onHold), true)
+                .addField("Dropped", String.valueOf(s.dropped), true)
+                .addField("Plan To Watch", String.valueOf(s.planToWatch), true)
+                .setFooter("Total: " + s.total);
     }
 
     public static EmbedBuilder characterToEmbed(Character c) {

@@ -4,7 +4,10 @@ import lollipop.Constant;
 import lollipop.commands.duel.Duel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,13 +30,13 @@ public class Game {
             Button.secondary("strength", "breathe"),
             Button.secondary("defend1", "shield"),
             Button.secondary("defend2", "block"),
-            Button.secondary("4thgear", "4th gear"),
-            Button.secondary("hinokami", "hinokami"),
-            Button.secondary("rasengan", "rasengan"),
-            Button.secondary("ora", "ora"),
-            Button.secondary("seriouspunch", "serious punch"),
-            Button.secondary("zawarudo", "za warudo"),
-            Button.secondary("yare", "yare yare daze")
+            Button.primary("4thgear", "4th gear"),
+            Button.primary("hinokami", "hinokami"),
+            Button.primary("rasengan", "rasengan"),
+            Button.primary("ora", "ora"),
+            Button.primary("seriouspunch", "serious punch"),
+            Button.primary("zawarudo", "za warudo"),
+            Button.primary("yare", "yare yare daze")
     };
     public Button surrenderButton = Button.danger("ff", "surrender");
 
@@ -62,15 +65,16 @@ public class Game {
         return null;
     }
 
-    public void sendSelectMove(TextChannel c, String move) {
+    public void sendSelectMove(SlashCommandInteractionEvent event, String move) {
+        TextChannel c = event.getTextChannel();
         if(homePlayer.HP < 0) homePlayer.HP = 0;
         if(opposingPlayer.HP < 0) opposingPlayer.HP = 0;
         if(playerTurn.member == null) {
             String homePName = homePlayer.member.getEffectiveName();
             EmbedBuilder e = new EmbedBuilder()
-                    .setDescription("**" + move + "**\n" +
-                            "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                            "> Computer's HP: `" + opposingPlayer.HP + "`\n\n")
+                    .setDescription("**" + move + "**")
+                    .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                    .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                     .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
             lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
         } else {
@@ -79,15 +83,15 @@ public class Game {
                 move = "I will accept this challenge and become your opponent! Let the duel begin!";
                 if(playerNotTurn.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
-                            .setDescription("**" + move + "**\n" +
-                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                                    "> Computer's HP: `" + opposingPlayer.HP + "`\n\n")
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
-                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
-                    int x = (int)(Math.random()*5);
-                    int y = x + (int)(Math.random()*5)+1;
-                    int z = y + (int)(Math.random()*5)+1;
-                    lastDisplay.add(c.sendMessageEmbeds(new EmbedBuilder()
+                    lastDisplay.add(event.replyEmbeds(e.build()).complete().retrieveOriginal().complete());
+                    int x = (int)(Math.random()*3);
+                    int y = x + (int)(Math.random()*3)+1;
+                    int z = y + (int)(Math.random()*9)+1;
+                    lastDisplay.add(lastDisplay.get(lastDisplay.size()-1).replyEmbeds(new EmbedBuilder()
                             .setAuthor(playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
                             .setFooter("Quick! You have 30 seconds to react!")
@@ -101,35 +105,118 @@ public class Game {
                 } else {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
-                            .setDescription("**" + move + "**\n" +
-                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                                    "> " + oppoPName + "'s HP: `" + opposingPlayer.HP + "`\n\n")
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
-                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                    lastDisplay.add(event.replyEmbeds(e.build()).complete().retrieveOriginal().complete());
                 }
             } else {
                 if(opposingPlayer.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
-                            .setDescription("**" + move + "**\n" +
-                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                                    "> Computer's HP: `" + opposingPlayer.HP + "`")
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "Health: `" + homePlayer.HP + " HP`\nStrength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField("Computer", "Health: `" + opposingPlayer.HP + " HP`\nStrength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
                     lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
                 } else {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
-                            .setDescription("**" + move + "**\n" +
-                                    "> " + homePName + "'s HP: `" + homePlayer.HP + "`\n" +
-                                    "> " + oppoPName + "'s HP: `" + opposingPlayer.HP + "`")
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
                     lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
                 }
             }
         }
         if(playerNotTurn.member != null && !playerNotTurn.isTimedOut()) {
-            int x = (int)(Math.random()*5);
-            int y = x + (int)(Math.random()*5)+1;
-            int z = y + (int)(Math.random()*5)+1;
+            int x = (int)(Math.random()*3);
+            int y = x + (int)(Math.random()*3)+1;
+            int z = y + (int)(Math.random()*9)+1;
+            lastDisplay.add(c.sendMessageEmbeds(new EmbedBuilder()
+                    .setAuthor(playerNotTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerNotTurn.member.getEffectiveAvatarUrl())
+                    .setDescription("What is your move?")
+                    .setFooter("Quick! You have 30 seconds to react!")
+                    .build()
+            ).setActionRow(
+                    moveButtons[x],
+                    moveButtons[y],
+                    moveButtons[z],
+                    surrenderButton
+            ).complete());
+        }
+    }
+
+    public void sendSelectMove(ButtonInteractionEvent event, String move) {
+        TextChannel c = event.getTextChannel();
+        if(homePlayer.HP < 0) homePlayer.HP = 0;
+        if(opposingPlayer.HP < 0) opposingPlayer.HP = 0;
+        if(playerTurn.member == null) {
+            String homePName = homePlayer.member.getEffectiveName();
+            EmbedBuilder e = new EmbedBuilder()
+                    .setDescription("**" + move + "**")
+                    .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                    .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                    .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
+            lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+        } else {
+            String homePName = homePlayer.member.getEffectiveName();
+            if(move == null) {
+                move = "I will accept this challenge and become your opponent! Let the duel begin!";
+                if(playerNotTurn.member == null) {
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                            .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
+                    lastDisplay.add(event.replyEmbeds(e.build()).complete().retrieveOriginal().complete());
+                    int x = (int)(Math.random()*3);
+                    int y = x + (int)(Math.random()*3)+1;
+                    int z = y + (int)(Math.random()*9)+1;
+                    lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                            .setAuthor(playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl())
+                            .setDescription("What is your move?")
+                            .setFooter("Quick! You have 30 seconds to react!")
+                            .build()
+                    ).setActionRow(
+                            moveButtons[x],
+                            moveButtons[y],
+                            moveButtons[z],
+                            surrenderButton
+                    ).complete());
+                } else {
+                    String oppoPName = opposingPlayer.member.getEffectiveName();
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                            .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
+                    lastDisplay.add(event.replyEmbeds(e.build()).complete().retrieveOriginal().complete());
+                }
+            } else {
+                if(opposingPlayer.member == null) {
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "Health: `" + homePlayer.HP + " HP`\nStrength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField("Computer", "Health: `" + opposingPlayer.HP + " HP`\nStrength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                            .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
+                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                } else {
+                    String oppoPName = opposingPlayer.member.getEffectiveName();
+                    EmbedBuilder e = new EmbedBuilder()
+                            .setDescription("**" + move + "**")
+                            .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                            .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                            .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
+                    lastDisplay.add(c.sendMessageEmbeds(e.build()).complete());
+                }
+            }
+        }
+        if(playerNotTurn.member != null && !playerNotTurn.isTimedOut()) {
+            int x = (int)(Math.random()*3);
+            int y = x + (int)(Math.random()*3)+1;
+            int z = y + (int)(Math.random()*9)+1;
             lastDisplay.add(c.sendMessageEmbeds(new EmbedBuilder()
                     .setAuthor(playerNotTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerNotTurn.member.getEffectiveAvatarUrl())
                     .setDescription("What is your move?")
@@ -155,9 +242,12 @@ public class Game {
         lastDisplay = new ArrayList<>();
     }
 
+    //spares the last display message
     public void deleteDisplayMessages() {
-        for(int i=0; i<lastDisplay.size()-1; i++) lastDisplay.get(i).delete().queue();
-        lastDisplay = new ArrayList<>();
+        for(int i=0; i<lastDisplay.size()-1; i++) {
+            lastDisplay.get(i).delete().queue();
+            lastDisplay.remove(i);
+        }
     }
 
     public String AIMove(Player h, Player o) {
@@ -263,7 +353,7 @@ public class Game {
     }
 
     public void setupTimeout(MessageChannel c) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
         else e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the game!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
@@ -277,11 +367,11 @@ public class Game {
     }
 
     public boolean checkWin(MessageChannel c) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         if(homePlayer.HP <= 0) {
             deleteDisplayMessagesFull();
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
-            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
+            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type l!duel to start another duel with me!");
             if(opposingPlayer.member == null) {
                 e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
@@ -291,7 +381,7 @@ public class Game {
                 e.setAuthor(opposingPlayer.member.getEffectiveName() + " won the game!", opposingPlayer.member.getUser().getAvatarUrl(), opposingPlayer.member.getUser().getEffectiveAvatarUrl());
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
                 e.setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `0`\n" +
-                        "> Computer's HP: `" + opposingPlayer.HP + "`");
+                        "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `" + opposingPlayer.HP + "`");
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
             }
             c.sendMessageEmbeds(e.build()).queue();
@@ -304,7 +394,7 @@ public class Game {
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
                         .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
-                        .setAuthor(homePlayer.member.getEffectiveName() + " won the due" + Constant.PREFIX + "", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
+                        .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `0`");
@@ -314,7 +404,7 @@ public class Game {
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
                         .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
-                        .setAuthor(homePlayer.member.getEffectiveName() + " won the due" + Constant.PREFIX + "", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
+                        .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> Computer's HP: `0`");
@@ -326,17 +416,17 @@ public class Game {
     }
 
     public void surrender(MessageChannel c, Player p) {
-        String[] victoryMsg = {"You are too strong...", "That kind of power should be illega" + Constant.PREFIX + "", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
+        String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         Duel.memberToGame.remove(playerTurn.member.getIdLong());
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) {
             e.setAuthor("Computer won the game!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
-            e.setDescription(p.member.getEffectiveName() + " ran away from the due" + Constant.PREFIX + "");
+            e.setDescription(p.member.getEffectiveName() + " ran away from the duel!");
         } else {
             e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the game!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
-            e.setDescription(p.member.getAsMention() + " ran away from the due" + Constant.PREFIX + "");
+            e.setDescription(p.member.getAsMention() + " ran away from the duel!");
             Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
         }
         c.sendMessageEmbeds(e.build()).queue();

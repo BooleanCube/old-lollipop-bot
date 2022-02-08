@@ -5,14 +5,16 @@ import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Picture implements Command {
     @Override
@@ -33,17 +35,17 @@ public class Picture implements Command {
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.NUMBER, "id", "MAL ID (available in the search command)", true);
+                .addOption(OptionType.INTEGER, "id", "MAL ID (available in the search command)", true);
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.size() != 2) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
+        if(args.size() != 2) { Tools.wrongUsage(event, this); return; }
         if(args.get(0).equalsIgnoreCase("anime") || args.get(0).equalsIgnoreCase("a")) {
             API api = new API();
-            long id = 0;
-            try { id = Long.parseLong(args.get(1)); }
-            catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+            long id = options.get(1).getAsLong();
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
                 msg.editOriginalEmbeds(
@@ -63,9 +65,7 @@ public class Picture implements Command {
             }
         } else if(args.get(0).equalsIgnoreCase("manga") || args.get(0).equalsIgnoreCase("m")) {
             API api = new API();
-            long id = 0;
-            try { id = Long.parseLong(args.get(1)); }
-            catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+            long id = options.get(1).getAsLong();
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
                 msg.editOriginalEmbeds(
@@ -85,9 +85,7 @@ public class Picture implements Command {
             }
         } else if(args.get(0).equalsIgnoreCase("character") || args.get(0).equalsIgnoreCase("c")) {
             API api = new API();
-            long id = 0;
-            try { id = Long.parseLong(args.get(1)); }
-            catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+            long id = options.get(1).getAsLong();
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for pictures...").build()).complete();
             try {
                 msg.editOriginalEmbeds(
@@ -105,6 +103,6 @@ public class Picture implements Command {
                                 .build()
                 ).queue();
             }
-        } else Tools.wrongUsage(event.getTextChannel(), this);
+        } else Tools.wrongUsage(event, this);
     }
 }

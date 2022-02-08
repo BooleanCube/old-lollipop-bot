@@ -2,7 +2,7 @@ package lollipop;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class Listener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(event.getName().equalsIgnoreCase("shutdown") && (event.getUser().getIdLong()== Constant.OWNER_ID)) {
             event.getJDA().shutdown();
             System.exit(0);

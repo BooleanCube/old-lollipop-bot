@@ -5,12 +5,14 @@ import lollipop.Command;
 import lollipop.Tools;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Move implements Command {
     @Override
@@ -25,7 +27,7 @@ public class Move implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives detail about a specific move that is available in a due" + Constant.PREFIX + "\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [move(optional)]`";
+        return "Gives detail about a specific move that is available in a duel!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [move*]`";
     }
 
     @Override
@@ -35,7 +37,9 @@ public class Move implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size() >= 1) {
             if(args.size() == 1 && args.get(0).equalsIgnoreCase("all")) {
                 event.replyEmbeds(new EmbedBuilder()
@@ -57,6 +61,6 @@ public class Move implements Command {
                         .build()
                 ).queue();
             }
-        } else Tools.wrongUsage(event.getTextChannel(), this);
+        } else Tools.wrongUsage(event, this);
     }
 }

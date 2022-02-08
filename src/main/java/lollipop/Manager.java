@@ -6,10 +6,7 @@ import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +29,9 @@ public class Manager {
                 new Baka().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
-                new Dashboard().getSlashCmd().setDefaultEnabled(false),
+                new Dashboard().getSlashCmd(),
                 new Eat().getSlashCmd(),
-                new Eval().getSlashCmd().setDefaultEnabled(false),
+                new Eval().getSlashCmd(),
                 new Gif().getSlashCmd(),
                 new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
@@ -43,7 +40,7 @@ public class Manager {
                 new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
                 new Onigiri().getSlashCmd(),
-                new OraOraOra().getSlashCmd(),
+                new Ora().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Picture().getSlashCmd(),
                 new Ping().getSlashCmd(),
@@ -52,6 +49,7 @@ public class Manager {
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
+                new Statistics().getSlashCmd(),
                 new Top().getSlashCmd()
         ).queue();
     }
@@ -70,7 +68,7 @@ public class Manager {
         addCommand(new Avatar());
         addCommand(new Eval());
         addCommand(new Dashboard());
-        addCommand(new OraOraOra());
+        addCommand(new Ora());
         addCommand(new Janken());
         addCommand(new Hentai());
         addCommand(new Baka());
@@ -89,6 +87,7 @@ public class Manager {
         addCommand(new Punch());
         addCommand(new Duel());
         addCommand(new Move());
+        addCommand(new Statistics());
     }
 
     private void addCommand(Command c) {
@@ -115,7 +114,7 @@ public class Manager {
         return commands.get(commandName);
     }
 
-    void run(SlashCommandEvent event) {
+    void run(SlashCommandInteractionEvent event) {
         final String msg = event.getCommandString();
         if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&
            !event.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) return;
@@ -126,9 +125,7 @@ public class Manager {
                         .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
-            final List<OptionMapping> options = event.getOptions();
-            final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
-            commands.get(command).run(args, event);
+            commands.get(command).run(event);
         }
     }
 

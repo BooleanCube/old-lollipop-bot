@@ -19,10 +19,11 @@ public class Anime {
     public int rank;
     public String trailer;
     public String type = "None";
+    public int popularity = 0;
 
     public String toString() {
         return "Anime [title=" + title + ", art=" + art + ", url=" + url + ", episodeCount=" + episodeCount + ", score=" + score
-                + ", status=" + status + ", summary=" + summary + ", author=" + author + ", tags=" + tags + ", episodes=" + episodes + "]";
+                + ", status=" + status + ", summary=" + summary + ", author=" + author + ", tags=" + tags + ", episodes=" + episodes + ", popularity=" + popularity + "]";
     }
 
 }

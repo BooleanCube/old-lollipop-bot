@@ -6,16 +6,19 @@ import lollipop.Tools;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Duel implements Command {
     @Override
@@ -30,7 +33,7 @@ public class Duel implements Command {
 
     @Override
     public String getHelp() {
-        return "Duel somebody (or an AI) in a small fun and competitive battle game!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user(optional)]`";
+        return "Duel somebody (or an AI) in a small fun and competitive battle game!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user*]`";
     }
 
     @Override
@@ -42,10 +45,12 @@ public class Duel implements Command {
     public static HashMap<Long, Game> memberToGame = new HashMap<>();
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) {
             event.replyEmbeds(new EmbedBuilder()
-                    .setDescription("You are already in a due" + Constant.PREFIX + " Finish your current duel to be able to start a new one...")
+                    .setDescription("You are already in a duel! Finish your current duel to be able to start a new one...")
                     .setColor(Color.red)
                     .build()
             ).queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
@@ -57,7 +62,7 @@ public class Duel implements Command {
             game.opposingPlayer.member = null; //AI
             game.playerTurn = game.homePlayer;
             game.playerNotTurn = game.opposingPlayer;
-            game.sendSelectMove(event.getTextChannel(), null);
+            game.sendSelectMove(event, null);
             game.setupTimeout(event.getChannel());
             memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
         } else if(args.size() == 1) {
@@ -68,7 +73,7 @@ public class Duel implements Command {
                 game.opposingPlayer.member = null; //AI
                 game.playerTurn = game.homePlayer;
                 game.playerNotTurn = game.opposingPlayer;
-                game.sendSelectMove(event.getTextChannel(), null);
+                game.sendSelectMove(event, null);
                 game.setupTimeout(event.getChannel());
                 memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
             } else {
@@ -84,14 +89,15 @@ public class Duel implements Command {
                     ).queue();
                     return;
                 }
-                event.getChannel().sendMessage(target.getAsMention()).queue(m -> game.lastDisplay.add(m));
+                game.lastDisplay.add(event.reply(target.getAsMention()).complete().retrieveOriginal().complete());
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription(event.getMember().getAsMention() + " requested to duel you! Do you accept their duel request?")
+                        .setFooter("Quick! You have 30 seconds to accept!")
                         .build()
                 ).setActionRow(
                         Button.primary("accept", "accept")
                 ).queue(m -> game.lastDisplay.add(m));
-                game.timeout = event.replyEmbeds(new EmbedBuilder()
+                game.timeout = event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription(target.getAsMention() + " didn't arrive in time! The duel request expired...")
                         .setColor(Color.red)
                         .build()

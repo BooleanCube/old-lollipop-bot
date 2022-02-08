@@ -5,12 +5,14 @@ import lollipop.Command;
 import lollipop.Manager;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Help implements Command {
 
@@ -30,7 +32,7 @@ public class Help implements Command {
     @Override
     public String getHelp() {
         return "Shows you a list of all the commands!\n" +
-                "Usage: `" + Constant.PREFIX + getAliases()[0] + " <command(optional)>`";
+                "Usage: `" + Constant.PREFIX + getAliases()[0] + " <command*>`";
     }
 
     @Override
@@ -40,9 +42,11 @@ public class Help implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size() > 1) {
-            Tools.wrongUsage(event.getTextChannel(), this);
+            Tools.wrongUsage(event, this);
             return;
         }
         if(args.isEmpty()) {
@@ -82,6 +86,7 @@ public class Help implements Command {
         event.replyEmbeds(new EmbedBuilder()
                         .setTitle("Command Help: `" + command.getAliases()[0] + "`")
                         .setDescription(command.getHelp())
+                        .setFooter("If the argument is followed by a *, then the argument is optional.")
                         .build()
         ).queue();
     }

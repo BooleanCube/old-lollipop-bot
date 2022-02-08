@@ -6,11 +6,13 @@ import lollipop.models.Newspaper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -39,18 +41,16 @@ public class News implements Command {
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.NUMBER, "id", "MAL ID (available in the search command)", true);
+                .addOption(OptionType.INTEGER, "id", "MAL ID (available in the search command)", true);
     }
 
     public static HashMap<Long, Newspaper> messageToPage = new HashMap<>();
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.size()<1) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
         API api = new API();
-        long id = 0;
-        try { id = Long.parseLong(args.get(0)); }
-        catch(Exception e) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+        long id = options.get(0).getAsLong();
         InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for news...").build()).complete();
         try {
             ArrayList<Article> articles = api.animeNews(id);
@@ -70,10 +70,11 @@ public class News implements Command {
                     .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
+            e.printStackTrace();
             msg.editOriginalEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
-                            .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
+                            .setDescription("Could not find any articles from that anime! Please try again with a different anime ID!")
                             .build()
             ).queue();
         }

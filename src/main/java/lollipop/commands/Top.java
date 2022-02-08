@@ -6,10 +6,10 @@ import lollipop.models.AnimePage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.*;
 import java.io.IOException;
@@ -43,13 +43,13 @@ public class Top implements Command {
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         API api = new API();
         try {
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Getting the `Top 10` anime...").build()).complete();
             ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                     .setColor(Color.red)
-                    .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
+                    .setDescription("Could not retreive the top 10 animes! Please try again later!")
                     .build()
             ).queueAfter(5, TimeUnit.SECONDS);
             ArrayList<Anime> animes = api.topAnime();

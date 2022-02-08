@@ -5,7 +5,7 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
@@ -42,12 +42,12 @@ public class Dashboard implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         if(event.getUser().getIdLong() != Constant.OWNER_ID) return;
         if(event.getJDA().getSelfUser().getIdLong() == Constant.TEST_ID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v6.2")
+                .setFooter("lollipop v6.3")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)
@@ -99,13 +99,13 @@ public class Dashboard implements Command {
         sb.append(numberOfHours).append(" hour(s), ").append(numberOfMinutes).append(" minute(s), ").append(numberOfSeconds).append(" second(s)");
         return sb.toString();
     }
-    public String botInfo(SlashCommandEvent event) {
+    public String botInfo(SlashCommandInteractionEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getUsers().size()).append("`\nPing: `")
                 .append(event.getJDA().getGatewayPing()).append("`");
         return sb.toString();
     }
-    public String shardInfo(SlashCommandEvent event) {
+    public String shardInfo(SlashCommandInteractionEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Average Ping: `").append(event.getJDA().getShardManager().getAverageGatewayPing()).append("`\nCurrent Shard ID: `").append(event.getJDA().getShardInfo().getShardId()).append("`\nTotal Shards: `")
         .append(event.getJDA().getShardInfo().getShardTotal()).append("`\nShard Statuses: \n");

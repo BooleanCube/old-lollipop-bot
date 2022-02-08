@@ -5,13 +5,15 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Pat implements Command {
     @Override
@@ -36,10 +38,10 @@ public class Pat implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://tenor.com/view/anime-head-pat-gif-23472603", "https://tenor.com/view/anime-head-pat-anime-pat-pat-anime-blush-gif-23411369", "https://tenor.com/view/mai-sakurajima-sakuta-anime-pat-gif-22595893", "https://tenor.com/view/neet-anime-cute-kawaii-pat-gif-9332926", "https://tenor.com/view/kanna-kamui-pat-head-pat-gif-12018819", "https://tenor.com/view/anime-good-girl-pet-pat-gif-9200932", "https://tenor.com/view/nogamenolife-shiro-headrub-sleepy-tired-gif-6238142", "https://tenor.com/view/anime-pat-smile-cute-blush-gif-16456868"};
-        Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        String[] gifs = {"https://c.tenor.com/OGnRVWCps7IAAAAC/anime-head-pat.gif", "https://c.tenor.com/N41zKEDABuUAAAAC/anime-head-pat-anime-pat.gif", "https://c.tenor.com/wLqFGYigJuIAAAAC/mai-sakurajima.gif", "https://c.tenor.com/8DaE6qzF0DwAAAAC/neet-anime.gif", "https://c.tenor.com/E6fMkQRZBdIAAAAC/kanna-kamui-pat.gif", "https://c.tenor.com/rZRQ6gSf128AAAAC/anime-good-girl.gif", "https://c.tenor.com/6dLDH0npv6IAAAAC/nogamenolife-shiro.gif", "https://c.tenor.com/jEfC8cztigIAAAAC/anime-pat.gif"};
+        Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
@@ -48,7 +50,9 @@ public class Pat implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.reply("*pat pat pat pat*\n" + target.getAsMention() + " was patted by " + event.getMember().getAsMention()).queue();
-        event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
+        event.replyEmbeds(new EmbedBuilder()
+                .setDescription("*pat pat pat pat*\n" + target.getAsMention() + " was patted by " + event.getMember().getAsMention())
+                .setImage(gifs[(int)(Math.random()*gifs.length)])
+                .build()).queue();
     }
 }

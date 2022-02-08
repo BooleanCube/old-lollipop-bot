@@ -4,7 +4,7 @@ import lollipop.Constant;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.models.Game;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +12,8 @@ import java.awt.*;
 import java.util.Objects;
 
 public class DuelsListener extends ListenerAdapter {
-
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if(Objects.equals(event.getButton().getId(), "accept")) {
             if(!Duel.memberToGame.containsKey(event.getMember().getIdLong())) return;
             Game game = Duel.memberToGame.get(event.getMember().getIdLong());
@@ -27,12 +26,14 @@ public class DuelsListener extends ListenerAdapter {
                 return;
             }
             game.timeout.cancel(false);
-            game.sendSelectMove(event.getTextChannel(), null);
+            game.deleteDisplayMessagesFull();
+            game.sendSelectMove(event, null);
             game.setupTimeout(event.getChannel());
             game.switchTurns();
         }
-        else if(Duel.memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) {
+        else if(Duel.memberToGame.containsKey(event.getMember().getIdLong())) {
             Game game = Duel.memberToGame.get(event.getMember().getIdLong());
+            if(event.getMessage().getIdLong() != game.lastDisplay.get(game.lastDisplay.size()-1).getIdLong()) return;
             if(event.getMember() != game.playerTurn.member) {
                 event.replyEmbeds(new EmbedBuilder()
                         .setDescription("**It is not your turn! Please wait for the other player to finish his turn!**")
@@ -42,7 +43,6 @@ public class DuelsListener extends ListenerAdapter {
                 ).setEphemeral(true).queue();
                 return;
             }
-            if(event.getMessage().getIdLong() != game.lastDisplay.get(game.lastDisplay.size()-1).getIdLong()) return;
             if(game.lastDisplay != null) game.deleteDisplayMessagesFull();
             String move = null;
             if(Objects.requireNonNull(event.getButton().getId()).startsWith("ff")) {
@@ -142,7 +142,7 @@ public class DuelsListener extends ListenerAdapter {
                 move = "yare yare daze...\nORA! " + game.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
             }
             game.timeout.cancel(false);
-            game.sendSelectMove(event.getTextChannel(), move);
+            game.sendSelectMove(event, move);
             if(game.playerTurn.member == null)
                 game.setupTimeout(event.getChannel());
             game.switchTurns();
@@ -154,9 +154,9 @@ public class DuelsListener extends ListenerAdapter {
             }
             if(game.playerTurn.isTimedOut()) {
                 game.switchTurns();
-                int x = (int)(Math.random()*5);
-                int y = x + (int)(Math.random()*5)+1;
-                int z = y + (int)(Math.random()*5)+1;
+                int x = (int)(Math.random()*3);
+                int y = x + (int)(Math.random()*3)+1;
+                int z = y + (int)(Math.random()*9)+1;
                 if(z == 13) --z;
                 game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
@@ -175,20 +175,20 @@ public class DuelsListener extends ListenerAdapter {
                 //AI
                 String aiMove = game.AIMove(game.playerTurn, game.playerNotTurn);
                 event.getChannel().sendTyping().complete();
-                game.sendSelectMove(event.getTextChannel(), aiMove);
+                game.sendSelectMove(event, aiMove);
                 if(game.playerNotTurn.isTimedOut()) {
                     int turns = (int)(Math.random()*2)+2;
                     for(int i=0; i<turns; i++) {
                         aiMove = game.AIMove(game.playerTurn, game.playerNotTurn);
                         event.getChannel().sendTyping().complete();
-                        game.sendSelectMove(event.getTextChannel(), aiMove);
+                        game.sendSelectMove(event, aiMove);
                     }
                     game.playerNotTurn.timeoutDuration = 0;
                     game.playerTurn.isZaWarudo = false;
                     game.switchTurns();
-                    int x = (int)(Math.random()*5);
-                    int y = x + (int)(Math.random()*5)+1;
-                    int z = y + (int)(Math.random()*5)+1;
+                    int x = (int)(Math.random()*3);
+                    int y = x + (int)(Math.random()*3)+1;
+                    int z = y + (int)(Math.random()*9)+1;
                     game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                             .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")

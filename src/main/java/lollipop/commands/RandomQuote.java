@@ -4,11 +4,13 @@ import lollipop.API;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RandomQuote implements Command {
     @Override
@@ -32,8 +34,7 @@ public class RandomQuote implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(!args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+    public void run(SlashCommandInteractionEvent event) {
         try { API.sendQuote(event.getChannel()); } catch (IOException e) {}
     }
 }

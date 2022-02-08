@@ -6,7 +6,8 @@ import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public class BitesTheDust implements Command {
 
     @Override
     public String getHelp() {
-        return "Deletes your recent messages in a channe" + Constant.PREFIX + "\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
+        return "Deletes your recent messages in a channel!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
     }
 
     @Override
@@ -35,11 +36,7 @@ public class BitesTheDust implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if (!args.isEmpty()) {
-            Tools.wrongUsage(event.getTextChannel(), this);
-            return;
-        }
+    public void run(SlashCommandInteractionEvent event) {
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             event.replyEmbeds(
                     new EmbedBuilder()

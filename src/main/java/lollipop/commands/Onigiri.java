@@ -5,13 +5,15 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Onigiri implements Command {
     @Override
@@ -36,10 +38,10 @@ public class Onigiri implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://tenor.com/view/roronoa-zoro-purgatory-onigiri-zoro-one-piece-gif-19973757", "https://tenor.com/view/onepiece-gif-18892769", "https://tenor.com/view/zorolangmalakasidolo-gif-22253350", "https://tenor.com/view/slt-gif-24007778", "https://tenor.com/view/one-piece-gif-24064405"};
-        Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        String[] gifs = {"https://c.tenor.com/wFb6MPreo9sAAAAS/roronoa-zoro-purgatory-onigiri.gif", "https://c.tenor.com/xwjN54qq-PAAAAAC/onepiece.gif", "https://c.tenor.com/835cMb6OoLIAAAAS/slt.gif", "https://c.tenor.com/RHqtJ5bvKtYAAAAC/one-piece.gif"};
+        Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
@@ -48,7 +50,9 @@ public class Onigiri implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.reply("**PURGATORY ONIGIRI!**\n" + target.getAsMention() + " was sliced up by " + event.getMember().getAsMention()).queue();
-        event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
+        event.replyEmbeds(new EmbedBuilder()
+                .setDescription("**PURGATORY ONIGIRI!**\n" + target.getAsMention() + " was sliced up by " + event.getMember().getAsMention())
+                .setImage(gifs[(int)(Math.random()*gifs.length)])
+                .build()).queue();
     }
 }

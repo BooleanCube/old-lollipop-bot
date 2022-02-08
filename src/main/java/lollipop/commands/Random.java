@@ -5,14 +5,17 @@ import lollipop.*;
 import lollipop.models.AnimePage;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Random implements Command {
     @Override
@@ -38,10 +41,10 @@ public class Random implements Command {
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         API api = new API();
-        if(args.isEmpty()) try {
-            Anime a = api.randomAnime();
+        try {
+            Anime a = api.randomAnime(event.getTextChannel().isNSFW());
             InteractionHook msg = event.replyEmbeds(Tools.animeToEmbed(a).build())
                     .addActionRow(
                             Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
@@ -49,6 +52,5 @@ public class Random implements Command {
             Message message = msg.retrieveOriginal().complete();
             messageToPage.put(message.getIdLong(), new AnimePage(a, message, event.getUser()));
         } catch(IOException ignored) {}
-        else Tools.wrongUsage(event.getTextChannel(), this);
     }
 }

@@ -6,11 +6,13 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchManga implements Command {
 
@@ -36,8 +38,10 @@ public class SearchManga implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
+        if(args.isEmpty()) { Tools.wrongUsage(event, this); return; }
         API api = new API();
         String query = String.join(" ", args);
         Message msg = event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();

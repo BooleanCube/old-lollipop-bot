@@ -5,12 +5,14 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Avatar implements Command {
     @Override
@@ -35,8 +37,9 @@ public class Avatar implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) {
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        if(options.isEmpty()) {
             Member target = event.getMember();
             assert target != null;
             event.replyEmbeds(new EmbedBuilder()
@@ -45,7 +48,7 @@ public class Avatar implements Command {
                     .build()
             ).queue();
         } else {
-            Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+            Member target = options.get(0).getAsMember();
             if(target == null) {
                 event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
                 return;

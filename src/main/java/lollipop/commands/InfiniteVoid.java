@@ -5,13 +5,15 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class InfiniteVoid implements Command {
     @Override
@@ -36,10 +38,10 @@ public class InfiniteVoid implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://tenor.com/view/infinite-void-gojo-satoru-gojo-jjk-jujutsu-kaisen-gif-19219956", "https://tenor.com/view/satoru-gojo-domain-expansion-infinite-void-unlimited-void-gif-20411471", "https://tenor.com/view/gojo-blindfold-eyes-gojo-eyes-jujutsu-kaisen-gif-19192192", "https://tenor.com/view/sawunn-gif-21249141", "https://tenor.com/view/jjk-gojo-gif-23192148", "https://tenor.com/view/jujustu-kaisen-satoru-gojo-infinite-void-strongest-domain-expansion-gif-19191941", "https://tenor.com/view/anime-gif-19444090"};
-        Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        String[] gifs = {"https://c.tenor.com/84Y17eI-b0oAAAAS/infinite-void-gojo.gif", "https://c.tenor.com/MfMS51gTUc4AAAAS/satoru-gojo-domain-expansion.gif", "https://c.tenor.com/LOrTA4poJjEAAAAS/gojo-blindfold.gif", "https://c.tenor.com/CrX9wY8ibikAAAAS/sawunn.gif", "https://c.tenor.com/Tt0MU3RgnoQAAAAd/jjk-gojo.gif", "https://c.tenor.com/QM3oFaOSQIgAAAAS/jujustu-kaisen-satoru-gojo.gif", "https://c.tenor.com/AydW1nG8SpoAAAAC/anime.gif"};
+        Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
@@ -48,7 +50,9 @@ public class InfiniteVoid implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.reply("**Domain Expansion: Infinite Void**\n" + target.getAsMention() + " is stuck in the infinite void casted by " + event.getMember().getAsMention()).queue();
-        event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
+        event.replyEmbeds(new EmbedBuilder()
+                .setDescription("**Domain Expansion: Infinite Void**\n" + target.getAsMention() + " is stuck in the infinite void casted by " + event.getMember().getAsMention())
+                .setImage(gifs[(int)(Math.random()*gifs.length)])
+                .build()).queue();
     }
 }

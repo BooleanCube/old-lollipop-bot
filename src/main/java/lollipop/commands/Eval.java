@@ -5,11 +5,13 @@ import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Eval implements Command {
 
@@ -52,10 +54,12 @@ public class Eval implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(event.getUser().getIdLong() != Constant.OWNER_ID) return;
         if(args.isEmpty()) {
-            Tools.wrongUsage(event.getTextChannel(), this);
+            Tools.wrongUsage(event, this);
             return;
         }
         try {

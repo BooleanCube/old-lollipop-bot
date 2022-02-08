@@ -5,12 +5,14 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Baka implements Command {
     @Override
@@ -35,10 +37,11 @@ public class Baka implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://c.tenor.com/G4zCaHnNxysAAAAC/anime-boy-baka-baka.gif", "https://tenor.com/view/baka-anime-gif-12908346", "https://tenor.com/view/baka-anime-gif-22001672", "https://tenor.com/view/baka-gif-19268094", "https://tenor.com/view/sasuke-naruto-anime-mad-baka-gif-17737654", "https://tenor.com/view/anime-fiduka-no-baka-blah-gif-12414850"};
-        Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        if(options.isEmpty()) { Tools.wrongUsage(event, this); return; }
+        String[] gifs = {"https://c.tenor.com/G4zCaHnNxysAAAAC/anime-boy-baka-baka.gif", "https://c.tenor.com/Xcr8fHyf84gAAAAC/baka-anime.gif", "https://c.tenor.com/UsggMuRixo0AAAAC/baka-anime.gif", "https://c.tenor.com/5GLN3NF8IawAAAAC/baka.gif", "https://c.tenor.com/rSW3Ty17towAAAAC/sasuke-naruto.gif", "https://c.tenor.com/OyIYV1OjcjQAAAAC/anime-fiduka.gif"};
+        Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
@@ -47,7 +50,9 @@ public class Baka implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.reply("**Bakana no?**\n" + target.getAsMention() + " was called a **baka** by " + event.getMember().getAsMention()).queue();
-        event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
+        event.replyEmbeds(new EmbedBuilder()
+                .setDescription("**Bakana no?**\n" + target.getAsMention() + " was called a **baka** by " + event.getMember().getAsMention())
+                .setImage(gifs[(int)(Math.random()*gifs.length)])
+                .build()).queue();
     }
 }

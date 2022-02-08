@@ -2,6 +2,7 @@ package awatch;
 
 import awatch.models.Anime;
 import awatch.models.Article;
+import awatch.models.Statistic;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,6 +31,7 @@ public class AParser {
             try { anime.type = result.getString("type"); } catch(Exception ignored) {}
             try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
             try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
+            try { anime.popularity = result.getInt("popularity"); } catch(Exception ignored) {}
             animes.add(anime);
         }
         return animes;
@@ -103,6 +105,21 @@ public class AParser {
             articles.add(a);
         }
         return articles;
+    }
+
+    public static Statistic parseStats(JSONObject data) {
+        Statistic stat = new Statistic();
+        JSONObject result = null;
+        try {
+            result = data.getJSONObject("data");
+        } catch(Exception e) { return null; }
+        try { stat.watching = result.getLong("watching"); } catch(Exception ignored) {}
+        try { stat.completed = result.getLong("completed"); } catch(Exception ignored) {}
+        try { stat.onHold = result.getLong("on_hold"); } catch(Exception ignored) {}
+        try { stat.dropped = result.getLong("dropped"); } catch(Exception ignored) {}
+        try { stat.planToWatch = result.getLong("plan_to_watch"); } catch(Exception ignored) {}
+        try { stat.total = result.getLong("total"); } catch(Exception ignored) {}
+        return stat;
     }
 
 }

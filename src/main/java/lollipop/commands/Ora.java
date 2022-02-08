@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Hinokami implements Command {
+public class Ora implements Command {
     @Override
     public String[] getAliases() {
-        return new String[] {"hinokami"};
+        return new String[] {"ora"};
     }
 
     @Override
@@ -28,19 +28,19 @@ public class Hinokami implements Command {
 
     @Override
     public String getHelp() {
-        return "Hinokami Kagura Dance!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user]`";
+        return "Ora Ora Ora Ora\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [user]`";
     }
 
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.USER, "user", "specified member", true);
+                .addOption(OptionType.USER, "user", "mention a user", true);
     }
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
         final List<OptionMapping> options = event.getOptions();
-        String[] gifs = {"https://c.tenor.com/AlygbzZXIn8AAAAC/tanjiro-demon.gif", "https://c.tenor.com/XySV6ySMPF4AAAAS/tanjiro-kamado-hinokami-kagura-dance.gif", "https://c.tenor.com/JiIpyKUl08wAAAAd/tanjiro-fire.gif", "https://c.tenor.com/dDE8ASg_ltMAAAAC/demon-slayer-season2.gif", "https://c.tenor.com/E3pWFs_Xt7AAAAAS/hinokami-kagura-dance.gif", "https://c.tenor.com/koVv87guk6QAAAAd/demon-slayer-slash.gif"};
+        String[] gifs = {"https://c.tenor.com/xZXvHLQWTP8AAAAC/jojo-star-platinum.gif", "https://c.tenor.com/LytxJSf81m4AAAAC/ora-beatdown-oraoraora.gif", "https://c.tenor.com/XQWVeTsLxWMAAAAC/jojos-bizarre-adventure-ora-ora.gif", "https://c.tenor.com/kXeAcAl6PmQAAAAS/star-platinum.gif", "https://c.tenor.com/Hf9MuA4oUrQAAAAS/star-platinum-ora.gif", "https://c.tenor.com/HzfPT3oEMMEAAAAC/star-platinum-the-world-jojo.gif"};
         Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
@@ -51,7 +51,7 @@ public class Hinokami implements Command {
             return;
         }
         event.replyEmbeds(new EmbedBuilder()
-                .setDescription("**Hinokami Kagura!**\n" + target.getAsMention() + " had their head chopped off by " + event.getMember().getAsMention())
+                .setDescription("**ORA ORA ORA ORA ORA ORA ORAAAAAAAA**\n" + target.getAsMention() + " was pulverized by " + event.getMember().getAsMention())
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }

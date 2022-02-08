@@ -5,6 +5,8 @@ import awatch.*;
 import awatch.models.Character;
 import awatch.models.Anime;
 import awatch.models.Article;
+import awatch.models.Statistic;
+import lollipop.commands.Statistics;
 import mread.controller.RClient;
 import mread.controller.RListener;
 import mread.controller.RParser;
@@ -108,8 +110,9 @@ public class API implements RListener {
         return AParser.getNews(data);
     }
 
-    public ArrayList<Anime> searchForAnime(String query) throws IOException {
-        URL web = new URL(v4API+"/anime?q=" + query.replaceAll(" ", "%20"));
+    public ArrayList<Anime> searchForAnime(String query, boolean nsfw) throws IOException {
+        String extension = !nsfw ? "&sfw=true" : "";
+        URL web = new URL(v4API+"/anime?q=" + query.replaceAll(" ", "%20") + extension);
         HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
@@ -134,8 +137,9 @@ public class API implements RListener {
         return AParser.parseTop(data);
     }
 
-    public Anime randomAnime() throws IOException {
-        URL web = new URL(v4API+"/random/anime");
+    public Anime randomAnime(boolean nsfw) throws IOException {
+        String extension = !nsfw ? "&sfw=true" : "";
+        URL web = new URL(v4API+"/random/anime" + extension);
         HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
@@ -197,6 +201,19 @@ public class API implements RListener {
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         JSONObject data = new JSONObject(bf.readLine());
         return CParser.getRandomPicture(data);
+    }
+
+    public Statistic getAnimeStats(long id) throws IOException {
+        URL web = new URL(v4API+"/anime/" + id + "/statistics");
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        JSONObject data = new JSONObject(bf.readLine());
+        return AParser.parseStats(data);
     }
 
 }

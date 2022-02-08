@@ -3,7 +3,7 @@ package lollipop;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.*;
@@ -44,7 +44,7 @@ public class TestCM {
         return commands.get(commandName);
     }
 
-    void run(SlashCommandEvent event) {
+    void run(SlashCommandInteractionEvent event) {
         final String msg = event.getCommandString();
         if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&
                 !event.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) return;
@@ -55,9 +55,7 @@ public class TestCM {
                         .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
                 return;
             }
-            final List<OptionMapping> options = event.getOptions();
-            final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
-            commands.get(command).run(args, event);
+            commands.get(command).run(event);
         }
     }
 

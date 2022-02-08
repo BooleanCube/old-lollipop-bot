@@ -5,13 +5,15 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Headbutt implements Command {
     @Override
@@ -36,10 +38,10 @@ public class Headbutt implements Command {
     }
 
     @Override
-    public void run(List<String> args, SlashCommandEvent event) {
-        if(args.isEmpty()) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        String[] gifs = {"https://tenor.com/view/demon-slayer-kimetsu-no-yaiba-kamado-tanjiro-headbutt-gif-14914253", "https://tenor.com/view/tanjiro-kamado-kimetsu-no-yaiba-headbutt-calm-down-gif-14514262", "https://tenor.com/view/headbutt-fight-tanjiro-demon-slayer-protect-gif-14911019", "https://tenor.com/view/demonslayer-headbutt-fight-anime-gif-15640558", "https://tenor.com/view/dbz-gif-dragon-ball-z-hit-the-head-vegeta-gif-15112832", "https://tenor.com/view/anime-headbutt-anime-headbutt-princess-angry-gif-16519815"};
-        Member target = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+    public void run(SlashCommandInteractionEvent event) {
+        final List<OptionMapping> options = event.getOptions();
+        String[] gifs = {"https://c.tenor.com/1xHAx5bI1DQAAAAC/demon-slayer-kimetsu-no-yaiba.gif", "https://c.tenor.com/SSgZ9SP_NeAAAAAC/tanjiro-kamado-kimetsu-no-yaiba.gif", "https://c.tenor.com/bRvQowf8RfkAAAAC/headbutt-fight.gif", "https://c.tenor.com/4AvIBPKxbOwAAAAS/demonslayer-headbutt.gif", "https://c.tenor.com/XhsmfZrj8EMAAAAC/dbz-gif.gif", "https://c.tenor.com/0zAC3rdS_5kAAAAC/anime-headbutt.gif"};
+        Member target = options.get(0).getAsMember();
         if(target == null) {
             event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
             return;
@@ -48,7 +50,9 @@ public class Headbutt implements Command {
             event.replyEmbeds(new EmbedBuilder().setDescription("You can't use Roleplay Commands on yourself!").setColor(Color.red).build()).queue();
             return;
         }
-        event.reply("\uD83D\uDCAB **BANG** \uD83D\uDCAB \n" + target.getAsMention() + " was headbutted by " + event.getMember().getAsMention()).queue();
-        event.getChannel().sendMessage(gifs[(int)(Math.random()*gifs.length)]).queue();
+        event.replyEmbeds(new EmbedBuilder()
+                        .setDescription("\uD83D\uDCAB **BANG** \uD83D\uDCAB \n" + target.getAsMention() + " was headbutted by " + event.getMember().getAsMention())
+                        .setImage(gifs[(int)(Math.random()*gifs.length)])
+                .build()).queue();
     }
 }

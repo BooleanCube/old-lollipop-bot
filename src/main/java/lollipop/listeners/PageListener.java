@@ -10,23 +10,19 @@ import lollipop.commands.Random;
 import lollipop.commands.Search;
 import lollipop.commands.Top;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 public class PageListener extends ListenerAdapter {
 
-    public HashMap<Long, InteractionHook> trailerMessage = new HashMap<>();
-    public HashMap<Long, Long> trailerToUser = new HashMap<>();
-
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if(Objects.requireNonNull(event.getUser()).isBot()) return;
         long id = event.getMessageIdLong();
         if(News.messageToPage.containsKey(id)) {
@@ -84,14 +80,7 @@ public class PageListener extends ListenerAdapter {
                     }
                 } else if(Objects.equals(event.getButton().getId(), "trailer")) {
                     Anime a = page.animes.get(page.pageNumber-1);
-                    if(trailerMessage.containsKey(id))
-                        try { trailerMessage.get(id).deleteOriginal().complete(); trailerMessage.remove(id); } catch(ErrorResponseException ignored) {}
-                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).complete();
-                    m.editOriginalComponents().setActionRow(
-                            Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
-                    ).queue();
-                    trailerMessage.put(id, m);
-                    trailerToUser.put(m.retrieveOriginal().complete().getIdLong(), page.user.getIdLong());
+                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
                 }
             } else if(page.animes == null) {
                 if(Objects.equals(event.getButton().getId(), "left")) {
@@ -148,14 +137,7 @@ public class PageListener extends ListenerAdapter {
                     }
                 } else if(Objects.equals(event.getButton().getId(), "trailer")) {
                     Anime a = page.animes.get(page.pageNumber-1);
-                    if(trailerMessage.containsKey(id))
-                        try { trailerMessage.get(id).deleteOriginal().complete(); trailerMessage.remove(id); } catch(ErrorResponseException ignored) {}
-                    InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).complete();
-                    m.editOriginalComponents().setActionRow(
-                            Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
-                    ).queue();
-                    trailerMessage.put(id, m);
-                    trailerToUser.put(m.retrieveOriginal().complete().getIdLong(), page.user.getIdLong());
+                    event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this manga!" : a.trailer).setEphemeral(true).complete();
                 }
             }
         }
@@ -167,22 +149,8 @@ public class PageListener extends ListenerAdapter {
             }
             if(Objects.equals(event.getButton().getId(), "trailer")) {
                 Anime a = page.animes.get(0);
-                InteractionHook m = event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).complete();
-                m.editOriginalComponents().setActionRow(
-                        Button.danger("delete", Emoji.fromUnicode("\uD83D\uDDD1"))
-                ).queue();
-                trailerMessage.put(id, m);
-                trailerToUser.put(m.retrieveOriginal().complete().getIdLong(), page.user.getIdLong());
-                event.editButton(event.getButton().asDisabled()).queue();
+                event.reply(a.trailer.equals("Unkown") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
             }
-        }
-        if(Objects.equals(event.getButton().getId(), "delete")) {
-            if(trailerToUser.get(event.getMessageIdLong()) != event.getUser().getIdLong()) {
-                event.reply("You can't use the delete button because you didn't use this command! Type `" + Constant.PREFIX + "help` for a list of commands!").setEphemeral(true).queue();
-                return;
-            }
-            event.getMessage().delete().queue();
-            trailerToUser.remove(event.getMessageIdLong());
         }
     }
 }
