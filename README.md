@@ -1,7 +1,7 @@
 ![lollipopbanner](https://user-images.githubusercontent.com/47650058/147891305-58aa09b6-2053-4180-9a9a-8c09826567f1.png)
 
 # lollipop-bot
-<img src="https://i.imgur.com/CF6ogNL.jpeg" width=165 align="left"/>
+<img src="https://i.imgur.com/hHNVR67.jpeg" width=165 align="left"/>
 
 > konnichiwa, watashi wa lollipop desu <br>
 
