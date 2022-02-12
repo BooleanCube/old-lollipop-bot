@@ -3,122 +3,122 @@ package awatch;
 import awatch.models.Anime;
 import awatch.models.Article;
 import awatch.models.Statistic;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.ArrayList;
 
 public class AParser {
 
-    public static ArrayList<Anime> parseData(JSONObject data) {
+    public static ArrayList<Anime> parseData(DataObject data) {
         ArrayList<Anime> animes = new ArrayList<>();
-        JSONArray arr = null;
+        DataArray arr = null;
         try {
-            arr = data.getJSONArray("data");
+            arr = data.getArray("data");
         } catch(Exception e) { return null; }
         for(int i=0; i<arr.length(); i++) {
-            JSONObject result = arr.getJSONObject(i);
+            DataObject result = arr.getObject(i);
             Anime anime = new Anime();
-            try { anime.art = result.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
-            try { anime.malID = result.getInt("mal_id"); } catch(Exception ignored) {}
-            try { anime.status = result.getString("status"); } catch(Exception ignored) {}
-            try { anime.rating = result.getString("rating"); } catch(Exception ignored) {}
-            try { anime.score = result.getDouble("score"); } catch(Exception ignored) {}
-            try { anime.summary = result.getString("synopsis"); } catch(Exception ignored) {}
-            try { anime.title = result.getString("title"); } catch(Exception ignored) {}
-            try { anime.url = result.getString("url"); } catch(Exception ignored) {}
-            try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
-            try { anime.type = result.getString("type"); } catch(Exception ignored) {}
-            try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
-            try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
-            try { anime.popularity = result.getInt("popularity"); } catch(Exception ignored) {}
+            anime.art = result.getObject("images").getObject("jpg").getString("image_url", "");
+            anime.malID = result.getInt("mal_id", 0);
+            anime.status = result.getString("status", "");
+            anime.rating = result.getString("rating", "");
+            anime.score = result.getDouble("score", 0);
+            anime.summary = result.getString("synopsis", "");
+            anime.title = result.getString("title", "");
+            anime.url = result.getString("url", "");
+            anime.rank = result.getInt("rank", Integer.MAX_VALUE);
+            anime.type = result.getString("type", "");
+            anime.trailer = result.getObject("trailer").getString("url", "");
+            anime.episodeCount = result.getInt("episodes", 0);
+            anime.popularity = result.getInt("popularity", Integer.MAX_VALUE);
             animes.add(anime);
         }
         return animes;
     }
 
-    public static ArrayList<Anime> parseTop(JSONObject data) {
+    public static ArrayList<Anime> parseTop(DataObject data) {
         ArrayList<Anime> animes = new ArrayList<>();
-        JSONArray arr = null;
+        DataArray arr = null;
         try {
-            arr = data.getJSONArray("data");
+            arr = data.getArray("data");
         } catch(Exception e) { return null; }
         for(int i=0; i<10; i++) {
-            JSONObject result = arr.getJSONObject(i);
+            DataObject result = arr.getObject(i);
             Anime anime = new Anime();
-            try { anime.art = result.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
-            try { anime.malID = result.getInt("mal_id"); } catch(Exception ignored) {}
-            try { anime.status = result.getString("status"); } catch(Exception ignored) {}
-            try { anime.rating = result.getString("rating"); } catch(Exception ignored) {}
-            try { anime.score = result.getDouble("score"); } catch(Exception ignored) {}
-            try { anime.summary = result.getString("synopsis"); } catch(Exception ignored) {}
-            try { anime.title = result.getString("title"); } catch(Exception ignored) {}
-            try { anime.url = result.getString("url"); } catch(Exception ignored) {}
-            try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
-            try { anime.type = result.getString("type"); } catch(Exception ignored) {}
-            try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
-            try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
+            anime.art = result.getObject("images").getObject("jpg").getString("image_url", "");
+            anime.malID = result.getInt("mal_id", 0);
+            anime.status = result.getString("status", "");
+            anime.rating = result.getString("rating", "");
+            anime.score = result.getDouble("score", 0);
+            anime.summary = result.getString("synopsis", "");
+            anime.title = result.getString("title", "");
+            anime.url = result.getString("url", "");
+            anime.rank = result.getInt("rank", Integer.MAX_VALUE);
+            anime.type = result.getString("type", "");
+            anime.trailer = result.getObject("trailer").getString("url", "Unkown");
+            anime.episodeCount = result.getInt("episodes", 0);
             animes.add(anime);
         }
         return animes;
     }
 
-    public static Anime parseAnime(JSONObject data) {
+    public static Anime parseAnime(DataObject data) {
         Anime anime = new Anime();
-        JSONObject result = null;
+        DataObject result = null;
         try {
-            result = data.getJSONObject("data");
+            result = data.getObject("data");
         } catch(Exception e) { return null; }
-        try { anime.art = result.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
-        try { anime.malID = result.getInt("mal_id"); } catch(Exception ignored) {}
-        try { anime.status = result.getString("status"); } catch(Exception ignored) {}
-        try { anime.rating = result.getString("rating"); } catch(Exception ignored) {}
-        try { anime.score = result.getDouble("score"); } catch(Exception ignored) {}
-        try { anime.summary = result.getString("synopsis"); } catch(Exception ignored) {}
-        try { anime.title = result.getString("title"); } catch(Exception ignored) {}
-        try { anime.url = result.getString("url"); } catch(Exception ignored) {}
-        try { anime.rank = result.getInt("rank"); } catch(Exception ignored) {}
-        try { anime.type = result.getString("type"); } catch(Exception ignored) {}
-        try { anime.trailer = result.getJSONObject("trailer").getString("url"); } catch(Exception ignored) { anime.trailer = "Unkown"; }
-        try { anime.episodeCount = result.getInt("episodes"); } catch(Exception ignored) {}
+        anime.art = result.getObject("images").getObject("jpg").getString("image_url");
+        anime.malID = result.getInt("mal_id", 0);
+        anime.status = result.getString("status", "");
+        anime.rating = result.getString("rating", "");
+        anime.score = result.getDouble("score", 0);
+        anime.summary = result.getString("synopsis", "");
+        anime.title = result.getString("title", "");
+        anime.url = result.getString("url", "");
+        anime.rank = result.getInt("rank", Integer.MAX_VALUE);
+        anime.type = result.getString("type", "");
+        anime.trailer = result.getObject("trailer").getString("url", "Unkown");
+        anime.episodeCount = result.getInt("episodes", 0);
         return anime;
     }
 
-    public static ArrayList<Article> getNews(JSONObject data) {
+    public static ArrayList<Article> getNews(DataObject data) {
         ArrayList<Article> articles = new ArrayList<>();
-        JSONArray arr = null;
+        DataArray arr = null;
         try {
-            arr = data.getJSONArray("data");
+            arr = data.getArray("data");
         } catch(Exception e) { return null; }
         for(int i=0; i<arr.length(); i++) {
-            JSONObject res = arr.getJSONObject(i);
+            DataObject res = arr.getObject(i);
             Article a = new Article();
-            try { a.author = res.getString("author_username"); } catch(Exception ignored) {}
-            try { a.authorUrl = res.getString("author_url"); } catch(Exception ignored) {}
-            try { a.url = res.getString("url"); } catch(Exception ignored) {}
-            try { a.title = res.getString("title"); } catch(Exception ignored) {}
-            try { a.comments = res.getInt("comments"); } catch(Exception ignored) {}
-            try { a.date = res.getString("date"); } catch(Exception ignored) {}
-            try { a.desc = res.getString("excerpt"); } catch(Exception ignored) {}
-            try { a.forum = res.getString("forum_url"); } catch(Exception ignored) {}
-            try { a.image = res.getJSONObject("images").getJSONObject("jpg").getString("image_url"); } catch(Exception ignored) {}
+            a.author = res.getString("author_username", "");
+            a.authorUrl = res.getString("author_url", "");
+            a.url = res.getString("url", "");
+            a.title = res.getString("title", "");
+            a.comments = res.getInt("comments", 0);
+            a.date = res.getString("date", "");
+            a.desc = res.getString("excerpt", "");
+            a.forum = res.getString("forum_url", "");
+            a.image = res.getObject("images").getObject("jpg").getString("image_url", "");
             articles.add(a);
         }
         return articles;
     }
 
-    public static Statistic parseStats(JSONObject data) {
+    public static Statistic parseStats(DataObject data) {
         Statistic stat = new Statistic();
-        JSONObject result = null;
+        DataObject result = null;
         try {
-            result = data.getJSONObject("data");
+            result = data.getObject("data");
         } catch(Exception e) { return null; }
-        try { stat.watching = result.getLong("watching"); } catch(Exception ignored) {}
-        try { stat.completed = result.getLong("completed"); } catch(Exception ignored) {}
-        try { stat.onHold = result.getLong("on_hold"); } catch(Exception ignored) {}
-        try { stat.dropped = result.getLong("dropped"); } catch(Exception ignored) {}
-        try { stat.planToWatch = result.getLong("plan_to_watch"); } catch(Exception ignored) {}
-        try { stat.total = result.getLong("total"); } catch(Exception ignored) {}
+        stat.watching = result.getLong("watching", 0);
+        stat.completed = result.getLong("completed", 0);
+        stat.onHold = result.getLong("on_hold", 0);
+        stat.dropped = result.getLong("dropped", 0);
+        stat.planToWatch = result.getLong("plan_to_watch", 0);
+        stat.total = result.getLong("total", 0);
         return stat;
     }
 

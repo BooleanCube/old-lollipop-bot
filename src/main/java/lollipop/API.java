@@ -6,7 +6,6 @@ import awatch.models.Character;
 import awatch.models.Anime;
 import awatch.models.Article;
 import awatch.models.Statistic;
-import lollipop.commands.Statistics;
 import mread.controller.RClient;
 import mread.controller.RListener;
 import mread.controller.RParser;
@@ -15,7 +14,7 @@ import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -70,7 +69,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return RParser.getNews(data);
     }
 
@@ -84,7 +83,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
         con.setReadTimeout(5000); // Sets Connection Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         String anime = data.getString("anime");
         String character = data.getString("character");
         String quote = data.getString("quote");
@@ -106,7 +105,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
         con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return AParser.getNews(data);
     }
 
@@ -120,7 +119,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
         con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return AParser.parseData(data);
     }
 
@@ -133,7 +132,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
         con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return AParser.parseTop(data);
     }
 
@@ -147,7 +146,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
         con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return AParser.parseAnime(data);
     }
 
@@ -160,7 +159,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return CParser.parseData(data);
     }
 
@@ -173,7 +172,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return CParser.getRandomPictureChar(data);
     }
 
@@ -186,7 +185,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return CParser.getRandomPicture(data);
     }
 
@@ -199,7 +198,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return CParser.getRandomPicture(data);
     }
 
@@ -212,7 +211,7 @@ public class API implements RListener {
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        JSONObject data = new JSONObject(bf.readLine());
+        DataObject data = DataObject.fromJson(bf.readLine());
         return AParser.parseStats(data);
     }
 

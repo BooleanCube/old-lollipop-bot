@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
@@ -94,19 +93,19 @@ class RLoader {
 			headers.put("X-Requested-With", "XMLHttpRequest");
 			String doc = Jsoup.connect("https://www.readm.org/service/search").timeout(RConstants.TIMEOUT)
 					.userAgent(RConstants.USER_AGENT).ignoreHttpErrors(true).headers(headers).data(data)
-					.ignoreContentType(true).post().select("body").text().toString();
-			JSONObject json = new JSONObject(doc);
-			JSONArray array = null;
-			try { array = json.getJSONArray("manga"); } catch(JSONException e) { return mangaList; }
+					.ignoreContentType(true).post().select("body").text();
+			DataObject json = DataObject.fromJson(doc);
+			DataArray array;
+			try { array = json.getArray("manga"); } catch(Exception e) { return mangaList; }
 			for (int i = 0; i < array.length(); i++) {
-				JSONObject obj = array.getJSONObject(i);
+				DataObject obj = array.getObject(i);
 				String title = "Unkown", url = null, art = null;
 				ArrayList<String> tokens = new ArrayList<>();
-				if (obj.has("title")) title = obj.getString("title");
-				if (obj.has("url")) url = obj.getString("url");
-				if (obj.has("image")) art = obj.getString("image");
-				if(obj.has("tokens")) {
-					JSONArray tokensArr = obj.getJSONArray("tokens");
+				if(obj.hasKey("title")) title = obj.getString("title");
+				if(obj.hasKey("url")) url = obj.getString("url");
+				if(obj.hasKey("image")) art = obj.getString("image");
+				if(obj.hasKey("tokens")) {
+					DataArray tokensArr = obj.getArray("tokens");
 					for(int j=0; j<tokensArr.length(); j++) tokens.add(tokensArr.getString(j));
 				}
 				Manga m = new Manga(title, url, "summary", "0", art, tokens);

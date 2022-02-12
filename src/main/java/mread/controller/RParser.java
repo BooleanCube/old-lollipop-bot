@@ -1,32 +1,32 @@
 package mread.controller;
 
 import awatch.models.Article;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.ArrayList;
 
 public class RParser {
 
     //unused and not updated to the new v4 jikan api
-    public static ArrayList<Article> getNews(JSONObject data) {
+    public static ArrayList<Article> getNews(DataObject data) {
         ArrayList<Article> articles = new ArrayList<>();
-        JSONArray arr = null;
+        DataArray arr = null;
         try {
-            arr = data.getJSONArray("data");
+            arr = data.getArray("data");
         } catch(Exception e) { return null; }
         for(int i=0; i<arr.length(); i++) {
-            JSONObject res = arr.getJSONObject(i);
+            DataObject res = arr.getObject(i);
             Article a = new Article();
-            try { a.author = res.getString("author_name"); } catch(Exception ignored) {}
-            try { a.authorUrl = res.getString("author_url"); } catch(Exception ignored) {}
-            try { a.url = res.getString("url"); } catch(Exception ignored) {}
-            try { a.title = res.getString("title"); } catch(Exception ignored) {}
-            try { a.comments = res.getInt("comments"); } catch(Exception ignored) {}
-            try { a.date = res.getString("date"); } catch(Exception ignored) {}
-            try { a.desc = res.getString("intro"); } catch(Exception ignored) {}
-            try { a.forum = res.getString("forum_url"); } catch(Exception ignored) {}
-            try { a.image = res.getString("image_url"); } catch(Exception ignored) {}
+            a.author = res.getString("author_name", "Unkown");
+            a.authorUrl = res.getString("author_url", "");
+            a.url = res.getString("url");
+            a.title = res.getString("title", "");
+            a.comments = res.getInt("comments", 0);
+            a.date = res.getString("date", "Unknown");
+            a.desc = res.getString("intro", "");
+            a.forum = res.getString("forum_url", "");
+            a.image = res.getString("image_url", "");
             articles.add(a);
         }
         return articles;

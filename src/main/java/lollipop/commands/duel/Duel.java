@@ -47,7 +47,6 @@ public class Duel implements Command {
     @Override
     public void run(SlashCommandInteractionEvent event) {
         final List<OptionMapping> options = event.getOptions();
-        final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) {
             event.replyEmbeds(new EmbedBuilder()
                     .setDescription("You are already in a duel! Finish your current duel to be able to start a new one...")
@@ -56,31 +55,27 @@ public class Duel implements Command {
             ).queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
             return;
         }
-        if(args.isEmpty()) {
+        if(options.isEmpty()) {
             Game game = new Game();
             game.homePlayer.member = event.getMember();
             game.opposingPlayer.member = null; //AI
             game.playerTurn = game.homePlayer;
             game.playerNotTurn = game.opposingPlayer;
-            game.sendSelectMove(event, null);
+            game.sendStartSelectMove(event, null);
             game.setupTimeout(event.getChannel());
             memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
-        } else if(args.size() == 1) {
+        } else if(options.size() == 1) {
             Game game = new Game();
-            Member target = Tools.getEffectiveMember(event.getGuild(), args.get(0));
+            Member target = options.get(0).getAsMember();
             if(target == event.getGuild().getSelfMember()) {
                 game.homePlayer.member = event.getMember();
                 game.opposingPlayer.member = null; //AI
                 game.playerTurn = game.homePlayer;
                 game.playerNotTurn = game.opposingPlayer;
-                game.sendSelectMove(event, null);
+                game.sendStartSelectMove(event, null);
                 game.setupTimeout(event.getChannel());
                 memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
             } else {
-                game.homePlayer.member = event.getMember();
-                game.opposingPlayer.member = target;
-                game.playerTurn = game.opposingPlayer;
-                game.playerNotTurn = game.homePlayer;
                 if(target == null) {
                     event.replyEmbeds(new EmbedBuilder()
                             .setDescription("I couldn't find the specified member! Try mentioning them in the command...\n> Example: `" + Constant.PREFIX + "duel @bool`")
@@ -89,6 +84,26 @@ public class Duel implements Command {
                     ).queue();
                     return;
                 }
+                if(target.getUser().isBot()) {
+                    event.replyEmbeds(new EmbedBuilder()
+                            .setDescription("You can't request a duel with other bots!\n> Example: `" + Constant.PREFIX + "duel @bool`")
+                            .setColor(Color.red)
+                            .build()
+                    ).queue();
+                    return;
+                }
+                if(target == event.getMember()) {
+                    event.replyEmbeds(new EmbedBuilder()
+                            .setDescription("You can't request a duel with yourself!\n> Example: `" + Constant.PREFIX + "duel @bool`")
+                            .setColor(Color.red)
+                            .build()
+                    ).queue();
+                    return;
+                }
+                game.homePlayer.member = event.getMember();
+                game.opposingPlayer.member = target;
+                game.playerTurn = game.opposingPlayer;
+                game.playerNotTurn = game.homePlayer;
                 game.lastDisplay.add(event.reply(target.getAsMention()).complete().retrieveOriginal().complete());
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription(event.getMember().getAsMention() + " requested to duel you! Do you accept their duel request?")
@@ -102,7 +117,6 @@ public class Duel implements Command {
                         .setColor(Color.red)
                         .build()
                 ).queueAfter(30, TimeUnit.SECONDS, m -> {
-                    game.deleteDisplayMessagesFull();
                     Duel.memberToGame.remove(event.getMember().getIdLong());
                     Duel.memberToGame.remove(target.getIdLong());
                 });

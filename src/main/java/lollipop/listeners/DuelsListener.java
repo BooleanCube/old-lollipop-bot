@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class DuelsListener extends ListenerAdapter {
     @Override
@@ -27,7 +28,7 @@ public class DuelsListener extends ListenerAdapter {
             }
             game.timeout.cancel(false);
             game.deleteDisplayMessagesFull();
-            game.sendSelectMove(event, null);
+            game.sendStartSelectMove(event, null);
             game.setupTimeout(event.getChannel());
             game.switchTurns();
         }
@@ -43,11 +44,12 @@ public class DuelsListener extends ListenerAdapter {
                 ).setEphemeral(true).queue();
                 return;
             }
-            if(game.lastDisplay != null) game.deleteDisplayMessagesFull();
             String move = null;
             if(Objects.requireNonNull(event.getButton().getId()).startsWith("ff")) {
                 game.surrender(event.getChannel(), game.playerTurn);
+                game.deleteDisplayMessagesFull();
                 game.timeout.cancel(false);
+                game.editTimeout.cancel(false);
                 return;
             }
             else if(event.getButton().getId().startsWith("attack")) {
@@ -87,11 +89,12 @@ public class DuelsListener extends ListenerAdapter {
             }
             else if(event.getButton().getId().startsWith("seriouspunch")) {
                 if(game.playerNotTurn.isDefending) {
-                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s serious punch!";
+                    int damage = (int)(Math.random()*11)+20+game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
                     game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*11)+30+game.playerTurn.strengthGain;
+                    int damage = (int)(Math.random()*11)+40+game.playerTurn.strengthGain;
                     game.playerNotTurn.HP -= damage;
                     move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
                 }
@@ -158,48 +161,56 @@ public class DuelsListener extends ListenerAdapter {
                 int y = x + (int)(Math.random()*3)+1;
                 int z = y + (int)(Math.random()*9)+1;
                 if(z == 13) --z;
-                game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                game.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
                         .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                         .setDescription("What is your move?")
                         .setFooter("Quick! You have 30 seconds to react!")
                         .build()
                 ).setActionRow(
+                        Game.moveButtons[x].asDisabled(),
+                        Game.moveButtons[y].asDisabled(),
+                        Game.moveButtons[z].asDisabled(),
+                        Game.surrenderButton.asDisabled()
+                ).queue();
+                game.lastDisplay.get(1).editMessageComponents().setActionRow(
                         Game.moveButtons[x],
                         Game.moveButtons[y],
                         Game.moveButtons[z],
-                        game.surrenderButton
-                ).complete());
+                        Game.surrenderButton
+                ).queueAfter(1, TimeUnit.SECONDS);
                 game.timeout.cancel(false);
                 game.setupTimeout(event.getChannel());
             } else if(game.playerTurn.member == null) {
                 //AI
-                String aiMove = game.AIMove(game.playerTurn, game.playerNotTurn);
-                event.getChannel().sendTyping().complete();
-                game.sendSelectMove(event, aiMove);
+                StringBuilder aiMove = new StringBuilder("> " + game.AIMove(game.playerTurn, game.playerNotTurn) + "\n\n");
+                game.sendSelectMove(event, aiMove.toString());
                 if(game.playerNotTurn.isTimedOut()) {
-                    int turns = (int)(Math.random()*2)+2;
-                    for(int i=0; i<turns; i++) {
-                        aiMove = game.AIMove(game.playerTurn, game.playerNotTurn);
-                        event.getChannel().sendTyping().complete();
-                        game.sendSelectMove(event, aiMove);
-                    }
+                    int turns = (int)(Math.random()*3)+2;
+                    for(int i=0; i<turns; i++) aiMove.append("> ").append(game.AIMove(game.playerTurn, game.playerNotTurn)).append("\n");
+                    game.sendSelectMove(event, aiMove.toString());
                     game.playerNotTurn.timeoutDuration = 0;
                     game.playerTurn.isZaWarudo = false;
                     game.switchTurns();
                     int x = (int)(Math.random()*3);
                     int y = x + (int)(Math.random()*3)+1;
                     int z = y + (int)(Math.random()*9)+1;
-                    game.lastDisplay.add(event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                    game.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
                             .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
                             .setFooter("Quick! You have 30 seconds to react!")
                             .build()
                     ).setActionRow(
+                            Game.moveButtons[x].asDisabled(),
+                            Game.moveButtons[y].asDisabled(),
+                            Game.moveButtons[z].asDisabled(),
+                            Game.surrenderButton.asDisabled()
+                    ).queue();
+                    game.lastDisplay.get(1).editMessageComponents().setActionRow(
                             Game.moveButtons[x],
                             Game.moveButtons[y],
                             Game.moveButtons[z],
-                            game.surrenderButton
-                    ).complete());
+                            Game.surrenderButton
+                    ).queueAfter(1, TimeUnit.SECONDS);
                 } else game.switchTurns();
             }
             game.checkWin(event.getChannel());
