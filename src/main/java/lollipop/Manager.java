@@ -6,6 +6,7 @@ import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.*;
@@ -54,8 +55,46 @@ public class Manager {
         ).queue();
     }
 
+    public void reloadCommands(Guild g) {
+        //update all commands
+        g.updateCommands().addCommands(
+                new Duel().getSlashCmd(),
+                new Move().getSlashCmd(),
+                new Avatar().getSlashCmd(),
+                new Baka().getSlashCmd(),
+                new BitesTheDust().getSlashCmd(),
+                new BotInfo().getSlashCmd(),
+                new Dashboard().getSlashCmd(),
+                new Eat().getSlashCmd(),
+                new Eval().getSlashCmd(),
+                new Gif().getSlashCmd(),
+                new Headbutt().getSlashCmd(),
+                new Help(this).getSlashCmd(),
+                new Hentai().getSlashCmd(),
+                new Hinokami().getSlashCmd(),
+                new InfiniteVoid().getSlashCmd(),
+                new Janken().getSlashCmd(),
+                new Onigiri().getSlashCmd(),
+                new Ora().getSlashCmd(),
+                new Pat().getSlashCmd(),
+                new Picture().getSlashCmd(),
+                new Ping().getSlashCmd(),
+                new Punch().getSlashCmd(),
+                new Random().getSlashCmd(),
+                new RandomQuote().getSlashCmd(),
+                new Rasengan().getSlashCmd(),
+                new Search().getSlashCmd(),
+                new Statistics().getSlashCmd(),
+                new Top().getSlashCmd()
+        ).queue();
+    }
+
     public void reloadCommand(JDA jda, Command c) {
         jda.upsertCommand(c.getSlashCmd()).queue();
+    }
+
+    public void reloadCommand(Guild g, Command c) {
+        g.upsertCommand(c.getSlashCmd()).queue();
     }
 
     private void setCommands() {

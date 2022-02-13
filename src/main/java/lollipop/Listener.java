@@ -41,6 +41,7 @@ public class Listener extends ListenerAdapter {
             String[] possible = event.getMessage().getContentRaw().split(" ", 2);
             List<String> args = new ArrayList<>();
             if(possible.length == 2) args = Arrays.asList(possible[1].split(" "));
+            event.getGuild().updateCommands().queue();
             if(args.size() == 0) {
                 m.reloadCommands(event.getJDA());
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
@@ -58,6 +59,34 @@ public class Listener extends ListenerAdapter {
                     return;
                 }
                 m.reloadCommand(event.getJDA(), c);
+                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                        .setDescription("Successfully reloaded the `" + c.getAliases()[0] + "` command!")
+                        .setColor(Color.GREEN)
+                        .build()
+                ).queue();
+            }
+        } else if(event.getMessage().getContentRaw().startsWith("l!greload") && event.getAuthor().getIdLong() == Constant.OWNER_ID) {
+            String[] possible = event.getMessage().getContentRaw().split(" ", 2);
+            List<String> args = new ArrayList<>();
+            if(possible.length == 2) args = Arrays.asList(possible[1].split(" "));
+            event.getGuild().updateCommands().queue();
+            if(args.size() == 0) {
+                m.reloadCommands(event.getGuild());
+                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                        .setDescription("Reloaded all slash commands!")
+                        .build()
+                ).queue();
+            } else if(args.size() == 1) {
+                Command c = m.getCommand(args.get(0));
+                if(c == null) {
+                    event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                            .setDescription("The command `" + args.get(0) + "` does not exist!")
+                            .setColor(Color.RED)
+                            .build()
+                    ).queue();
+                    return;
+                }
+                m.reloadCommand(event.getGuild(), c);
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription("Successfully reloaded the `" + c.getAliases()[0] + "` command!")
                         .setColor(Color.GREEN)

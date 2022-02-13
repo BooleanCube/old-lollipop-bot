@@ -35,7 +35,7 @@ public class Search implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for an anime/manga/charcater with the given search query!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
+        return "Searches for an anime/manga/charcater with the given search query and NSFW content is locked to NSFW channels only!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
@@ -77,8 +77,13 @@ public class Search implements Command {
                 ).queueAfter(5, TimeUnit.SECONDS);
                 ArrayList<Anime> animes = api.searchForAnime(query, event.getTextChannel().isNSFW());
                 if(animes == null || animes.isEmpty()) throw new Exception();
+                if(!event.getTextChannel().isNSFW()) {
+                    animes.forEach(a -> {
+                        if(a.rating.toLowerCase().startsWith("r+")) a.art = "";
+                    });
+                }
                 animes.sort(Comparator.comparingInt(a -> {
-                    if(a.popularity == 0) return Integer.MAX_VALUE;
+                    if(a.popularity < 1) return Integer.MAX_VALUE;
                     return a.popularity;
                 }));
                 //this filters out 0 popularity search results rather than sending them to the back of the queue

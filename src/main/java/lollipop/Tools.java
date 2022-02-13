@@ -57,7 +57,7 @@ public class Tools {
                     .setColor(Color.red)
                     .setDescription("Could not find an anime with that search query! Please try again with a valid anime!");
         }
-        return new EmbedBuilder()
+        EmbedBuilder e = new EmbedBuilder()
                 .setAuthor("ID: " + a.malID, a.url)
                 .setDescription(a.summary != null ? a.summary + " [Read More!](" + a.url + ")" : "[Read Here](" + a.url + ")")
                 .setTitle(a.title)
@@ -66,8 +66,9 @@ public class Tools {
                 .addField("Score", Double.toString(a.score), true)
                 .addField("Status", a.status, true)
                 .addField("Rank", Integer.toString(a.rank), true)
-                .addField("Episode Count", Integer.toString(a.episodeCount), true)
-                .setImage(a.art);
+                .addField("Episode Count", Integer.toString(a.episodeCount), true);
+        if(!a.art.equals("")) e.setImage(a.art);
+        return e;
     }
 
     public static EmbedBuilder statsToEmbed(Statistic s) {
