@@ -27,6 +27,7 @@ Lollipop is an anime/manga discord bot which allows any user to search for an an
 - Anime/Character Picture Generator
 - Anime News
 - Anime Themed Roleplay
+- Anime Themed Strategy Game
 - and many more fun and useful commands!
 
 ### Commands
