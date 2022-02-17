@@ -117,6 +117,7 @@ public class Duel implements Command {
                         .setColor(Color.red)
                         .build()
                 ).queueAfter(30, TimeUnit.SECONDS, m -> {
+                    game.deleteDisplayMessagesFull();
                     Duel.memberToGame.remove(event.getMember().getIdLong());
                     Duel.memberToGame.remove(target.getIdLong());
                 });

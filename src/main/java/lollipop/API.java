@@ -14,6 +14,7 @@ import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -74,7 +75,7 @@ public class API implements RListener {
     }
 
     //quote
-    public static void sendQuote(MessageChannel c) throws IOException {
+    public static void sendQuote(SlashCommandInteractionEvent event) throws IOException {
         URL web = new URL(quoteAPI);
         HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
         con.setRequestMethod("GET");
@@ -87,7 +88,7 @@ public class API implements RListener {
         String anime = data.getString("anime");
         String character = data.getString("character");
         String quote = data.getString("quote");
-        c.sendMessageEmbeds(
+        event.replyEmbeds(
                 new EmbedBuilder()
                         .setDescription("\"" + quote + "\"\n-" + character)
                         .setFooter("from " + anime)
@@ -137,7 +138,7 @@ public class API implements RListener {
     }
 
     public Anime randomAnime(boolean nsfw) throws IOException {
-        String extension = !nsfw ? "&sfw=true" : "";
+        String extension = !nsfw ? "?sfw=true" : "";
         URL web = new URL(v4API+"/random/anime" + extension);
         HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
         con.setRequestMethod("GET");

@@ -7,15 +7,12 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Random implements Command {
     @Override

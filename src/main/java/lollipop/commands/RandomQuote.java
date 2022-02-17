@@ -35,6 +35,6 @@ public class RandomQuote implements Command {
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
-        try { API.sendQuote(event.getChannel()); } catch (IOException e) {}
+        try { API.sendQuote(event); } catch (IOException ignored) {}
     }
 }

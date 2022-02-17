@@ -61,6 +61,11 @@ public class Move implements Command {
                         .build()
                 ).queue();
             }
-        } else Tools.wrongUsage(event, this);
+        } else {
+            event.replyEmbeds(new EmbedBuilder()
+                    .setDescription(Game.getAvailableMoves())
+                    .build()
+            ).queue();
+        }
     }
 }

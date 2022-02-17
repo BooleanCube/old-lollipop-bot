@@ -46,10 +46,10 @@ public class DuelsListener extends ListenerAdapter {
             }
             String move = null;
             if(Objects.requireNonNull(event.getButton().getId()).startsWith("ff")) {
+                if(game.timeout != null) game.timeout.cancel(false);
+                if(game.editTimeout != null) game.editTimeout.cancel(false);
                 game.surrender(event.getChannel(), game.playerTurn);
                 game.deleteDisplayMessagesFull();
-                game.timeout.cancel(false);
-                game.editTimeout.cancel(false);
                 return;
             }
             else if(event.getButton().getId().startsWith("attack")) {

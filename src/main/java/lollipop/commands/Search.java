@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Search implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"search", "s"};
@@ -35,7 +36,7 @@ public class Search implements Command {
 
     @Override
     public String getHelp() {
-        return "Searches for an anime/manga/charcater with the given search query and NSFW content is locked to NSFW channels only!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
+        return "Searches for an anime/manga/charcater and NSFW content is locked to NSFW channels only!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
@@ -112,4 +113,5 @@ public class Search implements Command {
         }
         else Tools.wrongUsage(event, this);
     }
+
 }

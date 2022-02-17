@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
 import java.io.IOException;
@@ -35,6 +36,9 @@ public class Picture implements Command {
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this)
+                .addOptions(new OptionData(OptionType.STRING, "type", "anime / manga / character", true)
+                        .addChoice("anime", "anime")
+                        .addChoice("character", "character"))
                 .addOption(OptionType.INTEGER, "id", "MAL ID (available in the search command)", true);
     }
 
