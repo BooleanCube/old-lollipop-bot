@@ -151,6 +151,7 @@ public class DuelsListener extends ListenerAdapter {
             if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
             if(game.checkWin(event.getChannel())) {
                 game.timeout.cancel(false);
+                game.editTimeout.cancel(false);
                 return;
             }
             if(game.playerTurn.isTimedOut()) {
