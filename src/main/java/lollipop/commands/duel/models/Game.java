@@ -292,6 +292,13 @@ public class Game {
                         .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                         .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
                 lastDisplay.get(0).editMessageEmbeds(e.build()).queue();
+            } else if(opposingPlayer.isTimedOut()) {
+                EmbedBuilder e = new EmbedBuilder()
+                        .setDescription("**" + move + "**")
+                        .addField(homePName, "Health: `" + homePlayer.HP + " HP`\nStrength Gain: `" + homePlayer.strengthGain + " HP`", true)
+                        .addField("Computer", "Health: `" + opposingPlayer.HP + " HP`\nStrength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
+                        .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
+                lastDisplay.get(0).editMessageEmbeds(e.build()).queue();
             }
         }
         if(playerNotTurn.member != null && playerTurn.isTimedOut()) {
