@@ -284,7 +284,7 @@ public class Game {
                             .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
                     lastDisplay.get(0).editMessageEmbeds(e.build()).queue();
                 }
-            } else {
+            } else if(opposingPlayer.member != null) {
                 String oppoPName = opposingPlayer.member.getEffectiveName();
                 EmbedBuilder e = new EmbedBuilder()
                         .setDescription("**" + move + "**")
