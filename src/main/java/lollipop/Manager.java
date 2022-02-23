@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +32,7 @@ public class Manager {
                 new Baka().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
-                new Dashboard().getSlashCmd(),
                 new Eat().getSlashCmd(),
-                new Eval().getSlashCmd(),
                 new Gif().getSlashCmd(),
                 new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
@@ -58,6 +58,8 @@ public class Manager {
 
     public void reloadCommands(Guild g) {
         //update all commands
+        CommandData dashCmd = new Dashboard().getSlashCmd();
+        CommandData evalCmd = new Eval().getSlashCmd();
         g.updateCommands().addCommands(
                 new Duel().getSlashCmd(),
                 new Move().getSlashCmd(),
@@ -65,9 +67,8 @@ public class Manager {
                 new Baka().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
-                new Dashboard().getSlashCmd(),
                 new Eat().getSlashCmd(),
-                new Eval().getSlashCmd(),
+                evalCmd.setDefaultEnabled(false),
                 new Gif().getSlashCmd(),
                 new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
@@ -89,6 +90,9 @@ public class Manager {
                 new Statistics().getSlashCmd(),
                 new Top().getSlashCmd()
         ).queue();
+        g.updateCommands()
+                .addCommands(dashCmd.setDefaultEnabled(false), evalCmd.setDefaultEnabled(false))
+                .queue(c -> c.forEach(cmd -> g.updateCommandPrivilegesById(cmd.getId(), CommandPrivilege.enableUser(Constant.OWNER_ID)).queue()));
     }
 
     public void reloadCommand(JDA jda, Command c) {

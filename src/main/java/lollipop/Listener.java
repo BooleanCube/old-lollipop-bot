@@ -42,6 +42,7 @@ public class Listener extends ListenerAdapter {
             List<String> args = new ArrayList<>();
             if(possible.length == 2) args = Arrays.asList(possible[1].split(" "));
             event.getGuild().updateCommands().queue();
+            event.getJDA().updateCommands().queue();
             if(args.size() == 0) {
                 m.reloadCommands(event.getJDA());
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
