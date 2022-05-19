@@ -37,4 +37,7 @@ Lollipop is an anime/manga discord bot which allows any user to search for an an
 ### Commands
 Typing `l!help` in a server will send you a list of the commands that lollipop provides!
 
+----
 
+Developed by BooleanCube
+*Powered by Jikan API, Readm, and JDA*
