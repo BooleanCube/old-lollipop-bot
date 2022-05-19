@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Cache {
 
-    public static String gifCache = "/home/boole/Documents/bots/discord/lollipop/src/main/java/lollipop/cache/gifs.txt";
+    public static String gifCache = "/home/boole/Documents/bots/discord/lollipop-bot/src/main/java/lollipop/cache/gifs.txt";
 
     public static void addGifToCache(String gif) throws IOException {
         BufferedReader bf = new BufferedReader(new FileReader(gifCache));
