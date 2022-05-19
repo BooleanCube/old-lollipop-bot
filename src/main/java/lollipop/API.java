@@ -11,18 +11,14 @@ import mread.model.Chapter;
 import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,7 +154,19 @@ public class API implements RListener {
         con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseTop(data);
+        return AParser.parseFirst(data);
+    }
+    public ArrayList<Anime> latestAnime() throws IOException {
+        URL web = new URL(v4API+"/seasons/now");
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
+        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        return AParser.parseFirst(data);
     }
 
     public Anime randomAnime(boolean nsfw) throws IOException {

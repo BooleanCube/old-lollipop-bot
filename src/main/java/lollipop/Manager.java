@@ -41,6 +41,7 @@ public class Manager {
                 new Hinokami().getSlashCmd(),
                 new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
+                new Latest().getSlashCmd(),
                 new Onigiri().getSlashCmd(),
                 new Ora().getSlashCmd(),
                 new Pat().getSlashCmd(),
@@ -73,6 +74,7 @@ public class Manager {
                 new Hinokami().getSlashCmd(),
                 new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
+                new Latest().getSlashCmd(),
                 new Onigiri().getSlashCmd(),
                 new Ora().getSlashCmd(),
                 new Pat().getSlashCmd(),
@@ -108,6 +110,7 @@ public class Manager {
         addCommand(new Dashboard());
         addCommand(new Ora());
         addCommand(new Janken());
+        addCommand(new Latest());
         addCommand(new Hentai());
         addCommand(new Baka());
         addCommand(new RandomQuote());

@@ -303,6 +303,63 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
+        if(Latest.messageToPage.containsKey(id)) {
+            AnimePage page = Latest.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `latest` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "news")) {
+                if(!page.news.containsKey(page.pageNumber))
+                    News.run(event, page);
+                else {
+                    Newspaper news = page.news.get(page.pageNumber);
+                    news.pageNumber = 1;
+                    InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for news...").build()).setEphemeral(true).complete();
+                    Message m = msg.editOriginalEmbeds(Tools.newsEmbed(news.articles.get(0)).setFooter("Page 1/" + news.articles.size()).build()).setActionRow(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    ).complete();
+                    News.messageToPage.put(m.getIdLong(), news);
+                    m.editMessageComponents()
+                            .queueAfter(3, TimeUnit.MINUTES, me -> News.messageToPage.remove(m.getIdLong()));
+                }
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "stats")) {
+                if(!page.stats.containsKey(page.pageNumber))
+                    Statistics.run(event, page);
+                else
+                    event.replyEmbeds(page.stats.get(page.pageNumber)).setEphemeral(true).queue();
+                return;
+            }
+            if(page.mangas == null) {
+                if(Objects.equals(event.getButton().getId(), "left")) {
+                    if(page.pageNumber>1)
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    else
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                } else if(Objects.equals(event.getButton().getId(), "right")) {
+                    if(page.pageNumber<page.animes.size()) {
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    }
+                    else {
+                        event.editMessageEmbeds(
+                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                        ).queue();
+                    }
+                } else if(Objects.equals(event.getButton().getId(), "trailer")) {
+                    Anime a = page.animes.get(page.pageNumber-1);
+                    event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
+                }
+            }
+        }
         if(Random.messageToPage.containsKey(id)) {
             AnimePage page = Random.messageToPage.get(id);
             if(event.getUser() != page.user) {

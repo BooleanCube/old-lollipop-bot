@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class AParser {
@@ -38,13 +37,14 @@ public class AParser {
         return animes;
     }
 
-    public static ArrayList<Anime> parseTop(DataObject data) {
+    public static ArrayList<Anime> parseFirst(DataObject data) {
         ArrayList<Anime> animes = new ArrayList<>();
         DataArray arr = null;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
-        for(int i=0; i<25; i++) {
+        int size = Math.min(25, arr.length());
+        for(int i=0; i<size; i++) {
             DataObject result = arr.getObject(i);
             Anime anime = new Anime();
             anime.art = result.getObject("images").getObject("jpg").getString("image_url", "");

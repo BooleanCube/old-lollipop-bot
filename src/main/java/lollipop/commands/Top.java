@@ -19,6 +19,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Top implements Command {
+
+    public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
+
     @Override
     public String[] getAliases() {
         return new String[] {"top"};
@@ -38,8 +41,6 @@ public class Top implements Command {
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this);
     }
-
-    public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
