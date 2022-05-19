@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import lollipop.API;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jsoup.Jsoup;
@@ -137,10 +138,14 @@ class RLoader {
 			}
 			manga.author = author;
 			manga.status = status;
+			if(manga.status.equalsIgnoreCase("ongoing")) manga.status = "On Going";
+			else if(manga.status.equalsIgnoreCase("completed")) manga.status = "Completed";
+			else manga.status = "Unknown";
 			manga.chapter = Integer.toString(chapterCount);
 			manga.summary = summary;
 			manga.rating = rating;
 		}
+		API.mangaCache.put(query, mangaList);
 		return mangaList;
 	}
 

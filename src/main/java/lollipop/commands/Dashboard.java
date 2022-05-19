@@ -47,7 +47,7 @@ public class Dashboard implements Command {
         if(event.getJDA().getSelfUser().getIdLong() == Constant.TEST_ID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v7.2")
+                .setFooter("lollipop v8.0")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)
@@ -101,7 +101,7 @@ public class Dashboard implements Command {
     }
     public String botInfo(SlashCommandInteractionEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getUsers().size()).append("`\nPing: `")
+        sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getShardManager().getUsers().size()).append("`\nPing: `")
                 .append(event.getJDA().getGatewayPing()).append("`");
         return sb.toString();
     }
@@ -112,7 +112,7 @@ public class Dashboard implements Command {
         ArrayList<JDA> shards = new ArrayList<>(event.getJDA().getShardManager().getShards());
         Collections.reverse(shards);
         for(JDA shard : shards)
-            sb.append("> Shard ID **").append(shard.getShardInfo().getShardId()).append("** Status = `")
+            sb.append("> Shard **").append(shard.getShardInfo().getShardId()).append("** Status = `")
                     .append(shard.getShardManager().getStatus(shard.getShardInfo().getShardId())).append("`\n");
         return sb.toString();
     }

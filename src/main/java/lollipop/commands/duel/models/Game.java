@@ -274,7 +274,7 @@ public class Game {
                             moveButtons[y],
                             moveButtons[z],
                             surrenderButton
-                    ).queueAfter(1, TimeUnit.SECONDS);
+                    ).queueAfter(3, TimeUnit.SECONDS);
                 } else {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
@@ -301,11 +301,11 @@ public class Game {
                 lastDisplay.get(0).editMessageEmbeds(e.build()).queue();
             }
         }
-        if(playerNotTurn.member != null && playerTurn.isTimedOut()) {
+        if(playerTurn.isTimedOut()) {
             int x = (int)(Math.random()*3);
             int y = x + (int)(Math.random()*3)+1;
             int z = y + (int)(Math.random()*9)+1;
-            try {
+            if(lastDisplay.size() >= 2) {
                 lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
                         .setAuthor(playerNotTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerNotTurn.member.getEffectiveAvatarUrl())
                         .setDescription("What is your move?")
@@ -323,13 +323,13 @@ public class Game {
                         moveButtons[z],
                         surrenderButton
                 ).queueAfter(1, TimeUnit.SECONDS);
-            } catch(Exception ignored) {}
+            }
         }
         else if(playerNotTurn.member != null && !playerNotTurn.isTimedOut()) {
             int x = (int)(Math.random()*3);
             int y = x + (int)(Math.random()*3)+1;
             int z = y + (int)(Math.random()*9)+1;
-            try {
+            if(lastDisplay.size() >= 2) {
                 lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
                         .setAuthor(playerNotTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", playerNotTurn.member.getEffectiveAvatarUrl())
                         .setDescription("What is your move?")
@@ -347,7 +347,7 @@ public class Game {
                         moveButtons[z],
                         surrenderButton
                 ).queueAfter(3, TimeUnit.SECONDS);
-            } catch(Exception ignored) {}
+            }
         }
         if(!event.isAcknowledged()) event.deferEdit().queue();
     }
@@ -359,9 +359,7 @@ public class Game {
     }
 
     public void deleteDisplayMessagesFull() {
-        lastDisplay.forEach(msg -> {
-            msg.delete().queue();
-        });
+        lastDisplay.forEach(msg -> msg.delete().queue());
         lastDisplay = new ArrayList<>();
     }
 
@@ -375,7 +373,7 @@ public class Game {
 
     public String AIMove(Player h, Player o) {
 
-        //Decides move
+        // Decides move
         String move;
         if(!h.isDefending && ((h.HP <= 30 && Math.random()*8<6) || Math.random()*6<3)) move = "defend";
         else if((h.HP <= 50 && Math.random()*5<3) || Math.random()*6<2) move = "heal";
@@ -390,7 +388,7 @@ public class Game {
         else if((o.strengthGain >= 12 && Math.random()*16<8) || Math.random()*16<3) move = "yare";
         else move = "attack";
 
-        //Implements Move
+        // Implements move
         if(move.startsWith("attack")) {
             if(playerNotTurn.isDefending) {
                 playerNotTurn.isDefending = false;
@@ -465,7 +463,7 @@ public class Game {
             int damage = (int)(Math.random()*6)+15+playerTurn.strengthGain;
             playerNotTurn.HP -= damage;
             playerNotTurn.strengthGain -= (int)(Math.random()*3)+3;
-            if(playerNotTurn.strengthGain < -10) playerNotTurn.strengthGain = -10;
+            if(playerNotTurn.strengthGain < -5) playerNotTurn.strengthGain = -5;
             return "yare yare daze...\nORA! `Copmputer` did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
         } else if(move.startsWith("zawarudo")) {
             playerNotTurn.timeoutStart = System.currentTimeMillis();
@@ -474,10 +472,10 @@ public class Game {
             return "ZA WARUDO!\n`Computer` stopped time. Their opponent is frozen for `5 seconds`.";
         }
 
-        //Duel closes if anything above doesn't work for some reason
+        // Duel closes if anything above doesn't work for some reason
         Duel.memberToGame.remove(homePlayer.member.getIdLong());
         Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
-        return "Error! This duel match will be closing...";
+        return "Error! This duel will be ending with no victor...";
     }
 
     public void setupTimeout(MessageChannel c) {
@@ -488,8 +486,9 @@ public class Game {
         e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
         e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
         timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
-            deleteDisplayMessagesFull();
             Duel.memberToGame.remove(playerTurn.member.getIdLong());
+            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+            deleteDisplayMessagesFull();
             if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
         });
     }
@@ -513,6 +512,7 @@ public class Game {
                         "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `" + opposingPlayer.HP + "`");
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
             }
+            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             c.sendMessageEmbeds(e.build()).queue();
             return true;
         } else if(opposingPlayer.HP <= 0) {
@@ -531,7 +531,6 @@ public class Game {
                 c.sendMessageEmbeds(e.build()).queue();
             } else {
                 editTimeout.cancel(false);
-
                 deleteDisplayMessagesFull();
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
@@ -542,6 +541,7 @@ public class Game {
                                 "> Computer's HP: `0`");
                 c.sendMessageEmbeds(e.build()).queue();
             }
+            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             return true;
         }
         return false;
@@ -550,6 +550,7 @@ public class Game {
     public void surrender(MessageChannel c, Player p) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         Duel.memberToGame.remove(playerTurn.member.getIdLong());
+        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) {
             e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");

@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Duel implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[]{"duel"};
@@ -43,18 +45,30 @@ public class Duel implements Command {
     }
 
     public static HashMap<Long, Game> memberToGame = new HashMap<>();
+    public static ArrayList<Integer> occupiedShards = new ArrayList<>();
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
         final List<OptionMapping> options = event.getOptions();
-        if(memberToGame.containsKey(Objects.requireNonNull(event.getMember()).getIdLong())) {
+        if(memberToGame.containsKey(event.getMember().getIdLong())) {
             event.replyEmbeds(new EmbedBuilder()
                     .setDescription("You are already in a duel! Finish your current duel to be able to start a new one...")
                     .setColor(Color.red)
                     .build()
-            ).queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
+            ).setEphemeral(true).queue();
             return;
         }
+        int shardId = event.getJDA().getShardInfo().getShardId();
+        if(occupiedShards.contains(shardId)) {
+            event.replyEmbeds(new EmbedBuilder()
+                            .setDescription("There is a concurrent duel in this shard! Please wait until the current duel ends...")
+                            .setFooter("There is a limit of 1 duel per shard to prevent the players from having a laggy experience. Please be patient!")
+                            .setColor(Color.red)
+                            .build()
+            ).setEphemeral(true).queue();
+            return;
+        }
+        else occupiedShards.add(shardId);
         if(options.isEmpty()) {
             Game game = new Game();
             game.homePlayer.member = event.getMember();
@@ -120,10 +134,12 @@ public class Duel implements Command {
                     game.deleteDisplayMessagesFull();
                     Duel.memberToGame.remove(event.getMember().getIdLong());
                     Duel.memberToGame.remove(target.getIdLong());
+                    occupiedShards.remove(Integer.valueOf(event.getJDA().getShardInfo().getShardId()));
                 });
                 Duel.memberToGame.put(event.getMember().getIdLong(), game);
                 Duel.memberToGame.put(target.getIdLong(), game);
             }
         }
     }
+
 }

@@ -101,7 +101,7 @@ public class DuelsListener extends ListenerAdapter {
             }
             else if(event.getButton().getId().startsWith("zawarudo")) {
                 game.playerNotTurn.timeoutStart = System.currentTimeMillis();
-                game.playerNotTurn.timeoutDuration = Math.random()+5;
+                game.playerNotTurn.timeoutDuration = Math.random()+6;
                 move = "ZA WARUDO!\n" + game.playerTurn.member.getAsMention() + " stopped time. Their opponent is frozen for `5 seconds`.";
             }
             else if(event.getButton().getId().startsWith("rasengan")) {
@@ -144,39 +144,22 @@ public class DuelsListener extends ListenerAdapter {
                 if(game.playerNotTurn.strengthGain < -5) game.playerNotTurn.strengthGain = -5;
                 move = "yare yare daze...\nORA! " + game.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
             }
+
             game.timeout.cancel(false);
-            game.sendSelectMove(event, move);
-            if(game.playerTurn.member == null) game.setupTimeout(event.getChannel());
-            game.switchTurns();
-            if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
-            if(game.checkWin(event.getChannel())) {
-                game.timeout.cancel(false);
-                game.editTimeout.cancel(false);
-                return;
+            if(game.playerNotTurn.isTimedOut()) {
+                if(game.playerNotTurn.member == null) game.setupTimeout(event.getChannel());
+                game.switchTurns();
+                if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
+                game.sendSelectMove(event, move);
+            } else {
+                game.sendSelectMove(event, move);
+                if(game.playerTurn.member == null) game.setupTimeout(event.getChannel());
+                game.switchTurns();
+                if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
             }
+
             if(game.playerTurn.isTimedOut()) {
                 game.switchTurns();
-                int x = (int)(Math.random()*3);
-                int y = x + (int)(Math.random()*3)+1;
-                int z = y + (int)(Math.random()*9)+1;
-                if(z == 13) --z;
-                game.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
-                        .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
-                        .setDescription("What is your move?")
-                        .setFooter("Quick! You have 30 seconds to react!")
-                        .build()
-                ).setActionRow(
-                        Game.moveButtons[x].asDisabled(),
-                        Game.moveButtons[y].asDisabled(),
-                        Game.moveButtons[z].asDisabled(),
-                        Game.surrenderButton.asDisabled()
-                ).queue();
-                game.lastDisplay.get(1).editMessageComponents().setActionRow(
-                        Game.moveButtons[x],
-                        Game.moveButtons[y],
-                        Game.moveButtons[z],
-                        Game.surrenderButton
-                ).queueAfter(1, TimeUnit.SECONDS);
                 game.timeout.cancel(false);
                 game.setupTimeout(event.getChannel());
             } else if(game.playerTurn.member == null) {
@@ -212,7 +195,14 @@ public class DuelsListener extends ListenerAdapter {
                     ).queueAfter(1, TimeUnit.SECONDS);
                 } else game.switchTurns();
             }
-            game.checkWin(event.getChannel());
+
+            if(game.checkWin(event.getChannel())) {
+                game.timeout.cancel(false);
+                game.editTimeout.cancel(false);
+                return;
+            }
+
+            game.checkWin(event.getChannel()); // ???????
         }
     }
 }

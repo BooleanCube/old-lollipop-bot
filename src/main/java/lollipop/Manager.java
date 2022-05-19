@@ -4,6 +4,7 @@ import lollipop.commands.Random;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
+import lollipop.commands.search.Search;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -40,18 +41,15 @@ public class Manager {
                 new Hinokami().getSlashCmd(),
                 new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
-                new News().getSlashCmd(),
                 new Onigiri().getSlashCmd(),
                 new Ora().getSlashCmd(),
                 new Pat().getSlashCmd(),
-                new Picture().getSlashCmd(),
                 new Ping().getSlashCmd(),
                 new Punch().getSlashCmd(),
                 new Random().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
-                new Statistics().getSlashCmd(),
                 new Top().getSlashCmd()
         ).queue();
     }
@@ -68,7 +66,6 @@ public class Manager {
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
                 new Eat().getSlashCmd(),
-                evalCmd.setDefaultEnabled(false),
                 new Gif().getSlashCmd(),
                 new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
@@ -76,23 +73,20 @@ public class Manager {
                 new Hinokami().getSlashCmd(),
                 new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
-                new News().getSlashCmd(),
                 new Onigiri().getSlashCmd(),
                 new Ora().getSlashCmd(),
                 new Pat().getSlashCmd(),
-                new Picture().getSlashCmd(),
                 new Ping().getSlashCmd(),
                 new Punch().getSlashCmd(),
                 new Random().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
-                new Statistics().getSlashCmd(),
                 new Top().getSlashCmd()
         ).queue();
         g.updateCommands()
                 .addCommands(dashCmd.setDefaultEnabled(false), evalCmd.setDefaultEnabled(false))
-                .queue(c -> c.forEach(cmd -> g.updateCommandPrivilegesById(cmd.getId(), CommandPrivilege.enableUser(Constant.OWNER_ID)).queue()));
+        .queue(c -> c.forEach(cmd -> g.updateCommandPrivilegesById(cmd.getId(), CommandPrivilege.enableUser(Constant.OWNER_ID)).queue()));
     }
 
     public void reloadCommand(JDA jda, Command c) {
@@ -108,7 +102,6 @@ public class Manager {
         addCommand(new Gif());
         addCommand(new Ping());
         addCommand(new Search());
-        addCommand(new Picture());
         addCommand(new BotInfo());
         addCommand(new Avatar());
         addCommand(new Eval());
@@ -126,13 +119,11 @@ public class Manager {
         addCommand(new Hinokami());
         addCommand(new InfiniteVoid());
         addCommand(new Headbutt());
-        addCommand(new News());
         addCommand(new Random());
         addCommand(new Top());
         addCommand(new Punch());
         addCommand(new Duel());
         addCommand(new Move());
-        addCommand(new Statistics());
     }
 
     private void addCommand(Command c) {

@@ -1,11 +1,12 @@
 package awatch;
 
-import awatch.models.Anime;
-import awatch.models.Article;
-import awatch.models.Statistic;
+import awatch.models.*;
+import lollipop.Tools;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class AParser {
@@ -43,7 +44,7 @@ public class AParser {
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
-        for(int i=0; i<10; i++) {
+        for(int i=0; i<25; i++) {
             DataObject result = arr.getObject(i);
             Anime anime = new Anime();
             anime.art = result.getObject("images").getObject("jpg").getString("image_url", "");
@@ -82,6 +83,76 @@ public class AParser {
         anime.trailer = result.getObject("trailer").getString("url", "Unkown");
         anime.episodeCount = result.getInt("episodes", 0);
         return anime;
+    }
+
+    public static ArrayList<Episode> parseEpisodes(DataObject data) {
+        ArrayList<Episode> episodes = new ArrayList<>();
+        DataArray arr = null;
+        try {
+            arr = data.getArray("data");
+        } catch(Exception e) { return null; }
+        for(int i=0; i<arr.length(); i++) {
+            DataObject res = arr.getObject(i);
+            Episode e = new Episode();
+            e.url = res.getString("url", "");
+            e.title = res.getString("title_romanji", res.getString("title", ""));
+            episodes.add(e);
+        }
+        return episodes;
+    }
+
+    public static EmbedBuilder parseReview(DataObject data) {
+        Review r = new Review();
+        DataArray arr = null;
+        try {
+            arr = data.getArray("data");
+        } catch(Exception e) { return null; }
+        DataObject res = arr.getObject(0);
+        r.authorName = res.getObject("user").getString("username", "Unkown Name");
+        r.authorIcon = res.getObject("user").getObject("images").getObject("jpg").getString("image_url", "https://api-private.atlassian.com/users/63729d1b358a0c5f1c38cf368ad9d693/avatar");
+        r.authorUrl = res.getObject("user").getString("url", "https://myanimelist.net/reviews.php");
+        r.url = res.getString("url", "https://myanimelist.net/reviews.php");
+        r.details = res.getString("review", "Empty Review Description");
+        r.votes = res.getInt("votes", 0);
+        r.score = res.getObject("scores").getInt("overall", 0);
+        return r.getEmbed();
+    }
+
+    public static String parseRecommendation(DataObject data) {
+        StringBuilder animes = new StringBuilder();
+        DataArray arr = null;
+        try {
+            arr = data.getArray("data");
+            int size = Math.min(10, arr.length());
+            for(int i=0; i<size; i++) {
+                DataObject res = arr.getObject(i);
+                String title = res.getObject("entry").getString("title", "Title");
+                String url = res.getObject("entry").getString("url", "https://myanimelist.net/");
+                animes.append("#").append(i+1).append(" - [").append(title).append("](").append(url).append(")\n");
+            }
+        } catch(Exception e) { return null; }
+        return animes.toString();
+    }
+
+    public static EmbedBuilder parseThemes(DataObject data) {
+        StringBuilder op = new StringBuilder();
+        StringBuilder end = new StringBuilder();
+        DataObject res = null;
+        try {
+            res = data.getObject("data");
+            DataArray arr = null;
+            arr = res.getArray("openings");
+            for(int i=0; i<arr.length(); i++) {
+                String result = arr.getString(i, "");
+                op.append(result).append("\n");
+            }
+            arr = res.getArray("endings");
+            for(int i=0; i<arr.length(); i++) {
+                String result = arr.getString(i, "");
+                end.append(result).append("\n");
+            }
+        } catch(Exception e) { return null; }
+        return Tools.themesToEmbed(op.toString(), end.toString());
     }
 
     public static ArrayList<Article> getNews(DataObject data) {
