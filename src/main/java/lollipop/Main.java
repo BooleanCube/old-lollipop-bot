@@ -97,7 +97,7 @@ public class Main {
             API.animeCache.clear();
             API.mangaCache.clear();
         };
-        scheduler.schedule(apiRefresh, 1, TimeUnit.DAYS);
+        scheduler.scheduleWithFixedDelay(apiRefresh, 1, 1, TimeUnit.DAYS);
 
     }
 
