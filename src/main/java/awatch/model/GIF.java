@@ -30,7 +30,7 @@ public class GIF implements ModelData {
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()
-                .setDescription(url);
+                .setImage(url);
     }
 
 }

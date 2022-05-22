@@ -173,3 +173,4 @@ https://api.kawaii.red/gif/ok/ok3.gif
 https://api.kawaii.red/gif/disappear/disappear4.gif
 https://api.kawaii.red/gif/pat/pat5.gif
 https://api.kawaii.red/gif/wink/wink22.gif
+https://api.kawaii.red/gif/money/money13.gif
