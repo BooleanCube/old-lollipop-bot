@@ -40,4 +40,5 @@ Typing `l!help` in a server will send you a list of the commands that lollipop p
 ----
 
 Developed by BooleanCube
+
 *Powered by Jikan API, Readm, and JDA*
