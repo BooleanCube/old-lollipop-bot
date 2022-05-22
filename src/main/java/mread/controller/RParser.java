@@ -1,6 +1,6 @@
 package mread.controller;
 
-import awatch.models.Article;
+import awatch.model.Article;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 

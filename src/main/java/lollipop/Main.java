@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.BasicConfigurator;
 import org.discordbots.api.client.DiscordBotListAPI;
+import threading.ThreadManagement;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.security.auth.login.LoginException;
@@ -91,13 +92,8 @@ public class Main {
             // @Deprecated httpClient.getConnectionManager().shutdown();
         }
 
-        // Start API refresh cycle once a day to refresh animes everyday to make sure new data is cached later on
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        Runnable apiRefresh = () -> {
-            API.animeCache.clear();
-            API.mangaCache.clear();
-        };
-        scheduler.scheduleWithFixedDelay(apiRefresh, 1, 1, TimeUnit.DAYS);
+        // Setup Cache Refresh Cycle
+        ThreadManagement.setupCacheRefresh();
 
     }
 

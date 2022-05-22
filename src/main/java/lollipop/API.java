@@ -1,305 +1,350 @@
 package lollipop;
 
-import awatch.*;
-
-import awatch.models.*;
-import awatch.models.Character;
+import awatch.controller.AClient;
+import awatch.controller.AListener;
+import awatch.model.*;
+import awatch.model.Character;
+import lollipop.commands.Latest;
+import lollipop.commands.RandomAnime;
+import lollipop.commands.Top;
+import lollipop.commands.search.Search;
+import lollipop.commands.search.infos.Episodes;
+import lollipop.commands.search.infos.News;
+import lollipop.pages.AnimePage;
 import mread.controller.RClient;
 import mread.controller.RListener;
-import mread.controller.RParser;
 import mread.model.Chapter;
 import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class API implements RListener {
-
-    static String v4API = "https://api.jikan.moe/v4";
-    static String v3API = "https://api.jikan.moe/v3";
-    static String quoteAPI = "https://animechan.vercel.app/api/random";
-    public static String readmAPI = "https://www.readm.org";
-    public static String kawaiiAPI = "https://kawaii.red/api/gif";
+/**
+ * Contacts awatch and readm libraries to retrieve data
+ */
+public class API implements RListener, AListener {
 
     //manga
     public static HashMap<String, List<Manga>> mangaCache = new HashMap<>();
-    RClient mAPI = new RClient(this);
-    private Message messageToEdit = null;
+    final RClient mangaClient = new RClient(this);
 
     //anime
-    public static HashMap<String, ArrayList<Anime>> animeCache = new HashMap<>();
+    final AClient animeClient = new AClient(this);
 
-    public void searchMangas(String query, Message c) {
+    //sending
+    final ArrayDeque<Message> messageToEdit = new ArrayDeque<>();
+    final ArrayDeque<ButtonInteractionEvent> eventToReply = new ArrayDeque<>();
+
+    public void searchMangas(String query, Message message) {
         if(mangaCache.containsKey(query)) {
-            c.editMessageEmbeds(Tools.mangaToEmbed(mangaCache.get(query).get(0)).build()).queue();
+            message.editMessageEmbeds(Tools.mangaToEmbed(mangaCache.get(query).get(0)).build()).queue();
             return;
         }
-        mAPI.search(query);
-        messageToEdit = c;
+        mangaClient.search(query);
+        messageToEdit.push(message);
     }
 
     @Override
-    public void setMangas(List<Manga> mangas) {
-        if(mangas.isEmpty()) { messageToEdit.editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
-        messageToEdit.editMessageEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
+    public void sendMangas(List<Manga> mangas) {
+        if(mangas.isEmpty()) { messageToEdit.removeFirst().editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
+        messageToEdit.removeFirst().editMessageEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
     }
 
     @Override
-    public void setChapters(Manga manga) {
+    public void sendChapters(Manga manga) {
         for (Chapter c : manga.chapters) System.out.println(c);
-        mAPI.pages(manga.chapters.get(0));
+        mangaClient.pages(manga.chapters.get(0));
     }
 
     @Override
-    public void setPages(Chapter chapter) {
+    public void sendPages(Chapter chapter) {
         for (String s : chapter.pages) System.out.println(s);
     }
 
-    public ArrayList<Article> mangaNews(long id) throws IOException {
-        URL web = new URL(v4API+"/manga/" + id + "/news");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return RParser.getNews(data);
+    public void searchAnime(Message message, String query, boolean nsfw) {
+        animeClient.searchAnime(query, nsfw);
+        messageToEdit.push(message);
     }
 
-    //quote
-    public static void sendQuote(SlashCommandInteractionEvent event) throws IOException {
-        URL web = new URL(quoteAPI);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Connection Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        String anime = data.getString("anime");
-        String character = data.getString("character");
-        String quote = data.getString("quote");
-        event.replyEmbeds(
-                new EmbedBuilder()
-                        .setDescription("\"" + quote + "\"\n-" + character)
-                        .setFooter("from " + anime)
-                        .build()
-        ).queue();
+    public void searchCharacter(Message message, String query) {
+        animeClient.searchCharacter(query);
+        messageToEdit.push(message);
     }
 
-    public ArrayList<Episode> animeEpisodes(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/episodes");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseEpisodes(data);
+    public void randomQuote(Message message) {
+        animeClient.randomQuote();
+        messageToEdit.push(message);
     }
 
-    //anime and character
-    public ArrayList<Article> animeNews(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/news");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.getNews(data);
+    public void getEpisodes(Message message, long id) {
+        animeClient.getEpisodes(id);
+        messageToEdit.push(message);
     }
 
-    public ArrayList<Anime> searchForAnime(String query, boolean nsfw) throws IOException {
-        if(animeCache.containsKey(query)) return animeCache.get(query);
-        String extension = !nsfw ? "&sfw=true" : "";
-        URL web = new URL(v4API+"/anime?q=" + query.replaceAll(" ", "%20") + extension);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        animeCache.put(query, AParser.parseData(data));
-        return animeCache.get(query);
+    public void getNews(Message message, long id) {
+        animeClient.getNews(id);
+        messageToEdit.push(message);
     }
 
-    public ArrayList<Anime> topAnime() throws IOException {
-        URL web = new URL(v4API+"/top/anime");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseFirst(data);
-    }
-    public ArrayList<Anime> latestAnime() throws IOException {
-        URL web = new URL(v4API+"/seasons/now");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseFirst(data);
+    public void getStatistics(ButtonInteractionEvent event, long id) {
+        animeClient.getStatistics(id);
+        eventToReply.push(event);
     }
 
-    public Anime randomAnime(boolean nsfw) throws IOException {
-        String extension = !nsfw ? "?sfw" : "";
-        URL web = new URL(v4API+"/random/anime" + extension);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseAnime(data);
+    public void getThemes(ButtonInteractionEvent event, long id) {
+        animeClient.getThemes(id);
+        eventToReply.push(event);
     }
 
-    public String randomGIF(String type) throws IOException {
-        URL web = new URL(kawaiiAPI + "/" + type + "/token=" + Secret.KAWAIIAPITOKEN + "/");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        String gif = data.getString("response");
-        Cache.addGifToCache(gif);
-        return gif;
+    public void getRecommendation(ButtonInteractionEvent event, long id) {
+        animeClient.getRecommendation(id);
+        eventToReply.push(event);
     }
 
-    public Character searchForCharacter(String query) throws IOException {
-        URL web = new URL(v3API+"/search/character?q=" + query.replaceAll(" ", "%20"));
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return CParser.parseData(data);
+    public void getReview(ButtonInteractionEvent event, long id) {
+        animeClient.getReview(id);
+        eventToReply.push(event);
     }
 
-    public String pictureCharacter(long id) throws IOException {
-        URL web = new URL(v4API+"/characters/" + id + "/pictures");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return CParser.getRandomPictureChar(data);
+    public void getTop(Message message) {
+        animeClient.getTop();
+        messageToEdit.push(message);
     }
 
-    public String pictureAnime(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/pictures");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return CParser.getRandomPicture(data);
+    public void getLatest(Message message) {
+        animeClient.getLatest();
+        messageToEdit.push(message);
     }
 
-    public String pictureManga(long id) throws IOException {
-        URL web = new URL(v4API+"/manga/" + id + "/pictures");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return CParser.getRandomPicture(data);
+    public void randomAnime(Message message, boolean nsfw) {
+        animeClient.randomAnime(nsfw);
+        messageToEdit.push(message);
     }
 
-    public Statistic getAnimeStats(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/statistics");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseStats(data);
+    public void randomGIF(Message message, String type) {
+        animeClient.randomGIF(type);
+        messageToEdit.push(message);
     }
 
-    public EmbedBuilder getAnimeThemes(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/themes");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseThemes(data);
+    @Override
+    public void sendSearchAnime(ArrayList<Anime> animes) {
+        Message message = messageToEdit.removeFirst();
+        if(animes == null || animes.isEmpty()) return;
+        AnimePage page = Search.messageToPage.get(message.getIdLong());
+        page.timeout.cancel(false);
+        page.animes = animes;
+        animes.sort(Comparator.comparingInt(a -> {
+            if(a.popularity < 1) return Integer.MAX_VALUE;
+            return a.popularity;
+        }));
+        //this filters out 0 popularity search results rather than sending them to the back of the queue
+        //animes = (ArrayList<Anime>) animes.stream().filter(a -> a.popularity > 0).collect(Collectors.toList());
+        message.editMessageEmbeds(animes.get(0).toEmbed().setFooter("Page 1/" + animes.size()).build()).setActionRow(
+                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
+                Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes"),
+                Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info"),
+                Button.secondary("right", Emoji.fromUnicode("➡"))
+        ).complete();
+        message.editMessageComponents()
+                .setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
+                        Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes").asDisabled(),
+                        Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info").asDisabled(),
+                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                )
+                .queueAfter(3, TimeUnit.MINUTES, me -> Search.messageToPage.remove(message.getIdLong()));
     }
 
-    public EmbedBuilder getAnimeRecommendation(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/recommendations");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return Tools.recommendationEmbed(AParser.parseRecommendation(data));
+    @Override
+    public void sendSearchCharacter(Character character) {
+        Message message = messageToEdit.removeFirst();
+        message.editMessageEmbeds(character.toEmbed().build()).queue();
     }
 
-    public EmbedBuilder getAnimeReview(long id) throws IOException {
-        URL web = new URL(v4API+"/anime/" + id + "/reviews");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        DataObject data = DataObject.fromJson(bf.readLine());
-        return AParser.parseReview(data);
+    @Override
+    public void sendRandomQuote(Quote quote) {
+        Message message = messageToEdit.removeFirst();
+        message.editMessageEmbeds(quote.toEmbed().build()).queue();
+    }
+
+    @Override
+    public void sendEpisodes(ArrayList<Episode> episodes) {
+        Message message = messageToEdit.removeFirst();
+        try {
+            ArrayList<StringBuilder> pages = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i<episodes.size(); i++) {
+                if(i%10 == 0 && i != 0) {
+                    pages.add(sb);
+                    sb = new StringBuilder();
+                }
+                sb.append("Episode #").append(i+1).append(" - [").append(episodes.get(i).title)
+                        .append("](").append(episodes.get(i).url).append(")\n");
+            }
+            String moreUrl = "";
+            if(!episodes.get(0).url.equals("")) moreUrl = episodes.get(0).url.substring(0, episodes.get(0).url.length()-2);
+            if(!sb.toString().equals("")) {
+                sb.append("\n> [Click for all episodes!](").append(moreUrl).append(")");
+                pages.add(sb);
+            }
+            else
+                pages.get(pages.size()-1).append("\n> [Click for all episodes!](").append(moreUrl).append(")");
+
+            Message m = message.editMessageEmbeds(
+                    new EmbedBuilder()
+                            .setTitle("Episode List")
+                            .setDescription(pages.get(0))
+                            .setFooter("Page 1/" + pages.size())
+                            .build()
+            ).setActionRow(
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.secondary("right", Emoji.fromUnicode("➡"))
+            ).complete();
+            AnimePage page = Search.messageToPage.get(message.getIdLong());
+            page.episodes.get(page.pageNumber).pages = pages;
+            Episodes.messageToPage.put(m.getIdLong(), page.episodes.get(page.pageNumber));
+            m.editMessageComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, me -> Episodes.messageToPage.remove(m.getIdLong()));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            message.editMessageEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("Could not find any episodes from that anime! Please try again later!")
+                            .build()
+            ).queue();
+        }
+    }
+
+    @Override
+    public void sendNews(ArrayList<Article> articles) {
+        Message message = messageToEdit.removeFirst();
+        try {
+            if(articles == null || articles.isEmpty()) throw new Exception();
+            Collections.reverse(articles);
+            Message m = message.editMessageEmbeds(articles.get(0).toEmbed().setFooter("Page 1/" + articles.size()).build()).setActionRow(
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.secondary("right", Emoji.fromUnicode("➡"))
+            ).complete();
+            AnimePage page = Search.messageToPage.get(message.getIdLong());
+            page.news.get(page.pageNumber).articles = articles;
+            News.messageToPage.put(m.getIdLong(), page.news.get(page.pageNumber));
+            m.editMessageComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, me -> News.messageToPage.remove(m.getIdLong()));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            message.editMessageEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("Could not find any articles from that anime! Please try again later!")
+                            .build()
+            ).queue();
+        }
+    }
+
+    @Override
+    public void sendStatistics(Statistic statistics) {
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(statistics.toEmbed().build()).setEphemeral(true).queue();
+        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        page.stats.put(page.pageNumber, statistics.toEmbed().build());
+    }
+
+    @Override
+    public void sendThemes(Themes themes) {
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(themes.toEmbed().build()).setEphemeral(true).queue();
+        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        page.themes.put(page.pageNumber, themes.toEmbed().build());
+    }
+
+    @Override
+    public void sendRecommendation(Recommendation recommendation) {
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(recommendation.toEmbed().build()).setEphemeral(true).queue();
+        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        page.stats.put(page.pageNumber, recommendation.toEmbed().build());
+    }
+
+    @Override
+    public void sendReview(Review review) {
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(review.toEmbed().build()).setEphemeral(true).queue();
+        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        page.review.put(page.pageNumber, review.toEmbed().build());
+    }
+
+    @Override
+    public void sendTop(ArrayList<Anime> top) {
+        Message message = messageToEdit.removeFirst();
+        if(top == null) return;
+        AnimePage page = Top.messageToPage.get(message.getIdLong());
+        page.timeout.cancel(false);
+        message.editMessageEmbeds(top.get(0).toEmbed().setFooter("Page 1/" + top.size()).build()).setActionRow(
+                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
+                Button.secondary("right", Emoji.fromUnicode("➡"))
+        ).complete();
+        Top.messageToPage.get(message.getIdLong()).animes = top;
+        message.editMessageComponents()
+                .setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
+                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                )
+                .queueAfter(3, TimeUnit.MINUTES, me -> Top.messageToPage.remove(message.getIdLong()));
+    }
+
+    @Override
+    public void sendLatest(ArrayList<Anime> latest) {
+        Message message = messageToEdit.removeFirst();
+        if(latest == null) return;
+        AnimePage page = Latest.messageToPage.get(message.getIdLong());
+        page.timeout.cancel(false);
+        message.editMessageEmbeds(latest.get(0).toEmbed().setFooter("Page 1/" + latest.size()).build()).setActionRow(
+                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
+                Button.secondary("right", Emoji.fromUnicode("➡"))
+        ).complete();
+        Latest.messageToPage.get(message.getIdLong()).animes = latest;
+        message.editMessageComponents()
+                .setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
+                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                )
+                .queueAfter(3, TimeUnit.MINUTES, me -> Latest.messageToPage.remove(message.getIdLong()));
+    }
+
+    @Override
+    public void sendRandomAnime(Anime random) {
+        Message message = messageToEdit.removeFirst();
+        if(random == null) return;
+        AnimePage page = RandomAnime.messageToPage.get(message.getIdLong());
+        page.timeout.cancel(false);
+        page.animes.add(random);
+        message.editMessageEmbeds(random.toEmbed().build()).setActionRow(
+                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
+        ).queue(msg -> msg.editMessageComponents()
+                .queueAfter(3, TimeUnit.MINUTES, me -> RandomAnime.messageToPage.remove(message.getIdLong())));
+    }
+
+    @Override
+    public void sendRandomGIF(GIF gif) {
+        Message message = messageToEdit.removeFirst();
+        if(gif == null) return;
+        message.editMessageEmbeds(gif.toEmbed().build()).queue();
     }
 
 }

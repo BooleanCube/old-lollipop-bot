@@ -1,6 +1,6 @@
 package lollipop.listeners;
 
-import awatch.models.Anime;
+import awatch.model.Anime;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
 import lollipop.commands.search.infos.*;
@@ -35,26 +35,26 @@ public class PageListener extends ListenerAdapter {
             if(Objects.equals(event.getButton().getId(), "left")) {
                 if(page.pageNumber>1)
                     event.editMessageEmbeds(
-                            Tools.newsEmbed(page.articles.get(--page.pageNumber-1))
+                            page.articles.get(--page.pageNumber-1).toEmbed()
                                     .setFooter("Page " + page.pageNumber + "/" + page.articles.size())
                                     .build()
                     ).queue();
                 else
                     event.editMessageEmbeds(
-                            Tools.newsEmbed(page.articles.get(0))
+                            page.articles.get(0).toEmbed()
                                     .setFooter("Page " + page.pageNumber + "/" + page.articles.size())
                                     .build()
                     ).queue();
             } else if(Objects.equals(event.getButton().getId(), "right")) {
                 if(page.pageNumber<page.articles.size())
                     event.editMessageEmbeds(
-                            Tools.newsEmbed(page.articles.get(++page.pageNumber-1))
+                            page.articles.get(++page.pageNumber-1).toEmbed()
                                     .setFooter("Page " + page.pageNumber + "/" + page.articles.size())
                                     .build()
                     ).queue();
                 else
                     event.editMessageEmbeds(
-                            Tools.newsEmbed(page.articles.get(page.articles.size()-1))
+                            page.articles.get(page.articles.size()-1).toEmbed()
                                     .setFooter("Page " + page.pageNumber + "/" + page.articles.size())
                                     .build()
                     ).queue();
@@ -123,7 +123,7 @@ public class PageListener extends ListenerAdapter {
                                     .build()
                     ).setEphemeral(true).complete();
                     Message m = msg.editOriginalEmbeds(
-                            Tools.newsEmbed(news.articles.get(0))
+                            news.articles.get(0).toEmbed()
                                     .setFooter("Page 1/" + news.articles.size())
                                     .build()
                     ).setActionRow(
@@ -199,21 +199,21 @@ public class PageListener extends ListenerAdapter {
                 if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1)
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(--page.pageNumber-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     else
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                 } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                     else {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(page.animes.size()-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                 } else if(Objects.equals(event.getButton().getId(), "trailer")) {
@@ -259,7 +259,7 @@ public class PageListener extends ListenerAdapter {
                     Newspaper news = page.news.get(page.pageNumber);
                     news.pageNumber = 1;
                     InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for news...").build()).setEphemeral(true).complete();
-                    Message m = msg.editOriginalEmbeds(Tools.newsEmbed(news.articles.get(0)).setFooter("Page 1/" + news.articles.size()).build()).setActionRow(
+                    Message m = msg.editOriginalEmbeds(news.articles.get(0).toEmbed().setFooter("Page 1/" + news.articles.size()).build()).setActionRow(
                             Button.secondary("left", Emoji.fromUnicode("⬅")),
                             Button.secondary("right", Emoji.fromUnicode("➡"))
                     ).complete();
@@ -280,21 +280,21 @@ public class PageListener extends ListenerAdapter {
                 if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1)
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(--page.pageNumber-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     else
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                 } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                     else {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(page.animes.size()-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                 } else if(Objects.equals(event.getButton().getId(), "trailer")) {
@@ -316,7 +316,7 @@ public class PageListener extends ListenerAdapter {
                     Newspaper news = page.news.get(page.pageNumber);
                     news.pageNumber = 1;
                     InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for news...").build()).setEphemeral(true).complete();
-                    Message m = msg.editOriginalEmbeds(Tools.newsEmbed(news.articles.get(0)).setFooter("Page 1/" + news.articles.size()).build()).setActionRow(
+                    Message m = msg.editOriginalEmbeds(news.articles.get(0).toEmbed().setFooter("Page 1/" + news.articles.size()).build()).setActionRow(
                             Button.secondary("left", Emoji.fromUnicode("⬅")),
                             Button.secondary("right", Emoji.fromUnicode("➡"))
                     ).complete();
@@ -337,21 +337,21 @@ public class PageListener extends ListenerAdapter {
                 if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1)
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(--page.pageNumber-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(--page.pageNumber-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     else
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(0)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                 } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                     else {
                         event.editMessageEmbeds(
-                                Tools.animeToEmbed(page.animes.get(page.animes.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                                page.animes.get(page.animes.size()-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
                         ).queue();
                     }
                 } else if(Objects.equals(event.getButton().getId(), "trailer")) {
@@ -360,8 +360,8 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
-        if(Random.messageToPage.containsKey(id)) {
-            AnimePage page = Random.messageToPage.get(id);
+        if(RandomAnime.messageToPage.containsKey(id)) {
+            AnimePage page = RandomAnime.messageToPage.get(id);
             if(event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
                 return;

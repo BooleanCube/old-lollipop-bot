@@ -1,6 +1,6 @@
 package lollipop.commands.search;
 
-import awatch.models.Anime;
+import awatch.model.Anime;
 import lollipop.*;
 import lollipop.pages.AnimePage;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -60,11 +60,7 @@ public class Search implements Command {
         if(args.get(0).equalsIgnoreCase("c") || args.get(0).equalsIgnoreCase("character")) {
             String query = String.join(" ", args.subList(1, args.size()));
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            try {
-                msg.editOriginalEmbeds(Tools.characterToEmbed(api.searchForCharacter(query)).build()).queue();
-            } catch (IOException e) {
-                msg.editOriginalEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find a character with that search query! Please try again with a valid character!").build()).queue();
-            }
+            api.searchCharacter(msg.retrieveOriginal().complete(), query);
         }
 
         else if(args.get(0).equalsIgnoreCase("a") || args.get(0).equalsIgnoreCase("anime")) {
@@ -76,37 +72,9 @@ public class Search implements Command {
                         .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
-                ArrayList<Anime> animes = api.searchForAnime(query, event.getTextChannel().isNSFW());
-                if(animes == null || animes.isEmpty()) throw new Exception();
-                if(!event.getTextChannel().isNSFW()) {
-                    animes.forEach(a -> {
-                        if(a.rating.toLowerCase().startsWith("r+")) a.art = "";
-                    });
-                }
-                animes.sort(Comparator.comparingInt(a -> {
-                    if(a.popularity < 1) return Integer.MAX_VALUE;
-                    return a.popularity;
-                }));
-                //this filters out 0 popularity search results rather than sending them to the back of the queue
-                //animes = (ArrayList<Anime>) animes.stream().filter(a -> a.popularity > 0).collect(Collectors.toList());
-                Message m = msg.editOriginalEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
-                        Button.secondary("left", Emoji.fromUnicode("⬅")),
-                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
-                        Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes"),
-                        Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info"),
-                        Button.secondary("right", Emoji.fromUnicode("➡"))
-                ).complete();
-                messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getUser()));
-                timeout.cancel(true);
-                msg.editOriginalComponents()
-                        .setActionRow(
-                                Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
-                                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
-                                Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes").asDisabled(),
-                                Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info").asDisabled(),
-                                Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
-                        )
-                .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
+                Message m = msg.retrieveOriginal().complete();
+                Search.messageToPage.put(m.getIdLong(), new AnimePage(null, m, 1, event.getUser(), timeout));
+                api.searchAnime(m, query, event.getTextChannel().isNSFW());
             }
             catch(Exception ignored) {}
         }

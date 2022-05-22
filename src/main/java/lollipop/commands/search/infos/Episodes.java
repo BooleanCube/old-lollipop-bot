@@ -18,42 +18,18 @@ import java.util.concurrent.TimeUnit;
 
 public class Episodes {
 
+    static API api = new API();
     public static HashMap<Long, EpisodeList> messageToPage = new HashMap<>();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        API api = new API();
         long id = page.animes.get(page.pageNumber-1).malID;
         InteractionHook msg = event.replyEmbeds(
                 new EmbedBuilder()
                         .setDescription("Searching for episodes...")
                         .build()
         ).setEphemeral(true).complete();
-        try {
-            ArrayList<StringBuilder> pageContent = Tools.episodeEmbeds(api.animeEpisodes(page.animes.get(page.pageNumber-1).malID));
-            Message m = msg.editOriginalEmbeds(
-                    new EmbedBuilder()
-                            .setTitle("Episode List")
-                            .setDescription(pageContent.get(0))
-                            .setFooter("Page 1/" + pageContent.size())
-                            .build()
-            ).setActionRow(
-                    Button.secondary("left", Emoji.fromUnicode("⬅")),
-                    Button.secondary("right", Emoji.fromUnicode("➡"))
-            ).complete();
-            page.episodes.put(page.pageNumber, new EpisodeList(pageContent, 0, m, event.getUser()));
-            messageToPage.put(m.getIdLong(), page.episodes.get(page.pageNumber));
-            m.editMessageComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            msg.editOriginalEmbeds(
-                    new EmbedBuilder()
-                            .setColor(Color.red)
-                            .setDescription("Could not find any episodes from that anime! Please try again later!")
-                            .build()
-            ).queue();
-        }
+        api.getEpisodes(msg.retrieveOriginal().complete(), id);
+        page.episodes.put(page.pageNumber, new EpisodeList(null, 0, msg.retrieveOriginal().complete(), event.getUser()));
     }
 
 }

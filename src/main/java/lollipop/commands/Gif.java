@@ -5,6 +5,7 @@ import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -32,14 +33,18 @@ public class Gif implements Command {
         return Tools.defaultSlashCmd(this);
     }
 
+    static API api = new API();
+
     @Override
     public void run(SlashCommandInteractionEvent event) {
         String[] types = {"alarm", "amazing", "ask", "baka", "bite", "blush", "blyat", "boop", "clap", "coffee", "confused", "cry", "cuddle", "cute", "dance", "destroy", "die", "disappear", "dodge", "error", "facedesk", "facepalm", "fbi", "fight", "happy", "hide", "highfive", "hug", "kill", "kiss", "laugh", "lick", "lonely", "love", "mad", "money", "nom", "nosebleed", "ok", "party", "pat", "peek", "poke", "pout", "protect", "puke", "punch", "purr", "pusheen", "run", "salute", "scared", "scream", "shame", "shocked", "shoot", "shrug", "sip", "sit", "slap", "sleepy", "smile", "smoke", "smug", "spin", "stare", "stomp", "tickle", "trap", "triggered", "uwu", "wasted", "wave", "wiggle", "wink", "yeet"};
         String type = types[(int)(Math.random()*types.length)];
-        API api = new API();
-        try {
-            event.replyEmbeds(new EmbedBuilder().setImage(api.randomGIF(type)).build()).queue();
-        } catch (IOException e) { throw new RuntimeException(e); }
+        Message message = event.replyEmbeds(
+                new EmbedBuilder()
+                        .setDescription("Retrieving a Random `GIF`...")
+                        .build()
+        ).complete().retrieveOriginal().complete();
+        api.randomGIF(message, type);
     }
 
 }

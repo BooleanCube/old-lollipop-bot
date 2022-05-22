@@ -1,6 +1,6 @@
 package lollipop.commands;
 
-import awatch.models.Anime;
+import awatch.model.Anime;
 import lollipop.*;
 import lollipop.pages.AnimePage;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -45,30 +45,14 @@ public class Top implements Command {
     @Override
     public void run(SlashCommandInteractionEvent event) {
         API api = new API();
-        try {
-            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Getting the `Top 25` anime...").build()).complete();
-            ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
-                    .setColor(Color.red)
-                    .setDescription("Could not retreive the top 25 animes! Please try again later!")
-                    .build()
-            ).queueAfter(5, TimeUnit.SECONDS);
-            ArrayList<Anime> animes = api.topAnime();
-            if(animes == null) throw new IOException();
-            Message m = msg.editOriginalEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
-                    Button.secondary("left", Emoji.fromUnicode("⬅")),
-                    Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
-                    Button.secondary("right", Emoji.fromUnicode("➡"))
-            ).complete();
-            messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getUser()));
-            timeout.cancel(true);
-            m.editMessageComponents()
-                    .setActionRow(
-                            Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
-                            Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
-                            Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
-                    )
-                    .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
-        }
-        catch(IOException ignored) {}
+        InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Getting the `Top 25` anime...").build()).complete();
+        Message message = msg.retrieveOriginal().complete();
+        ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
+                .setColor(Color.red)
+                .setDescription("Could not retreive the top 25 animes! Please try again later!")
+                .build()
+        ).queueAfter(5, TimeUnit.SECONDS, me -> messageToPage.remove(message.getIdLong()));
+        messageToPage.put(message.getIdLong(), new AnimePage(null, message, 1, event.getUser(), timeout));
+        api.getTop(message);
     }
 }

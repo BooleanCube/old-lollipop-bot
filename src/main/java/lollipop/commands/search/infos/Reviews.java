@@ -9,16 +9,11 @@ import java.io.IOException;
 
 public class Reviews {
 
+    static API api = new API();
+
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        API api = new API();
         long id = page.animes.get(page.pageNumber-1).malID;
-        try {
-            MessageEmbed reviewEmbed = api.getAnimeReview(id).build();
-            event.replyEmbeds(reviewEmbed).setEphemeral(true).queue();
-            page.review.put(page.pageNumber, reviewEmbed);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        api.getReview(event, id);
     }
 
 }

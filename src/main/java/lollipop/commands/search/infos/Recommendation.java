@@ -10,16 +10,11 @@ import java.io.IOException;
 
 public class Recommendation {
 
+    static API api = new API();
+
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        API api = new API();
         long id = page.animes.get(page.pageNumber-1).malID;
-        try {
-            MessageEmbed recommendationEmbed = api.getAnimeRecommendation(id).build();
-            event.replyEmbeds(recommendationEmbed).setEphemeral(true).queue();
-            page.stats.put(page.pageNumber, recommendationEmbed);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        api.getRecommendation(event, id);
     }
 
 }

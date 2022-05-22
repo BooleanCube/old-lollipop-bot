@@ -1,6 +1,6 @@
 package lollipop.pages;
 
-import awatch.models.Article;
+import awatch.model.Article;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 

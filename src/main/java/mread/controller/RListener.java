@@ -7,9 +7,9 @@ import mread.model.Manga;
 
 public interface RListener {
 
-	void setMangas(List<Manga> mangas);
+	void sendMangas(List<Manga> mangas);
 
-	void setChapters(Manga manga);
+	void sendChapters(Manga manga);
 
-	void setPages(Chapter chapter);
+	void sendPages(Chapter chapter);
 }

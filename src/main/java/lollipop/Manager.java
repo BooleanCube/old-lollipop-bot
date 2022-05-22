@@ -1,6 +1,6 @@
 package lollipop;
 
-import lollipop.commands.Random;
+import lollipop.commands.RandomAnime;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
@@ -47,7 +47,7 @@ public class Manager {
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
                 new Punch().getSlashCmd(),
-                new Random().getSlashCmd(),
+                new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
@@ -80,7 +80,7 @@ public class Manager {
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
                 new Punch().getSlashCmd(),
-                new Random().getSlashCmd(),
+                new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
@@ -122,7 +122,7 @@ public class Manager {
         addCommand(new Hinokami());
         addCommand(new InfiniteVoid());
         addCommand(new Headbutt());
-        addCommand(new Random());
+        addCommand(new RandomAnime());
         addCommand(new Top());
         addCommand(new Punch());
         addCommand(new Duel());

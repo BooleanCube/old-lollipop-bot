@@ -4,6 +4,8 @@ import lollipop.API;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,8 +35,19 @@ public class RandomQuote implements Command {
         return Tools.defaultSlashCmd(this);
     }
 
+    public API api;
+
+    public RandomQuote() {
+        this.api = new API();
+    }
+
     @Override
     public void run(SlashCommandInteractionEvent event) {
-        try { API.sendQuote(event); } catch (IOException ignored) {}
+        Message message = event.replyEmbeds(
+                new EmbedBuilder()
+                        .setDescription("Getting a random `quote`...")
+                        .build()
+        ).complete().retrieveOriginal().complete();
+        api.randomQuote(message);
     }
 }

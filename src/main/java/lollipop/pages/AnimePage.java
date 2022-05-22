@@ -1,6 +1,6 @@
 package lollipop.pages;
 
-import awatch.models.Anime;
+import awatch.model.Anime;
 import mread.model.Manga;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledFuture;
 
 public class AnimePage {
     public ArrayList<Anime> animes = null;
@@ -15,6 +16,7 @@ public class AnimePage {
     public Message msg;
     public int pageNumber;
     public User user;
+    public ScheduledFuture<?> timeout;
 
     public HashMap<Integer, MessageEmbed> stats = new HashMap<>();
     public HashMap<Integer, Newspaper> news = new HashMap<>();
@@ -24,11 +26,12 @@ public class AnimePage {
     public HashMap<Integer, MessageEmbed> review = new HashMap<>();
     public HashMap<Integer, MessageEmbed> recommendations = new HashMap<>();
 
-    public AnimePage(ArrayList<Anime> as, Message m, int pn, User u) {
+    public AnimePage(ArrayList<Anime> as, Message m, int pn, User u, ScheduledFuture<?> t) {
         animes = as;
         msg = m;
         pageNumber = pn;
         user = u;
+        timeout = t;
     }
     public AnimePage(ArrayList<Manga> ms, int pn, Message m, User u) {
         mangas = ms;
@@ -41,6 +44,13 @@ public class AnimePage {
         animes.add(a);
         msg = m;
         user = u;
+    }
+
+    public AnimePage(Message m, User u, ScheduledFuture<?> t) {
+        animes = new ArrayList<>();
+        msg = m;
+        user = u;
+        timeout = t;
     }
 
 }

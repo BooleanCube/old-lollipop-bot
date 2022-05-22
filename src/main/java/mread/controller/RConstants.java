@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 class RConstants {
 
+    // base website scraped to retrieve data
 	public static final String BASE_URL = "https://www.readm.org/";
 
 	// string format, [page]
@@ -65,4 +66,5 @@ class RConstants {
 
 		return genres;
 	}
+
 }

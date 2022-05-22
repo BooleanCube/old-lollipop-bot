@@ -9,16 +9,11 @@ import java.io.IOException;
 
 public class Themes {
 
+    static API api = new API();
+
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        API api = new API();
         long id = page.animes.get(page.pageNumber-1).malID;
-        try {
-            MessageEmbed themeEmbed = api.getAnimeThemes(id).build();
-            event.replyEmbeds(themeEmbed).setEphemeral(true).queue();
-            page.themes.put(page.pageNumber, themeEmbed);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        api.getThemes(event, id);
     }
 
 }
