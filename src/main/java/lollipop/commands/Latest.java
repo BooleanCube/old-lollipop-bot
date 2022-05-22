@@ -58,16 +58,16 @@ public class Latest implements Command {
             ArrayList<Anime> animes = api.latestAnime();
             if(animes == null) throw new IOException();
             Message m = msg.editOriginalEmbeds(Tools.animeToEmbed(animes.get(0)).setFooter("Page 1/" + animes.size()).build()).setActionRow(
-                    net.dv8tion.jda.api.interactions.components.buttons.Button.secondary("left", Emoji.fromUnicode("⬅")),
-                    net.dv8tion.jda.api.interactions.components.buttons.Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
-                    net.dv8tion.jda.api.interactions.components.buttons.Button.secondary("right", Emoji.fromUnicode("➡"))
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
+                    Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
             messageToPage.put(m.getIdLong(), new AnimePage(animes, m, 1, event.getUser()));
             timeout.cancel(true);
             m.editMessageComponents()
                     .setActionRow(
-                            net.dv8tion.jda.api.interactions.components.buttons.Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
-                            net.dv8tion.jda.api.interactions.components.buttons.Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
+                            Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                            Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                             Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                     )
                     .queueAfter(3, TimeUnit.MINUTES, me -> messageToPage.remove(m.getIdLong()));
