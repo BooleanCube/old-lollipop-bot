@@ -53,6 +53,6 @@ public class Top implements Command {
                 .build()
         ).queueAfter(5, TimeUnit.SECONDS, me -> messageToPage.remove(message.getIdLong()));
         messageToPage.put(message.getIdLong(), new AnimePage(null, message, 1, event.getUser(), timeout));
-        api.getTop(message);
+        api.getTop(msg);
     }
 }

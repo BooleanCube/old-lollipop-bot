@@ -12,8 +12,7 @@ public class Themes {
     static API api = new API();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        long id = page.animes.get(page.pageNumber-1).malID;
-        api.getThemes(event, id);
+        api.getThemes(event, page);
     }
 
 }

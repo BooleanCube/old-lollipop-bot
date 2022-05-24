@@ -57,6 +57,6 @@ public class RandomAnime implements Command {
                         .build()
         ).queueAfter(5, TimeUnit.SECONDS, me -> messageToPage.remove(message.getIdLong()));
         messageToPage.put(message.getIdLong(), new AnimePage(message, event.getUser(), timeout));
-        api.randomAnime(message, event.getTextChannel().isNSFW());
+        api.randomAnime(interactionHook, event.getTextChannel().isNSFW());
     }
 }

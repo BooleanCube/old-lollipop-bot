@@ -16,22 +16,22 @@ public class RClient {
 
 	// genre can be null
 	public void browse(int page, String genre) {
-        ThreadManagement.executor.execute(() -> listener.sendMangas(RLoader.browse(page, genre)));
+        ThreadManagement.execute(() -> listener.sendMangas(RLoader.browse(page, genre)));
 	}
 
 	// search for manga by keyword
 	public void search(String query) {
-		ThreadManagement.executor.execute(() -> listener.sendMangas(RLoader.search(query)));
+		ThreadManagement.execute(() -> listener.sendMangas(RLoader.search(query)));
 	}
 
 	// get chapters
 	public void chapters(Manga manga) {
-		ThreadManagement.executor.execute(() -> listener.sendChapters(RLoader.getChapters(manga)));
+		ThreadManagement.execute(() -> listener.sendChapters(RLoader.getChapters(manga)));
 	}
 
 	// get pages
 	public void pages(Chapter chapter) {
-		ThreadManagement.executor.execute(() -> listener.sendPages(RLoader.getPages(chapter)));
+		ThreadManagement.execute(() -> listener.sendPages(RLoader.getPages(chapter)));
 	}
 
 	// get all genres

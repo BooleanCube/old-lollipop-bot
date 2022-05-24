@@ -10,7 +10,10 @@ public class Themes implements ModelData {
     public StringBuilder opening;
     public StringBuilder ending;
 
-    public Themes() {}
+    public Themes() {
+        opening = new StringBuilder();
+        ending = new StringBuilder();
+    }
 
     @Override
     public void parseData(DataObject data) {

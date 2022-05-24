@@ -11,6 +11,8 @@ import lollipop.commands.search.Search;
 import lollipop.commands.search.infos.Episodes;
 import lollipop.commands.search.infos.News;
 import lollipop.pages.AnimePage;
+import lollipop.pages.EpisodeList;
+import lollipop.pages.Newspaper;
 import mread.controller.RClient;
 import mread.controller.RListener;
 import mread.model.Chapter;
@@ -19,6 +21,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.*;
@@ -39,12 +42,13 @@ public class API implements RListener, AListener {
     final AClient animeClient = new AClient(this);
 
     //sending
-    final ArrayDeque<Message> messageToEdit = new ArrayDeque<>();
+    final ArrayDeque<InteractionHook> messageToEdit = new ArrayDeque<>();
     final ArrayDeque<ButtonInteractionEvent> eventToReply = new ArrayDeque<>();
+    final HashMap<ButtonInteractionEvent, AnimePage> eventToPage = new HashMap<>();
 
-    public void searchMangas(String query, Message message) {
+    public void searchMangas(String query, InteractionHook message) {
         if(mangaCache.containsKey(query)) {
-            message.editMessageEmbeds(Tools.mangaToEmbed(mangaCache.get(query).get(0)).build()).queue();
+            message.editOriginalEmbeds(Tools.mangaToEmbed(mangaCache.get(query).get(0)).build()).queue();
             return;
         }
         mangaClient.search(query);
@@ -53,8 +57,8 @@ public class API implements RListener, AListener {
 
     @Override
     public void sendMangas(List<Manga> mangas) {
-        if(mangas.isEmpty()) { messageToEdit.removeFirst().editMessageEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
-        messageToEdit.removeFirst().editMessageEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
+        if(mangas.isEmpty()) { messageToEdit.removeFirst().editOriginalEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
+        messageToEdit.removeFirst().editOriginalEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
     }
 
     @Override
@@ -68,76 +72,91 @@ public class API implements RListener, AListener {
         for (String s : chapter.pages) System.out.println(s);
     }
 
-    public void searchAnime(Message message, String query, boolean nsfw) {
+    public void searchAnime(InteractionHook message, String query, boolean nsfw) {
         animeClient.searchAnime(query, nsfw);
         messageToEdit.push(message);
     }
 
-    public void searchCharacter(Message message, String query) {
+    public void searchCharacter(InteractionHook message, String query) {
         animeClient.searchCharacter(query);
         messageToEdit.push(message);
     }
 
-    public void randomQuote(Message message) {
+    public void randomQuote(InteractionHook message) {
         animeClient.randomQuote();
         messageToEdit.push(message);
     }
 
-    public void getEpisodes(Message message, long id) {
+    public void getEpisodes(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getEpisodes(id);
+        eventToReply.push(event);
         messageToEdit.push(message);
+        eventToPage.put(event, page);
     }
 
-    public void getNews(Message message, long id) {
+    public void getNews(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getNews(id);
+        eventToReply.push(event);
         messageToEdit.push(message);
+        eventToPage.put(event, page);
     }
 
-    public void getStatistics(ButtonInteractionEvent event, long id) {
+    public void getStatistics(ButtonInteractionEvent event, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getStatistics(id);
         eventToReply.push(event);
+        eventToPage.put(event, page);
     }
 
-    public void getThemes(ButtonInteractionEvent event, long id) {
+    public void getThemes(ButtonInteractionEvent event, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getThemes(id);
         eventToReply.push(event);
+        eventToPage.put(event, page);
     }
 
-    public void getRecommendation(ButtonInteractionEvent event, long id) {
+    public void getRecommendation(ButtonInteractionEvent event, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getRecommendation(id);
         eventToReply.push(event);
+        eventToPage.put(event, page);
     }
 
-    public void getReview(ButtonInteractionEvent event, long id) {
+    public void getReview(ButtonInteractionEvent event, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getReview(id);
         eventToReply.push(event);
+        eventToPage.put(event, page);
     }
 
-    public void getTop(Message message) {
+    public void getTop(InteractionHook message) {
         animeClient.getTop();
         messageToEdit.push(message);
     }
 
-    public void getLatest(Message message) {
+    public void getLatest(InteractionHook message) {
         animeClient.getLatest();
         messageToEdit.push(message);
     }
 
-    public void randomAnime(Message message, boolean nsfw) {
+    public void randomAnime(InteractionHook message, boolean nsfw) {
         animeClient.randomAnime(nsfw);
         messageToEdit.push(message);
     }
 
-    public void randomGIF(Message message, String type) {
+    public void randomGIF(InteractionHook message, String type) {
         animeClient.randomGIF(type);
         messageToEdit.push(message);
     }
 
     @Override
     public void sendSearchAnime(ArrayList<Anime> animes) {
-        Message message = messageToEdit.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         if(animes == null || animes.isEmpty()) return;
-        AnimePage page = Search.messageToPage.get(message.getIdLong());
+        AnimePage page = Search.messageToPage.get(msg.getIdLong());
         page.timeout.cancel(false);
         page.animes = animes;
         animes.sort(Comparator.comparingInt(a -> {
@@ -146,14 +165,14 @@ public class API implements RListener, AListener {
         }));
         //this filters out 0 popularity search results rather than sending them to the back of the queue
         //animes = (ArrayList<Anime>) animes.stream().filter(a -> a.popularity > 0).collect(Collectors.toList());
-        message.editMessageEmbeds(animes.get(0).toEmbed().setFooter("Page 1/" + animes.size()).build()).setActionRow(
+        message.editOriginalEmbeds(animes.get(0).toEmbed().setFooter("Page 1/" + animes.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
                 Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes"),
                 Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info"),
                 Button.secondary("right", Emoji.fromUnicode("➡"))
         ).complete();
-        message.editMessageComponents()
+        message.editOriginalComponents()
                 .setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
@@ -161,24 +180,26 @@ public class API implements RListener, AListener {
                         Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Search.messageToPage.remove(message.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, me -> Search.messageToPage.remove(msg.getIdLong()));
     }
 
     @Override
     public void sendSearchCharacter(Character character) {
-        Message message = messageToEdit.removeFirst();
-        message.editMessageEmbeds(character.toEmbed().build()).queue();
+        InteractionHook message = messageToEdit.removeFirst();
+        message.editOriginalEmbeds(character.toEmbed().build()).queue();
     }
 
     @Override
     public void sendRandomQuote(Quote quote) {
-        Message message = messageToEdit.removeFirst();
-        message.editMessageEmbeds(quote.toEmbed().build()).queue();
+        InteractionHook message = messageToEdit.removeFirst();
+        message.editOriginalEmbeds(quote.toEmbed().build()).queue();
     }
 
     @Override
     public void sendEpisodes(ArrayList<Episode> episodes) {
-        Message message = messageToEdit.removeFirst();
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -199,7 +220,7 @@ public class API implements RListener, AListener {
             else
                 pages.get(pages.size()-1).append("\n> [Click for all episodes!](").append(moreUrl).append(")");
 
-            Message m = message.editMessageEmbeds(
+            message.editOriginalEmbeds(
                     new EmbedBuilder()
                             .setTitle("Episode List")
                             .setDescription(pages.get(0))
@@ -208,16 +229,16 @@ public class API implements RListener, AListener {
             ).setActionRow(
                     Button.secondary("left", Emoji.fromUnicode("⬅")),
                     Button.secondary("right", Emoji.fromUnicode("➡"))
-            ).complete();
-            AnimePage page = Search.messageToPage.get(message.getIdLong());
-            page.episodes.get(page.pageNumber).pages = pages;
-            Episodes.messageToPage.put(m.getIdLong(), page.episodes.get(page.pageNumber));
-            m.editMessageComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, me -> Episodes.messageToPage.remove(m.getIdLong()));
+            ).queue();
+            AnimePage page = eventToPage.remove(event);
+            page.episodes.put(page.pageNumber, new EpisodeList(pages,1, msg, event.getUser()));
+            Episodes.messageToPage.put(msg.getIdLong(), page.episodes.get(page.pageNumber));
+            message.editOriginalComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, me -> Episodes.messageToPage.remove(msg.getIdLong()));
         }
         catch (Exception e) {
             e.printStackTrace();
-            message.editMessageEmbeds(
+            message.editOriginalEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any episodes from that anime! Please try again later!")
@@ -228,23 +249,25 @@ public class API implements RListener, AListener {
 
     @Override
     public void sendNews(ArrayList<Article> articles) {
-        Message message = messageToEdit.removeFirst();
+        ButtonInteractionEvent event = eventToReply.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         try {
             if(articles == null || articles.isEmpty()) throw new Exception();
             Collections.reverse(articles);
-            Message m = message.editMessageEmbeds(articles.get(0).toEmbed().setFooter("Page 1/" + articles.size()).build()).setActionRow(
+            Message m = message.editOriginalEmbeds(articles.get(0).toEmbed().setFooter("Page 1/" + articles.size()).build()).setActionRow(
                     Button.secondary("left", Emoji.fromUnicode("⬅")),
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
-            AnimePage page = Search.messageToPage.get(message.getIdLong());
-            page.news.get(page.pageNumber).articles = articles;
+            AnimePage page = eventToPage.remove(event);
+            page.news.put(page.pageNumber, new Newspaper(articles, 1, msg, event.getUser()));
             News.messageToPage.put(m.getIdLong(), page.news.get(page.pageNumber));
             m.editMessageComponents()
                     .queueAfter(3, TimeUnit.MINUTES, me -> News.messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
             e.printStackTrace();
-            message.editMessageEmbeds(
+            message.editOriginalEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any articles from that anime! Please try again later!")
@@ -257,7 +280,7 @@ public class API implements RListener, AListener {
     public void sendStatistics(Statistic statistics) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(statistics.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        AnimePage page = eventToPage.remove(event);
         page.stats.put(page.pageNumber, statistics.toEmbed().build());
     }
 
@@ -265,7 +288,7 @@ public class API implements RListener, AListener {
     public void sendThemes(Themes themes) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(themes.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        AnimePage page = eventToPage.remove(event);
         page.themes.put(page.pageNumber, themes.toEmbed().build());
     }
 
@@ -273,7 +296,7 @@ public class API implements RListener, AListener {
     public void sendRecommendation(Recommendation recommendation) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(recommendation.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        AnimePage page = eventToPage.remove(event);
         page.stats.put(page.pageNumber, recommendation.toEmbed().build());
     }
 
@@ -281,70 +304,74 @@ public class API implements RListener, AListener {
     public void sendReview(Review review) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(review.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = Search.messageToPage.get(event.getMessageIdLong());
+        AnimePage page = eventToPage.remove(event);
         page.review.put(page.pageNumber, review.toEmbed().build());
     }
 
     @Override
     public void sendTop(ArrayList<Anime> top) {
-        Message message = messageToEdit.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         if(top == null) return;
-        AnimePage page = Top.messageToPage.get(message.getIdLong());
+        AnimePage page = Top.messageToPage.get(msg.getIdLong());
         page.timeout.cancel(false);
-        message.editMessageEmbeds(top.get(0).toEmbed().setFooter("Page 1/" + top.size()).build()).setActionRow(
+        message.editOriginalEmbeds(top.get(0).toEmbed().setFooter("Page 1/" + top.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
                 Button.secondary("right", Emoji.fromUnicode("➡"))
         ).complete();
-        Top.messageToPage.get(message.getIdLong()).animes = top;
-        message.editMessageComponents()
+        Top.messageToPage.get(msg.getIdLong()).animes = top;
+        message.editOriginalComponents()
                 .setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Top.messageToPage.remove(message.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, me -> Top.messageToPage.remove(msg.getIdLong()));
     }
 
     @Override
     public void sendLatest(ArrayList<Anime> latest) {
-        Message message = messageToEdit.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         if(latest == null) return;
-        AnimePage page = Latest.messageToPage.get(message.getIdLong());
+        AnimePage page = Latest.messageToPage.get(msg.getIdLong());
         page.timeout.cancel(false);
-        message.editMessageEmbeds(latest.get(0).toEmbed().setFooter("Page 1/" + latest.size()).build()).setActionRow(
+        message.editOriginalEmbeds(latest.get(0).toEmbed().setFooter("Page 1/" + latest.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
                 Button.secondary("right", Emoji.fromUnicode("➡"))
         ).complete();
-        Latest.messageToPage.get(message.getIdLong()).animes = latest;
-        message.editMessageComponents()
+        Latest.messageToPage.get(msg.getIdLong()).animes = latest;
+        message.editOriginalComponents()
                 .setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Latest.messageToPage.remove(message.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, me -> Latest.messageToPage.remove(msg.getIdLong()));
     }
 
     @Override
     public void sendRandomAnime(Anime random) {
-        Message message = messageToEdit.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
         if(random == null) return;
-        AnimePage page = RandomAnime.messageToPage.get(message.getIdLong());
+        AnimePage page = RandomAnime.messageToPage.get(msg.getIdLong());
         page.timeout.cancel(false);
         page.animes.add(random);
-        message.editMessageEmbeds(random.toEmbed().build()).setActionRow(
+        message.editOriginalEmbeds(random.toEmbed().build()).setActionRow(
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
-        ).queue(msg -> msg.editMessageComponents()
-                .queueAfter(3, TimeUnit.MINUTES, me -> RandomAnime.messageToPage.remove(message.getIdLong())));
+        ).queue();
+        message.editOriginalComponents()
+                .queueAfter(3, TimeUnit.MINUTES, me -> RandomAnime.messageToPage.remove(msg.getIdLong()));
     }
 
     @Override
     public void sendRandomGIF(GIF gif) {
-        Message message = messageToEdit.removeFirst();
+        InteractionHook message = messageToEdit.removeFirst();
         if(gif == null) return;
-        message.editMessageEmbeds(gif.toEmbed().build()).queue();
+        message.editOriginalEmbeds(gif.toEmbed().build()).queue();
     }
 
 }

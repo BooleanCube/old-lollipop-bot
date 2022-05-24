@@ -24,14 +24,12 @@ public class News {
     public static HashMap<Long, Newspaper> messageToPage = new HashMap<>();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        long id = page.animes.get(page.pageNumber-1).malID;
         InteractionHook msg = event.replyEmbeds(
                 new EmbedBuilder()
                         .setDescription("Searching for news...")
                         .build()
         ).setEphemeral(true).complete();
-        api.getNews(msg.retrieveOriginal().complete(), id);
-        page.news.put(page.pageNumber, new Newspaper(null, 1, msg.retrieveOriginal().complete(), event.getUser()));
+        api.getNews(event, msg, page);
     }
 
 }

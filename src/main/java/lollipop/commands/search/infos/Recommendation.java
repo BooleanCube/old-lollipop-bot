@@ -13,8 +13,7 @@ public class Recommendation {
     static API api = new API();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        long id = page.animes.get(page.pageNumber-1).malID;
-        api.getRecommendation(event, id);
+        api.getRecommendation(event, page);
     }
 
 }

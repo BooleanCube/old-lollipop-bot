@@ -22,14 +22,12 @@ public class Episodes {
     public static HashMap<Long, EpisodeList> messageToPage = new HashMap<>();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        long id = page.animes.get(page.pageNumber-1).malID;
         InteractionHook msg = event.replyEmbeds(
                 new EmbedBuilder()
                         .setDescription("Searching for episodes...")
                         .build()
         ).setEphemeral(true).complete();
-        api.getEpisodes(msg.retrieveOriginal().complete(), id);
-        page.episodes.put(page.pageNumber, new EpisodeList(null, 0, msg.retrieveOriginal().complete(), event.getUser()));
+        api.getEpisodes(event, msg, page);
     }
 
 }

@@ -9,7 +9,9 @@ public class Recommendation implements ModelData {
 
     public StringBuilder recommendationList;
 
-    public Recommendation() {}
+    public Recommendation() {
+        recommendationList = new StringBuilder();
+    }
 
     @Override
     public void parseData(DataObject data) {

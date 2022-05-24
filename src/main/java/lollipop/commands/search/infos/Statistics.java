@@ -13,8 +13,7 @@ public class Statistics {
     static API api = new API();
 
     public static void run(ButtonInteractionEvent event, AnimePage page) {
-        long id = page.animes.get(page.pageNumber-1).malID;
-        api.getStatistics(event, id);
+        api.getStatistics(event, page);
     }
 
 }

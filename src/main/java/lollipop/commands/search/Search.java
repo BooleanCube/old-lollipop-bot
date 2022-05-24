@@ -60,7 +60,7 @@ public class Search implements Command {
         if(args.get(0).equalsIgnoreCase("c") || args.get(0).equalsIgnoreCase("character")) {
             String query = String.join(" ", args.subList(1, args.size()));
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            api.searchCharacter(msg.retrieveOriginal().complete(), query);
+            api.searchCharacter(msg, query);
         }
 
         else if(args.get(0).equalsIgnoreCase("a") || args.get(0).equalsIgnoreCase("anime")) {
@@ -74,7 +74,7 @@ public class Search implements Command {
                 ).queueAfter(5, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();
                 Search.messageToPage.put(m.getIdLong(), new AnimePage(null, m, 1, event.getUser(), timeout));
-                api.searchAnime(m, query, event.getTextChannel().isNSFW());
+                api.searchAnime(msg, query, event.getTextChannel().isNSFW());
             }
             catch(Exception ignored) {}
         }
@@ -82,7 +82,7 @@ public class Search implements Command {
         else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
             String query = String.join(" ", args.subList(1, args.size()));
             InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            api.searchMangas(query, msg.retrieveOriginal().complete());
+            api.searchMangas(query, msg);
         }
 
         else Tools.wrongUsage(event, this);
