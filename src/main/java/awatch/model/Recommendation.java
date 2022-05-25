@@ -5,6 +5,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import java.util.Arrays;
+
+/**
+ * Recommendation Model
+ */
 public class Recommendation implements ModelData {
 
     public StringBuilder recommendationList;
@@ -13,6 +18,18 @@ public class Recommendation implements ModelData {
         recommendationList = new StringBuilder();
     }
 
+    /**
+     * Returns a string with all of the data
+     * @return string
+     */
+    public String toString() {
+        return Arrays.toString(new String[]{recommendationList.toString()});
+    }
+
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         DataArray arr = null;
@@ -28,11 +45,19 @@ public class Recommendation implements ModelData {
         } catch(Exception e) {}
     }
 
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses all of the data into an EmbedBuilder
+     * @return embedbuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()

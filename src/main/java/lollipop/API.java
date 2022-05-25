@@ -146,8 +146,8 @@ public class API implements RListener, AListener {
         messageToEdit.push(message);
     }
 
-    public void randomGIF(InteractionHook message, String type) {
-        animeClient.randomGIF(type);
+    public void randomGIF(InteractionHook message) {
+        animeClient.randomGIF();
         messageToEdit.push(message);
     }
 

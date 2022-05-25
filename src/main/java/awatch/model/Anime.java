@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.List;
 
+/**
+ * Anime Model
+ */
 public class Anime implements ModelData {
 
     public int malID;
@@ -26,11 +29,19 @@ public class Anime implements ModelData {
     public String type = "None";
     public int popularity = 0;
 
+    /**
+     * Returns a string with all data
+     * @return string
+     */
     public String toString() {
         return "Anime [title=" + title + ", art=" + art + ", url=" + url + ", episodeCount=" + episodeCount + ", score=" + score
                 + ", status=" + status + ", summary=" + summary + ", author=" + author + ", tags=" + tags + ", episodes=" + episodes + ", popularity=" + popularity + "]";
     }
 
+    /**
+     * Parses all the data and defines the Anime Object
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         this.art = data.getObject("images").getObject("jpg").getString("image_url");
@@ -47,11 +58,19 @@ public class Anime implements ModelData {
         this.episodeCount = data.getInt("episodes", 0);
     }
 
+    /**
+     * Parses all the data and defines the Anime Object
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses all of the data into an EmbedBuilder
+     * @return EmbedBuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         EmbedBuilder e = new EmbedBuilder()

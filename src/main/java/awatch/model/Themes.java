@@ -5,6 +5,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import java.util.Arrays;
+
+/**
+ * Themes Model
+ */
 public class Themes implements ModelData {
 
     public StringBuilder opening;
@@ -15,6 +20,18 @@ public class Themes implements ModelData {
         ending = new StringBuilder();
     }
 
+    /**
+     * Returns a string of all the data
+     * @return string
+     */
+    public String toString() {
+        return Arrays.toString(new String[]{opening.toString(), ending.toString()});
+    }
+
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         DataObject res = null;
@@ -34,11 +51,19 @@ public class Themes implements ModelData {
         } catch(Exception e) { return; }
     }
 
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses the data into an EmbedBuilder
+     * @return embedbuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()

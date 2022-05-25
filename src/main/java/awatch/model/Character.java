@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Character Model
+ */
 public class Character implements ModelData {
 
     public String art;
@@ -18,10 +21,18 @@ public class Character implements ModelData {
     public String anime = "None";
     public String manga = "None";
 
+    /**
+     * Returns a string with all the data
+     * @return string
+     */
     public String toString() {
         return "Charcter [" + malID + ": " + name + "]";
     }
 
+    /**
+     * Parses all the data
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         this.art = data.getString("image_url");
@@ -40,11 +51,19 @@ public class Character implements ModelData {
             this.anime = "[" + data.getArray("anime").getObject(0).get("name") + "](" + data.getArray("anime").getObject(0).get("url") + ")";
     }
 
+    /**
+     * Parses all the data
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses all the data into an EmbedBuilder
+     * @return embedbuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()

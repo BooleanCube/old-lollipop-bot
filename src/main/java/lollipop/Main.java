@@ -3,7 +3,6 @@ package lollipop;
 import lollipop.listeners.DuelsListener;
 import lollipop.listeners.LollipopReaction;
 import lollipop.listeners.PageListener;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -20,22 +19,18 @@ import org.apache.log4j.BasicConfigurator;
 import org.discordbots.api.client.DiscordBotListAPI;
 import threading.ThreadManagement;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
+/**
+ * Main Class
+ */
 public class Main {
 
+    /**
+     * Executed on application execution
+     * @param args
+     * @throws LoginException
+     */
     public static void main(String[] args) throws LoginException {
 
         // Configure log4j appenders for debugging
@@ -64,7 +59,7 @@ public class Main {
                 .addEventListeners(new DuelsListener())
                 .addEventListeners(new PageListener())
                 .addEventListeners(new LollipopReaction());
-        JDA test = testClient.build();
+        //JDA test = testClient.build();
 
         // Set top.gg Statistics and Server Count
         DiscordBotListAPI topgg = new DiscordBotListAPI.Builder()

@@ -5,6 +5,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import java.util.Arrays;
+
+/**
+ * Statistic Model
+ */
 public class Statistic implements ModelData {
     public long watching;
     public long completed;
@@ -15,6 +20,18 @@ public class Statistic implements ModelData {
 
     public Statistic() {}
 
+    /**
+     * Returns a string with all of the data
+     * @return string
+     */
+    public String toString() {
+        return Arrays.toString(new long[]{watching, completed, onHold, dropped, planToWatch, total});
+    }
+
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         DataObject result = null;
@@ -29,11 +46,19 @@ public class Statistic implements ModelData {
         this.total = result.getLong("total", -1);
     }
 
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses all of the data into an EmbedBuilder
+     * @return embedbuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()

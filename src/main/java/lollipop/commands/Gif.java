@@ -38,14 +38,12 @@ public class Gif implements Command {
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
-        String[] types = {"alarm", "amazing", "ask", "baka", "bite", "blush", "blyat", "boop", "clap", "coffee", "confused", "cry", "cuddle", "cute", "dance", "destroy", "die", "disappear", "dodge", "error", "facedesk", "facepalm", "fbi", "fight", "happy", "hide", "highfive", "hug", "kill", "kiss", "laugh", "lick", "lonely", "love", "mad", "money", "nom", "nosebleed", "ok", "party", "pat", "peek", "poke", "pout", "protect", "puke", "punch", "purr", "pusheen", "run", "salute", "scared", "scream", "shame", "shocked", "shoot", "shrug", "sip", "sit", "slap", "sleepy", "smile", "smoke", "smug", "spin", "stare", "stomp", "tickle", "trap", "triggered", "uwu", "wasted", "wave", "wiggle", "wink", "yeet"};
-        String type = types[(int)(Math.random()*types.length)];
         InteractionHook message = event.replyEmbeds(
                 new EmbedBuilder()
                         .setDescription("Retrieving a Random `GIF`...")
                         .build()
         ).complete();
-        api.randomGIF(message, type);
+        api.randomGIF(message);
     }
 
 }

@@ -5,6 +5,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import java.util.Arrays;
+
+/**
+ * Review Model
+ */
 public class Review implements ModelData {
 
     public String authorName;
@@ -17,6 +22,18 @@ public class Review implements ModelData {
 
     public Review() {}
 
+    /**
+     * Returns a string with all of the data
+     * @return string
+     */
+    public String toString() {
+        return Arrays.toString(new String[]{authorName, authorIcon, authorUrl, url, details, Integer.toString(votes), Integer.toString(score)});
+    }
+
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataObject data) {
         DataArray arr = null;
@@ -33,11 +50,19 @@ public class Review implements ModelData {
         this.score = res.getObject("scores").getInt("overall", 0);
     }
 
+    /**
+     * Parses all of the data
+     * @param data
+     */
     @Override
     public void parseData(DataArray data) {
         // empty
     }
 
+    /**
+     * Compresses all of the data into an EmbedBuilder
+     * @return embedbuilder
+     */
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()
