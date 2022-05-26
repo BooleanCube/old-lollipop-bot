@@ -47,7 +47,7 @@ public class Dashboard implements Command {
         if(event.getJDA().getSelfUser().getIdLong() == Constant.TEST_ID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v9.0")
+                .setFooter("lollipop v9.1")
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)
@@ -57,6 +57,10 @@ public class Dashboard implements Command {
         event.replyEmbeds(msg.build()).queue();
     }
 
+    /**
+     * Gets info about memory usage of the server
+     * @return memory info in string
+     */
     public String memInfo() {
         NumberFormat format = NumberFormat.getInstance();
         StringBuilder sb = new StringBuilder();
@@ -68,12 +72,22 @@ public class Dashboard implements Command {
         .append("`\nTotal free memory: `").append(format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024)).append("`");
         return sb.toString();
     }
+
+    /**
+     * Gets info about the operating system of the server
+     * @return os info in string
+     */
     public String osInfo() {
         StringBuilder sb = new StringBuilder();
         sb.append("OS: `").append(System.getProperty("os.name")).append("`\nVersion: `").append(System.getProperty("os.version"))
         .append("`\nArchitecture: `").append(System.getProperty("os.arch")).append("`");
         return sb.toString();
     }
+
+    /**
+     * Gets info about the CPU usage of the server
+     * @return cpu info in string
+     */
     public String cpuInfo() {
         OperatingSystemMXBean operatingSystemMXBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
@@ -88,6 +102,11 @@ public class Dashboard implements Command {
         .append("Available processors (cores): `").append(runtime.availableProcessors()).append("`");
         return sb.toString();
     }
+
+    /**
+     * Gets uptime info of the bot application
+     * @return uptime info in string
+     */
     public String uptimeInfo() {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         long uptime = runtimeMXBean.getUptime();
@@ -99,12 +118,24 @@ public class Dashboard implements Command {
         sb.append(numberOfHours).append(" hour(s), ").append(numberOfMinutes).append(" minute(s), ").append(numberOfSeconds).append(" second(s)");
         return sb.toString();
     }
+
+    /**
+     * Gets bot info of the bot client
+     * @param event slash command interaction event
+     * @return bot info in string
+     */
     public String botInfo(SlashCommandInteractionEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Server Count `").append(event.getJDA().getShardManager().getGuilds().size()).append("`\nUser Count: `").append(event.getJDA().getShardManager().getUsers().size()).append("`\nPing: `")
                 .append(event.getJDA().getGatewayPing()).append("`");
         return sb.toString();
     }
+
+    /**
+     * Gets shard info of the bot application
+     * @param event slash command interaction event
+     * @return shard info in string
+     */
     public String shardInfo(SlashCommandInteractionEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append("Average Ping: `").append(event.getJDA().getShardManager().getAverageGatewayPing()).append("`\nCurrent Shard ID: `").append(event.getJDA().getShardInfo().getShardId()).append("`\nTotal Shards: `")

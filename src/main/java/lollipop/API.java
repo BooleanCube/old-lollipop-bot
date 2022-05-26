@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 public class API implements RListener, AListener {
 
     //manga
-    public static HashMap<String, List<Manga>> mangaCache = new HashMap<>();
     final RClient mangaClient = new RClient(this);
 
     //anime
@@ -46,47 +45,88 @@ public class API implements RListener, AListener {
     final ArrayDeque<ButtonInteractionEvent> eventToReply = new ArrayDeque<>();
     final HashMap<ButtonInteractionEvent, AnimePage> eventToPage = new HashMap<>();
 
+    /**
+     * Searches for Manga given query
+     * @param query manga name
+     * @param message message
+     */
     public void searchMangas(String query, InteractionHook message) {
-        if(mangaCache.containsKey(query)) {
-            message.editOriginalEmbeds(Tools.mangaToEmbed(mangaCache.get(query).get(0)).build()).queue();
-            return;
-        }
         mangaClient.search(query);
         messageToEdit.push(message);
     }
 
+    /**
+     * Send Manga that was searched
+     * @param mangas manga list
+     */
     @Override
     public void sendMangas(List<Manga> mangas) {
-        if(mangas.isEmpty()) { messageToEdit.removeFirst().editOriginalEmbeds(new EmbedBuilder().setColor(Color.red).setDescription("Could not find any results with that search query! Please try again with a valid manga!").build()).queue(); return; }
-        messageToEdit.removeFirst().editOriginalEmbeds(Tools.mangaToEmbed(mangas.get(0)).build()).queue();
+        if(mangas.isEmpty()) {
+            messageToEdit.removeFirst().editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("Could not find any results with that search query! Please try again with a valid manga!")
+                            .build()).queue();
+            return;
+        }
+        messageToEdit.removeFirst().editOriginalEmbeds(mangas.get(0).toEmbed().build()).queue();
     }
 
+    /**
+     * Send chapters from searched manga
+     * @param manga manga
+     */
     @Override
     public void sendChapters(Manga manga) {
         for (Chapter c : manga.chapters) System.out.println(c);
         mangaClient.pages(manga.chapters.get(0));
     }
 
+    /**
+     * Sent pages from a manga chapter
+     * @param chapter chapter
+     */
     @Override
     public void sendPages(Chapter chapter) {
         for (String s : chapter.pages) System.out.println(s);
     }
 
+    /**
+     * Searches for an anime given a query and more information
+     * @param message message
+     * @param query anime name
+     * @param nsfw nsfw allowed
+     */
     public void searchAnime(InteractionHook message, String query, boolean nsfw) {
         animeClient.searchAnime(query, nsfw);
         messageToEdit.push(message);
     }
 
+    /**
+     * Searches for a character given a query
+     * @param message message
+     * @param query character name
+     */
     public void searchCharacter(InteractionHook message, String query) {
         animeClient.searchCharacter(query);
         messageToEdit.push(message);
     }
 
+    /**
+     * Generates a randomly chosen anime related quote
+     * @param message message
+     */
     public void randomQuote(InteractionHook message) {
         animeClient.randomQuote();
         messageToEdit.push(message);
     }
 
+    /**
+     * Retrieves the episodes from the given anime
+     * @param event button interaction event
+     * @param message message
+     * @param page anime page
+     */
     public void getEpisodes(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getEpisodes(id);
@@ -95,6 +135,12 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves recent news from the given anime
+     * @param event button interaction event
+     * @param message message
+     * @param page anime page
+     */
     public void getNews(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getNews(id);
@@ -103,6 +149,11 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves statistics from the given anime
+     * @param event button interaction event
+     * @param page anime page
+     */
     public void getStatistics(ButtonInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getStatistics(id);
@@ -110,6 +161,11 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves themes from the given anime
+     * @param event button interaction event
+     * @param page anime page
+     */
     public void getThemes(ButtonInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getThemes(id);
@@ -117,6 +173,11 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves reccomendations from the given anime
+     * @param event button interaction event
+     * @param page anime page
+     */
     public void getRecommendation(ButtonInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getRecommendation(id);
@@ -124,6 +185,11 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves top review from the given anime
+     * @param event button interaction event
+     * @param page anime page
+     */
     public void getReview(ButtonInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getReview(id);
@@ -131,26 +197,47 @@ public class API implements RListener, AListener {
         eventToPage.put(event, page);
     }
 
+    /**
+     * Retrieves the top 25 ranked animes in terms of score
+     * @param message message
+     */
     public void getTop(InteractionHook message) {
         animeClient.getTop();
         messageToEdit.push(message);
     }
 
+    /**
+     * Retrieves the latest anime of the current season
+     * @param message message
+     */
     public void getLatest(InteractionHook message) {
         animeClient.getLatest();
         messageToEdit.push(message);
     }
 
+    /**
+     * Generates a randomly chosen anime from MALs database
+     * @param message message
+     * @param nsfw nsfw allowed
+     */
     public void randomAnime(InteractionHook message, boolean nsfw) {
         animeClient.randomAnime(nsfw);
         messageToEdit.push(message);
     }
 
+    /**
+     * Generates a randomly chosen anime related GIF
+     * @param message message
+     */
     public void randomGIF(InteractionHook message) {
         animeClient.randomGIF();
         messageToEdit.push(message);
     }
 
+    /**
+     * Sends the requested anime list
+     * @param animes anime list
+     */
     @Override
     public void sendSearchAnime(ArrayList<Anime> animes) {
         InteractionHook message = messageToEdit.removeFirst();
@@ -183,18 +270,30 @@ public class API implements RListener, AListener {
                 .queueAfter(3, TimeUnit.MINUTES, me -> Search.messageToPage.remove(msg.getIdLong()));
     }
 
+    /**
+     * Sends the requested character
+     * @param character character
+     */
     @Override
     public void sendSearchCharacter(Character character) {
         InteractionHook message = messageToEdit.removeFirst();
         message.editOriginalEmbeds(character.toEmbed().build()).queue();
     }
 
+    /**
+     * Sends the requested quote
+     * @param quote random quote
+     */
     @Override
     public void sendRandomQuote(Quote quote) {
         InteractionHook message = messageToEdit.removeFirst();
         message.editOriginalEmbeds(quote.toEmbed().build()).queue();
     }
 
+    /**
+     * Sends the requested episodes
+     * @param episodes episodes
+     */
     @Override
     public void sendEpisodes(ArrayList<Episode> episodes) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -247,6 +346,10 @@ public class API implements RListener, AListener {
         }
     }
 
+    /**
+     * Sends the requested news articles
+     * @param articles article list
+     */
     @Override
     public void sendNews(ArrayList<Article> articles) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -276,6 +379,10 @@ public class API implements RListener, AListener {
         }
     }
 
+    /**
+     * Sends the requested statistics
+     * @param statistics statistics
+     */
     @Override
     public void sendStatistics(Statistic statistics) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -284,6 +391,10 @@ public class API implements RListener, AListener {
         page.stats.put(page.pageNumber, statistics.toEmbed().build());
     }
 
+    /**
+     * Sends the requested themes
+     * @param themes theme songs
+     */
     @Override
     public void sendThemes(Themes themes) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -292,6 +403,10 @@ public class API implements RListener, AListener {
         page.themes.put(page.pageNumber, themes.toEmbed().build());
     }
 
+    /**
+     * Sends the requested recommendation list
+     * @param recommendation recommendation list
+     */
     @Override
     public void sendRecommendation(Recommendation recommendation) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -300,6 +415,10 @@ public class API implements RListener, AListener {
         page.stats.put(page.pageNumber, recommendation.toEmbed().build());
     }
 
+    /**
+     * Sends the requested top review
+     * @param review top review
+     */
     @Override
     public void sendReview(Review review) {
         ButtonInteractionEvent event = eventToReply.removeFirst();
@@ -308,6 +427,10 @@ public class API implements RListener, AListener {
         page.review.put(page.pageNumber, review.toEmbed().build());
     }
 
+    /**
+     * Sends the top 25 requested animes
+     * @param top top anime list
+     */
     @Override
     public void sendTop(ArrayList<Anime> top) {
         InteractionHook message = messageToEdit.removeFirst();
@@ -330,6 +453,10 @@ public class API implements RListener, AListener {
                 .queueAfter(3, TimeUnit.MINUTES, me -> Top.messageToPage.remove(msg.getIdLong()));
     }
 
+    /**
+     * Sends the latest requested animes
+     * @param latest latest anime list
+     */
     @Override
     public void sendLatest(ArrayList<Anime> latest) {
         InteractionHook message = messageToEdit.removeFirst();
@@ -352,6 +479,10 @@ public class API implements RListener, AListener {
                 .queueAfter(3, TimeUnit.MINUTES, me -> Latest.messageToPage.remove(msg.getIdLong()));
     }
 
+    /**
+     * Sends a random anime
+     * @param random random anime
+     */
     @Override
     public void sendRandomAnime(Anime random) {
         InteractionHook message = messageToEdit.removeFirst();
@@ -367,6 +498,10 @@ public class API implements RListener, AListener {
                 .queueAfter(3, TimeUnit.MINUTES, me -> RandomAnime.messageToPage.remove(msg.getIdLong()));
     }
 
+    /**
+     * Sends a random GIF
+     * @param gif random gif
+     */
     @Override
     public void sendRandomGIF(GIF gif) {
         InteractionHook message = messageToEdit.removeFirst();

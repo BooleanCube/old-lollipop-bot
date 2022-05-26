@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BitesTheDust implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"biteszadust", "btd"};
@@ -55,4 +56,5 @@ public class BitesTheDust implements Command {
             event.reply("You haven't done anything recently to travel back in time!").setEphemeral(true).queue();
         }
     }
+
 }

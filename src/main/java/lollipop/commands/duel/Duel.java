@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Duel implements Command {
 
@@ -44,6 +43,7 @@ public class Duel implements Command {
                 .addOption(OptionType.USER, "user", "mention a user", false);
     }
 
+    // Game Settings and Occupancy
     public static HashMap<Long, Game> memberToGame = new HashMap<>();
     public static ArrayList<Integer> occupiedShards = new ArrayList<>();
 

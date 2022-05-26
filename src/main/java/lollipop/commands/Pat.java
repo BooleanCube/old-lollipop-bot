@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Pat implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"pat"};
@@ -55,4 +56,5 @@ public class Pat implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

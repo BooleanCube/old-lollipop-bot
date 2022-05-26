@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Punch implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[]{"punch"};
@@ -55,4 +56,5 @@ public class Punch implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

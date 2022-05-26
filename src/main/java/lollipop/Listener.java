@@ -13,11 +13,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Listener class which listens for commands
+ */
 public class Listener extends ListenerAdapter {
 
     public Manager m = null;
     public TestCM testM = null;
 
+    /**
+     * Notify that the bot application is online on startup!
+     * @param event ready event
+     */
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         System.out.println(event.getJDA().getSelfUser().getName() + " is online!");
@@ -25,6 +32,10 @@ public class Listener extends ListenerAdapter {
         testM = new TestCM();
     }
 
+    /**
+     * Triggered when a slash command is called and gets the command object connecte to the slash command through the command manager
+     * @param event slash command interaction event
+     */
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(event.getName().equalsIgnoreCase("shutdown") && (event.getUser().getIdLong()== Constant.OWNER_ID)) {
@@ -35,6 +46,10 @@ public class Listener extends ListenerAdapter {
         m.run(event);
     }
 
+    /**
+     * Triggered when a message is recieved
+     * @param event message recieved event
+     */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if(event.getMessage().getContentRaw().startsWith("l!reload") && event.getAuthor().getIdLong() == Constant.OWNER_ID) {
@@ -96,4 +111,5 @@ public class Listener extends ListenerAdapter {
             }
         }
     }
+
 }

@@ -8,7 +8,7 @@ import threading.ThreadManagement;
 
 public class RClient {
 
-	private RListener listener;
+	private final RListener listener;
 
 	public RClient(RListener listener) {
 		this.listener = listener;
@@ -38,4 +38,5 @@ public class RClient {
 	public Set<String> genres() {
 		return RConstants.getGenres().keySet();
 	}
+
 }

@@ -24,6 +24,10 @@ public class Manager {
         setCommands();
     }
 
+    /**
+     * Reload all slash commands to all shards
+     * @param jda current shard
+     */
     public void reloadCommands(JDA jda) {
         //update all commands
         jda.updateCommands().addCommands(
@@ -55,6 +59,10 @@ public class Manager {
         ).queue();
     }
 
+    /**
+     * Reload all slash commands for a specific guild
+     * @param g guild
+     */
     public void reloadCommands(Guild g) {
         //update all commands
         CommandData dashCmd = new Dashboard().getSlashCmd();
@@ -91,14 +99,27 @@ public class Manager {
         .queue(c -> c.forEach(cmd -> g.updateCommandPrivilegesById(cmd.getId(), CommandPrivilege.enableUser(Constant.OWNER_ID)).queue()));
     }
 
+    /**
+     * Reload a singular command for all shards
+     * @param jda current shard
+     * @param c command
+     */
     public void reloadCommand(JDA jda, Command c) {
         jda.upsertCommand(c.getSlashCmd()).queue();
     }
 
+    /**
+     * Reload a singular command to a singular guild
+     * @param g guild
+     * @param c command
+     */
     public void reloadCommand(Guild g, Command c) {
         g.upsertCommand(c.getSlashCmd()).queue();
     }
 
+    /**
+     * Set command manager commands
+     */
     private void setCommands() {
         addCommand(new Help(this));
         addCommand(new Gif());
@@ -129,10 +150,19 @@ public class Manager {
         addCommand(new Move());
     }
 
+    /**
+     * Adds command to command manager
+     * @param c command
+     */
     private void addCommand(Command c) {
         if(!commands.containsKey(c.getAliases()[0])) for(String cmd : c.getAliases()) commands.put(cmd, c);
     }
 
+    /**
+     * Gets all the commands stored in the command manger and filters out for a specific command category
+     * @param category command category
+     * @return collection of commands
+     */
     public Collection<Command> getCommands(String category) {
         ArrayList<Command> r = new ArrayList<>();
         List<Command> values = commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
@@ -140,6 +170,10 @@ public class Manager {
         return r;
     }
 
+    /**
+     * Gets a list of all commands from the command manager
+     * @return list of commands
+     */
     public Collection<Command> getCommands() {
         ArrayList<Command> r = new ArrayList<>();
         List<Command> values = new ArrayList<>(commands.values());
@@ -147,12 +181,21 @@ public class Manager {
         return r;
     }
 
+    /**
+     * Get slash command from the command name
+     * @param commandName command name
+     * @return Command corresponding to the
+     */
     public Command getCommand(String commandName) {
         if (commandName == null) return null;
         if(!commands.containsKey(commandName)) return null;
         return commands.get(commandName);
     }
 
+    /**
+     * Run the corresponding code to the corresponding command stored in the database
+     * @param event slash command interaction event
+     */
     void run(SlashCommandInteractionEvent event) {
         final String msg = event.getCommandString();
         if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&

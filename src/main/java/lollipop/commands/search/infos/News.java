@@ -18,11 +18,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * News Model for search command
+ */
 public class News {
 
     static API api = new API();
     public static HashMap<Long, Newspaper> messageToPage = new HashMap<>();
 
+    /**
+     * Runs a request to get anime news
+     * @param event button interaction event
+     * @param page anime page
+     */
     public static void run(ButtonInteractionEvent event, AnimePage page) {
         InteractionHook msg = event.replyEmbeds(
                 new EmbedBuilder()

@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Game Model for duel games
+ */
 public class Game {
     public Player homePlayer = new Player();
     public Player opposingPlayer = new Player();
@@ -41,12 +44,21 @@ public class Game {
     };
     public static Button surrenderButton = Button.danger("ff", "surrender");
 
+    /**
+     * Get a list of all moves possible
+     * @return string
+     */
     public static String getAvailableMoves() {
         StringBuilder sb = new StringBuilder();
         for(Button b : moveButtons) sb.append("`").append(b.getLabel()).append("`, ");
         return sb.substring(0, sb.length()-2);
     }
 
+    /**
+     * Get a move description for each move in a duel game
+     * @param name move name
+     * @return string move description
+     */
     public static String moveDescription(String name) {
         if(name.equalsIgnoreCase("punch")) return "**Punch your opponent... *unseriously*!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
         if(name.equalsIgnoreCase("kick")) return "**Kick your opponent with power!**\n(Does `5-10 HP` damage to the opponent by default)\n> `Type`: Regular Attack\n> `Blockable`: True";
@@ -66,6 +78,11 @@ public class Game {
         return null;
     }
 
+    /**
+     * Send the starting select move once the duel has been accepted by both sides
+     * @param event triggered after slash command usage
+     * @param move move phrase
+     */
     public void sendStartSelectMove(SlashCommandInteractionEvent event, String move) {
         TextChannel c = event.getTextChannel();
         if(homePlayer.HP < 0) homePlayer.HP = 0;
@@ -150,6 +167,11 @@ public class Game {
         if(!event.isAcknowledged()) event.deferReply().queue();
     }
 
+    /**
+     * Send the starting select move once the duel has been accepted by both sides
+     * @param event triggered when a button is pressed
+     * @param move move phrase
+     */
     public void sendStartSelectMove(ButtonInteractionEvent event, String move) {
         TextChannel c = event.getTextChannel();
         if(homePlayer.HP < 0) homePlayer.HP = 0;
@@ -233,6 +255,11 @@ public class Game {
         }
     }
 
+    /**
+     * Send the select move message for the player to select their next move
+     * @param event triggered when a button is pressed
+     * @param move move phrase
+     */
     public void sendSelectMove(ButtonInteractionEvent event, String move) {
         if(homePlayer.HP < 0) homePlayer.HP = 0;
         if(opposingPlayer.HP < 0) opposingPlayer.HP = 0;
@@ -352,18 +379,27 @@ public class Game {
         if(!event.isAcknowledged()) event.deferEdit().queue();
     }
 
+    /**
+     * Switch the players turns
+     */
     public void switchTurns() {
         Player temp = playerTurn;
         playerTurn = playerNotTurn;
         playerNotTurn = temp;
     }
 
+    /**
+     * Deletes ALL of the display messages for the duels game
+     */
     public void deleteDisplayMessagesFull() {
         lastDisplay.forEach(msg -> msg.delete().queue());
         lastDisplay = new ArrayList<>();
     }
 
-    //spares the last display message
+    /**
+     * Deletes all of the display messages except the final display message
+     * (unused since we're editing the messages instead now)
+     */
     public void deleteDisplayMessages() {
         for(int i=0; i<lastDisplay.size()-1; i++) {
             lastDisplay.get(i).delete().queue();
@@ -371,6 +407,12 @@ public class Game {
         }
     }
 
+    /**
+     * Runs AI to calculate best move with arbitrarily chosen moves
+     * @param h home player
+     * @param o opponent player
+     * @return string
+     */
     public String AIMove(Player h, Player o) {
 
         // Decides move
@@ -478,6 +520,10 @@ public class Game {
         return "Error! This duel will be ending with no victor...";
     }
 
+    /**
+     * Setup 30 second timeout for people who go AFK
+     * @param c channel
+     */
     public void setupTimeout(MessageChannel c) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
@@ -493,6 +539,11 @@ public class Game {
         });
     }
 
+    /**
+     * Checks if a player in the duel has won and does the following procedures
+     * @param c channel
+     * @return boolean indicating whether a player won or not
+     */
     public boolean checkWin(MessageChannel c) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         if(homePlayer.HP <= 0) {
@@ -547,6 +598,11 @@ public class Game {
         return false;
     }
 
+    /**
+     * Runs the surrender procedures when a player surrenders the duel
+     * @param c channel
+     * @param p player
+     */
     public void surrender(MessageChannel c, Player p) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         Duel.memberToGame.remove(playerTurn.member.getIdLong());

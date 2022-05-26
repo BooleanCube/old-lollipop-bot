@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class RandomAnime implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[]{"random", "r"};
@@ -59,4 +60,5 @@ public class RandomAnime implements Command {
         messageToPage.put(message.getIdLong(), new AnimePage(message, event.getUser(), timeout));
         api.randomAnime(interactionHook, event.getTextChannel().isNSFW());
     }
+
 }

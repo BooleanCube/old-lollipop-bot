@@ -22,14 +22,14 @@ import threading.ThreadManagement;
 import javax.security.auth.login.LoginException;
 
 /**
- * Main Class
+ * MAIN CLASS
  */
 public class Main {
 
     /**
      * Executed on application execution
-     * @param args
-     * @throws LoginException
+     * @param args string[] args
+     * @throws LoginException for ShardMangerBuilder and JDABuilder
      */
     public static void main(String[] args) throws LoginException {
 

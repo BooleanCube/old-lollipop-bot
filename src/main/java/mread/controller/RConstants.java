@@ -2,6 +2,9 @@ package mread.controller;
 
 import java.util.HashMap;
 
+/**
+ * Constants for Readm Library
+ */
 class RConstants {
 
     // base website scraped to retrieve data

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Janken implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"janken"};
@@ -86,4 +87,5 @@ public class Janken implements Command {
             event.replyEmbeds(e.build()).queue();
         } else Tools.wrongUsage(event, this);
     }
+
 }

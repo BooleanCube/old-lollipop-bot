@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Avatar implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"avatar"};
@@ -60,4 +61,5 @@ public class Avatar implements Command {
             ).queue();
         }
     }
+
 }

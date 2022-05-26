@@ -55,4 +55,5 @@ public class Top implements Command {
         messageToPage.put(message.getIdLong(), new AnimePage(null, message, 1, event.getUser(), timeout));
         api.getTop(msg);
     }
+
 }

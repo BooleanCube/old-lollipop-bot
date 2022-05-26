@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.List;
 
 public class BotInfo implements Command {
+
     @Override
     public String[] getAliases() { return new String[] {"botinfo"}; }
 
@@ -44,4 +45,5 @@ public class BotInfo implements Command {
                 .build()
         ).queue();
     }
+
 }

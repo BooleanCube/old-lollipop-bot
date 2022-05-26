@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Onigiri implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"onigiri"};
@@ -55,4 +56,5 @@ public class Onigiri implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

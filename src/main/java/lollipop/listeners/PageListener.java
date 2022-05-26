@@ -20,8 +20,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Responds to page interactions for commands which include pagination
+ */
 public class PageListener extends ListenerAdapter {
 
+    /**
+     * Triggered when a button is pressed
+     * @param event
+     */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if(Objects.requireNonNull(event.getUser()).isBot()) return;
@@ -224,23 +231,31 @@ public class PageListener extends ListenerAdapter {
                 if(Objects.equals(event.getButton().getId(), "left")) {
                     if(page.pageNumber>1) {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(--page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                page.mangas.get(--page.pageNumber - 1).toEmbed()
+                                        .setFooter("Page " + page.pageNumber + "/" + page.mangas.size())
+                                        .build()
                         ).queue();
                     }
                     else {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(0)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                page.mangas.get(0).toEmbed()
+                                        .setFooter("Page " + page.pageNumber + "/" + page.mangas.size())
+                                        .build()
                         ).queue();
                     }
                 } else if(Objects.equals(event.getButton().getId(), "right")) {
                     if(page.pageNumber<page.animes.size()) {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(++page.pageNumber - 1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                page.mangas.get(++page.pageNumber - 1).toEmbed()
+                                        .setFooter("Page " + page.pageNumber + "/" + page.mangas.size())
+                                        .build()
                         ).queue();
                     }
                     else {
                         event.editMessageEmbeds(
-                                Tools.mangaToEmbed(page.mangas.get(page.mangas.size()-1)).setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                                page.mangas.get(page.mangas.size()-1).toEmbed()
+                                        .setFooter("Page " + page.pageNumber + "/" + page.mangas.size())
+                                        .build()
                         ).queue();
                     }
                 }
@@ -372,4 +387,5 @@ public class PageListener extends ListenerAdapter {
             }
         }
     }
+
 }

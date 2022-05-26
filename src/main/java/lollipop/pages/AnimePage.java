@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * Anime Page Model represents a singular page in pagination commands
+ */
 public class AnimePage {
     public ArrayList<Anime> animes = null;
     public ArrayList<Manga> mangas = null;
@@ -26,6 +29,14 @@ public class AnimePage {
     public HashMap<Integer, MessageEmbed> review = new HashMap<>();
     public HashMap<Integer, MessageEmbed> recommendations = new HashMap<>();
 
+    /**
+     * Anime List Constructor
+     * @param as
+     * @param m
+     * @param pn
+     * @param u
+     * @param t
+     */
     public AnimePage(ArrayList<Anime> as, Message m, int pn, User u, ScheduledFuture<?> t) {
         animes = as;
         msg = m;
@@ -33,12 +44,27 @@ public class AnimePage {
         user = u;
         timeout = t;
     }
+
+    /**
+     * Manga List Constructor
+     * @param ms
+     * @param pn
+     * @param m
+     * @param u
+     */
     public AnimePage(ArrayList<Manga> ms, int pn, Message m, User u) {
         mangas = ms;
         msg = m;
         pageNumber = pn;
         user = u;
     }
+
+    /**
+     * Singular Anime Constructor
+     * @param a
+     * @param m
+     * @param u
+     */
     public AnimePage(Anime a, Message m, User u) {
         animes = new ArrayList<>();
         animes.add(a);
@@ -46,6 +72,12 @@ public class AnimePage {
         user = u;
     }
 
+    /**
+     * Constructor for starting search command with timeout
+     * @param m
+     * @param u
+     * @param t
+     */
     public AnimePage(Message m, User u, ScheduledFuture<?> t) {
         animes = new ArrayList<>();
         msg = m;

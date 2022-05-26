@@ -18,6 +18,9 @@ public class Eval implements Command {
     private final GroovyShell engine;
     private final String imports;
 
+    /**
+     * Initialize variables and settings in the constructor
+     */
     public Eval() {
         this.engine = new GroovyShell();
         this.imports = "import java.io.*\n" +

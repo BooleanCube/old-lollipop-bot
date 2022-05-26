@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.List;
 
 public class Eat implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"eat", "food", "nom"};
@@ -38,4 +39,5 @@ public class Eat implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

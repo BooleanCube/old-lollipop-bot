@@ -11,10 +11,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * MoreInfo Model for search command
+ */
 public class MoreInfo {
 
     public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
 
+    /**
+     * Sends the message embed to get more information
+     * @param event button interaction event
+     * @param page anime page
+     */
     public static void run(ButtonInteractionEvent event, AnimePage page) {
         InteractionHook m = event.replyEmbeds(
                 new EmbedBuilder()

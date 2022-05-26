@@ -12,7 +12,15 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Responds to player actions for lollipop duels
+ */
 public class DuelsListener extends ListenerAdapter {
+
+    /**
+     * Triggered when a button is pressed
+     * @param event
+     */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         if(Objects.equals(event.getButton().getId(), "accept")) {
@@ -205,4 +213,5 @@ public class DuelsListener extends ListenerAdapter {
             game.checkWin(event.getChannel()); // ???????
         }
     }
+
 }

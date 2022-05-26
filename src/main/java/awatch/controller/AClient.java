@@ -13,7 +13,7 @@ public class AClient {
 
     /**
      * Initialize AListener in constructor
-     * @param listener
+     * @param listener AListener
      */
     public AClient(AListener listener) {
         this.listener = listener;
@@ -21,8 +21,8 @@ public class AClient {
 
     /**
      * Runs a thread to make a search anime call
-     * @param query
-     * @param nsfw
+     * @param query anime name
+     * @param nsfw nsfw allowed
      */
     public void searchAnime(String query, boolean nsfw) {
         ThreadManagement.execute(() -> {
@@ -34,7 +34,7 @@ public class AClient {
 
     /**
      * Runs a thread to make a search character call
-     * @param query
+     * @param query character name
      */
     public void searchCharacter(String query) {
         ThreadManagement.execute(() -> {
@@ -57,7 +57,7 @@ public class AClient {
 
     /**
      * Runs a thread to get episodes of an anime
-     * @param id
+     * @param id MAL id
      */
     public void getEpisodes(long id) {
         ThreadManagement.execute(() -> {
@@ -69,7 +69,7 @@ public class AClient {
 
     /**
      * Runs a thread to get news of an anime
-     * @param id
+     * @param id MAL id
      */
     public void getNews(long id) {
         ThreadManagement.execute(() -> {
@@ -81,7 +81,7 @@ public class AClient {
 
     /**
      * Runs a thread to get the statistics of an anime
-     * @param id
+     * @param id MAL id
      */
     public void getStatistics(long id) {
         ThreadManagement.execute(() -> {
@@ -93,7 +93,7 @@ public class AClient {
 
     /**
      * Runs a thread to get the themes of an anime
-     * @param id
+     * @param id MAL id
      */
     public void getThemes(long id) {
         ThreadManagement.execute(() -> {
@@ -105,7 +105,7 @@ public class AClient {
 
     /**
      * Runs a thread to get the recommendations for an anime
-     * @param id
+     * @param id MAL id
      */
     public void getRecommendation(long id) {
         ThreadManagement.execute(() -> {
@@ -117,7 +117,7 @@ public class AClient {
 
     /**
      * Runs a thread to get the top review of an anime
-     * @param id
+     * @param id MAL id
      */
     public void getReview(long id) {
         ThreadManagement.execute(() -> {
@@ -151,7 +151,7 @@ public class AClient {
 
     /**
      * Runs a thread to get a randomly chosen anime from MALs database
-     * @param nsfw
+     * @param nsfw nsfw allowed
      */
     public void randomAnime(boolean nsfw) {
         ThreadManagement.execute(() -> {

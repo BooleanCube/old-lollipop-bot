@@ -1,7 +1,7 @@
 package threading;
 
 import awatch.controller.ALoader;
-import lollipop.API;
+import mread.controller.RLoader;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,15 +16,22 @@ public class ThreadManagement {
 
     public static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
 
+    /**
+     * Execute a call from the API or from ALoader
+     * @param runnable
+     */
     public static void execute(Runnable runnable) {
         executor.execute(runnable);
     }
 
+    /**
+     * Setup a cache refresh cycle which refreshes the cache every day so the new animes and new information reaches as soon as possible
+     */
     public static void setupCacheRefresh() {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         Runnable apiRefresh = () -> {
             ALoader.animeCache.clear();
-            API.mangaCache.clear();
+            RLoader.mangaCache.clear();
         };
         // Start API refresh cycle once a day to refresh animes everyday to make sure new data is cached later on
         scheduler.scheduleWithFixedDelay(apiRefresh, 1, 1, TimeUnit.DAYS);

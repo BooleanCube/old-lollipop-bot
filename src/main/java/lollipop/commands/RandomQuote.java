@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RandomQuote implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"quote"};
@@ -51,4 +52,5 @@ public class RandomQuote implements Command {
         ).complete();
         api.randomQuote(message);
     }
+
 }

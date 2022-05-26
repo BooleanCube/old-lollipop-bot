@@ -8,10 +8,18 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
 import java.io.IOException;
 
+/**
+ * Recommendation Model for search command
+ */
 public class Recommendation {
 
     static API api = new API();
 
+    /**
+     * Runs a reqest to get anime recommendations
+     * @param event button interaction event
+     * @param page anime page
+     */
     public static void run(ButtonInteractionEvent event, AnimePage page) {
         api.getRecommendation(event, page);
     }

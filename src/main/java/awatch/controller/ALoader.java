@@ -24,10 +24,10 @@ public class ALoader {
 
     /**
      * Load Animes from a certain search query
-     * @param query
-     * @param nsfw
+     * @param query anime name
+     * @param nsfw nsfw allowed
      * @return arraylist of animes
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static ArrayList<Anime> loadAnime(String query, boolean nsfw) throws IOException {
         if(animeCache.containsKey(query)) return animeCache.get(query);
@@ -58,9 +58,9 @@ public class ALoader {
 
     /**
      * Load a character given query
-     * @param query
+     * @param query character name
      * @return character
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Character loadCharacter(String query) throws IOException {
         URL web = new URL(AConstants.v3API+"/search/character?q=" + query.replaceAll(" ", "%20"));
@@ -80,7 +80,7 @@ public class ALoader {
     /**
      * Load a random anime related quote
      * @return random quote
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Quote loadQuote() throws IOException {
         URL web = new URL(AConstants.quoteAPI);
@@ -99,9 +99,9 @@ public class ALoader {
 
     /**
      * Loads the episodes of the given anime
-     * @param id
+     * @param id MAL id
      * @return arraylist of episodes
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static ArrayList<Episode> loadEpisodes(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/episodes");
@@ -129,9 +129,9 @@ public class ALoader {
 
     /**
      * Loads recent news from the given anime
-     * @param id
+     * @param id MAL id
      * @return arraylist of articles
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static ArrayList<Article> loadNews(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/news");
@@ -159,9 +159,9 @@ public class ALoader {
 
     /**
      * Load statistics from the given anime
-     * @param id
+     * @param id MAL id
      * @return statistic
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Statistic loadStatistics(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/statistics");
@@ -180,9 +180,9 @@ public class ALoader {
 
     /**
      * Loads themes from the given anime
-     * @param id
+     * @param id MAL id
      * @return themes
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Themes loadThemes(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/themes");
@@ -201,9 +201,9 @@ public class ALoader {
 
     /**
      * Loads recommended animes from the given anime
-     * @param id
+     * @param id MAL id
      * @return recommendation list
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Recommendation loadRecommendations(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/recommendations");
@@ -222,9 +222,9 @@ public class ALoader {
 
     /**
      * Loads the top review from the given anime
-     * @param id
+     * @param id MAL id
      * @return review
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Review loadReview(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/reviews");
@@ -244,7 +244,7 @@ public class ALoader {
     /**
      * Load the top animes ranked in terms of score
      * @return arraylist of anime
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static ArrayList<Anime> loadTop() throws IOException {
         URL web = new URL(AConstants.v4API+"/top/anime");
@@ -274,7 +274,7 @@ public class ALoader {
     /**
      * Load the latest animes of the season
      * @return arraylist of animes
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static ArrayList<Anime> loadLatest() throws IOException {
         URL web = new URL(AConstants.v4API+"/seasons/now");
@@ -303,9 +303,9 @@ public class ALoader {
 
     /**
      * Load a random anime
-     * @param nsfw
+     * @param nsfw nsfw allowed
      * @return anime
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static Anime loadRandom(boolean nsfw) throws IOException {
         String extension = !nsfw ? "?sfw" : "";
@@ -330,7 +330,7 @@ public class ALoader {
     /**
      * Load a random anime related GIF
      * @return GIF
-     * @throws IOException
+     * @throws IOException for BufferedReader
      */
     public static GIF loadGIF() throws IOException {
         String[] types = {"alarm", "amazing", "ask", "baka", "bite", "blush", "blyat", "boop", "clap", "coffee", "confused", "cry", "cuddle", "cute", "dance", "destroy", "die", "disappear", "dodge", "error", "facedesk", "facepalm", "fbi", "fight", "happy", "hide", "highfive", "hug", "kill", "kiss", "laugh", "lick", "lonely", "love", "mad", "money", "nom", "nosebleed", "ok", "party", "pat", "peek", "poke", "pout", "protect", "puke", "punch", "purr", "pusheen", "run", "salute", "scared", "scream", "shame", "shocked", "shoot", "shrug", "sip", "sit", "slap", "sleepy", "smile", "smoke", "smug", "spin", "stare", "stomp", "tickle", "trap", "triggered", "uwu", "wasted", "wave", "wiggle", "wink", "yeet"};

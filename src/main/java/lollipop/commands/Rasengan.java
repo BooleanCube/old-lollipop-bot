@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Rasengan implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"rasengan"};
@@ -55,4 +56,5 @@ public class Rasengan implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

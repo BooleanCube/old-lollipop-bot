@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import awatch.model.Anime;
 import lollipop.API;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -14,7 +15,10 @@ import org.jsoup.nodes.Element;
 import mread.model.Chapter;
 import mread.model.Manga;
 
-class RLoader {
+public class RLoader {
+
+    // Manga Cache
+    public static HashMap<String, ArrayList<Manga>> mangaCache = new HashMap<>();
 
 	public static List<Manga> browse(int page, String genre) {
 		List<Manga> mangaList = new ArrayList<>();
@@ -85,7 +89,8 @@ class RLoader {
 	}
 
 	public static List<Manga> search(String query) {
-		List<Manga> mangaList = new ArrayList<>();
+        if(mangaCache.containsKey(query)) return mangaCache.get(query);
+		ArrayList<Manga> mangaList = new ArrayList<>();
 		try {
 			HashMap<String, String> data = new HashMap<>();
 			data.put("dataType", "json");
@@ -112,8 +117,8 @@ class RLoader {
 				Manga m = new Manga(title, url, "summary", "0", art, tokens);
 				mangaList.add(m);
 
-				//This limits the search results to only 1
-				//I only did this for time efficiency because otherwise it would take ages iterating and web scraping over all the search results.
+				// This limits the search results to only 1
+				// I only did this for time efficiency because otherwise it would take ages iterating and web scraping over all the search results.
 				break;
 			}
 
@@ -145,7 +150,7 @@ class RLoader {
 			manga.summary = summary;
 			manga.rating = rating;
 		}
-		API.mangaCache.put(query, mangaList);
+		mangaCache.put(query, mangaList);
 		return mangaList;
 	}
 

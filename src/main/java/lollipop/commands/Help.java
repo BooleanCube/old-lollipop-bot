@@ -17,6 +17,11 @@ import java.util.stream.Collectors;
 public class Help implements Command {
 
     Manager manager;
+
+    /**
+     * Initialize command manager
+     * @param m command manager
+     */
     public Help(Manager m) {
         this.manager = m;
     }
@@ -90,4 +95,5 @@ public class Help implements Command {
                         .build()
         ).queue();
     }
+
 }

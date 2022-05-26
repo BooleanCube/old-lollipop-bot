@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Hinokami implements Command {
+
     @Override
     public String[] getAliases() {
         return new String[] {"hinokami"};
@@ -55,4 +56,5 @@ public class Hinokami implements Command {
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }
+
 }

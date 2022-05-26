@@ -16,11 +16,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Episode Model for search command
+ */
 public class Episodes {
 
     static API api = new API();
     public static HashMap<Long, EpisodeList> messageToPage = new HashMap<>();
 
+    /**
+     * Runs a request to get anime episodes
+     * @param event button interaction event
+     * @param page anime page
+     */
     public static void run(ButtonInteractionEvent event, AnimePage page) {
         InteractionHook msg = event.replyEmbeds(
                 new EmbedBuilder()
