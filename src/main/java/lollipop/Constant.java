@@ -1,5 +1,8 @@
 package lollipop;
 
+/**
+ * Constants for lollipop bot
+ */
 public class Constant {
 
     public static long TEST_ID = 927731018151120966L;
