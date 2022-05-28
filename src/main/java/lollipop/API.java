@@ -412,7 +412,7 @@ public class API implements RListener, AListener {
         ButtonInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(recommendation.toEmbed().build()).setEphemeral(true).queue();
         AnimePage page = eventToPage.remove(event);
-        page.stats.put(page.pageNumber, recommendation.toEmbed().build());
+        page.recommendations.put(page.pageNumber, recommendation.toEmbed().build());
     }
 
     /**
