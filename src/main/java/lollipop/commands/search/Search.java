@@ -69,7 +69,10 @@ public class Search implements Command {
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
-                        .setDescription("Could not find an anime with that search query! Please try again with a valid anime!")
+                        .setDescription("""
+                                Could not find an anime with that search query!
+                                > Search using japanese title (eg. Kimetsu no Yaiba)
+                                > Try again with a valid anime title that exists in MyAnimeList's database""")
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();
