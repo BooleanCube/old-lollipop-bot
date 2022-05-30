@@ -6,21 +6,15 @@ import lollipop.Constant;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
-import java.lang.reflect.Member;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Trivia Command
- */
 public class Trivia implements Command {
 
     @Override

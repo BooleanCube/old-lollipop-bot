@@ -26,6 +26,11 @@ public class Question implements ModelData {
         this.options = o;
     }
 
+    /**
+     * Generates num amount of options from available
+     * @param available available options
+     * @param num number of options to generate
+     */
     public void generateOptions(HashSet<String> available, int num) {
         for(int i=0; i<num; i++) {
             String title = available.iterator().next();
