@@ -50,12 +50,13 @@ public class Search implements Command {
                 .addOption(OptionType.STRING, "query", "search query", true);
     }
 
+    static API api = new API();
+
     @Override
     public void run(SlashCommandInteractionEvent event) {
         final List<OptionMapping> options = event.getOptions();
         final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size()<2) { Tools.wrongUsage(event, this); return; }
-        API api = new API();
 
         if(args.get(0).equalsIgnoreCase("c") || args.get(0).equalsIgnoreCase("character")) {
             String query = String.join(" ", args.subList(1, args.size()));

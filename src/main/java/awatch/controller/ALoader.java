@@ -3,6 +3,7 @@ package awatch.controller;
 import awatch.model.*;
 import awatch.model.Character;
 import lollipop.Secret;
+import awatch.model.Question;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
@@ -11,8 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Reads all data from Jikan REST API
@@ -347,6 +347,33 @@ public class ALoader {
         GIF gif = new GIF();
         gif.parseData(data);
         return gif;
+    }
+
+    /**
+     * Load a random question for trivia
+     * @return anime
+     * @throws IOException for BufferedReader
+     */
+    public static Question loadTrivia(HashSet<String> available) throws IOException {
+        URL web = new URL(AConstants.v4API+"/random/anime?sfw");
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
+        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        Anime anime = new Anime();
+        DataObject result = null;
+        try {
+            result = data.getObject("data");
+        } catch(Exception e) { return null; }
+        anime.parseData(result);
+        Question question = new Question(anime, new ArrayList<>(List.of(anime.title)));
+        question.generateOptions(available, 3);
+        Collections.shuffle(question.options);
+        return question;
     }
 
 }

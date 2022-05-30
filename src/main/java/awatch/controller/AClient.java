@@ -3,6 +3,7 @@ package awatch.controller;
 import threading.ThreadManagement;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * Access the threading and ALoader which retrieves data from the APIs
@@ -169,6 +170,17 @@ public class AClient {
             try {
                 listener.sendRandomGIF(ALoader.loadGIF());
             } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to get a random trivia question about anime
+     */
+    public void randomTrivia(HashSet<String> available) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendTrivia(ALoader.loadTrivia(available));
+            } catch(IOException e) { e.printStackTrace(); throw new RuntimeException(e); }
         });
     }
 

@@ -3,7 +3,7 @@ package lollipop.commands.duel;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
-import lollipop.commands.duel.models.Game;
+import lollipop.commands.duel.models.DGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -43,12 +43,12 @@ public class Move implements Command {
         if(args.size() >= 1) {
             if(args.size() == 1 && args.get(0).equalsIgnoreCase("all")) {
                 event.replyEmbeds(new EmbedBuilder()
-                        .setDescription(Game.getAvailableMoves())
+                        .setDescription(DGame.getAvailableMoves())
                         .build()
                 ).queue();
                 return;
             }
-            String moveDesc = Game.moveDescription(String.join(" ", args));
+            String moveDesc = DGame.moveDescription(String.join(" ", args));
             if(moveDesc == null) {
                 event.replyEmbeds(new EmbedBuilder()
                         .setDescription("I could not find an available move under that name! Please try again with a different input or do `" + Constant.PREFIX + "move all` to get a list of all the available moves!")
@@ -63,7 +63,7 @@ public class Move implements Command {
             }
         } else {
             event.replyEmbeds(new EmbedBuilder()
-                    .setDescription(Game.getAvailableMoves())
+                    .setDescription(DGame.getAvailableMoves())
                     .build()
             ).queue();
         }

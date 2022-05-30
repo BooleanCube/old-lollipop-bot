@@ -4,6 +4,7 @@ import awatch.model.Anime;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
 import lollipop.commands.search.infos.*;
+import lollipop.commands.trivia.Trivia;
 import lollipop.pages.EpisodeList;
 import lollipop.pages.Newspaper;
 import lollipop.pages.AnimePage;
@@ -17,6 +18,9 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +31,7 @@ public class PageListener extends ListenerAdapter {
 
     /**
      * Triggered when a button is pressed
-     * @param event
+     * @param event button interaction event
      */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
@@ -385,6 +389,29 @@ public class PageListener extends ListenerAdapter {
                 Anime a = page.animes.get(0);
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
             }
+        }
+        if(Trivia.openGames.containsKey(id)) {
+            Trivia.openGames.get(id).gameTimeout.cancel(false);
+            if(Objects.equals(event.getButton().getId(), "right")) {
+                event.editMessageEmbeds(
+                        new EmbedBuilder()
+                                .setTitle("Correct Answer!")
+                                .setColor(Color.green)
+                                .setDescription("You guessed the correct anime!")
+                                .setImage("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
+                                .build()
+                ).setActionRows(Collections.emptyList()).queue();
+            } else {
+                event.editMessageEmbeds(
+                        new EmbedBuilder()
+                                .setTitle("Wrong Answer!")
+                                .setColor(Color.red)
+                                .setDescription("You guessed the wrong anime!")
+                                .setImage("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
+                                .build()
+                ).setActionRows(Collections.emptyList()).queue();
+            }
+            Trivia.openGames.remove(id);
         }
     }
 

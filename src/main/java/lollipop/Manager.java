@@ -5,6 +5,7 @@ import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
 import lollipop.commands.search.Search;
+import lollipop.commands.trivia.Trivia;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -55,7 +56,8 @@ public class Manager {
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
-                new Top().getSlashCmd()
+                new Top().getSlashCmd(),
+                new Trivia().getSlashCmd()
         ).queue();
     }
 
@@ -92,7 +94,8 @@ public class Manager {
                 new RandomQuote().getSlashCmd(),
                 new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
-                new Top().getSlashCmd()
+                new Top().getSlashCmd(),
+                new Trivia().getSlashCmd()
         ).queue();
         g.updateCommands()
                 .addCommands(dashCmd.setDefaultEnabled(false), evalCmd.setDefaultEnabled(false))
@@ -148,6 +151,7 @@ public class Manager {
         addCommand(new Punch());
         addCommand(new Duel());
         addCommand(new Move());
+        addCommand(new Trivia());
     }
 
     /**

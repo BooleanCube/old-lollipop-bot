@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadManagement {
 
-    public static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
+    public static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
 
     /**
      * Execute a call from the API or from ALoader

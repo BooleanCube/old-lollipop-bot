@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Game Model for duel games
  */
-public class Game {
+public class DGame {
     public Player homePlayer = new Player();
     public Player opposingPlayer = new Player();
     public Player playerTurn = new Player();

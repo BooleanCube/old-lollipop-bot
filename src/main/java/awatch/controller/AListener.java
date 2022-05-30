@@ -2,7 +2,7 @@ package awatch.controller;
 
 import awatch.model.*;
 import awatch.model.Character;
-import lollipop.pages.EpisodeList;
+import awatch.model.Question;
 
 import java.util.ArrayList;
 
@@ -22,6 +22,7 @@ public interface AListener {
     void sendLatest(ArrayList<Anime> latest);
     void sendRandomAnime(Anime random);
     void sendRandomGIF(GIF gif);
+    void sendTrivia(Question question);
 
 
 }

@@ -3,7 +3,7 @@ package lollipop.commands.duel;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
-import lollipop.commands.duel.models.Game;
+import lollipop.commands.duel.models.DGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -44,7 +44,7 @@ public class Duel implements Command {
     }
 
     // Game Settings and Occupancy
-    public static HashMap<Long, Game> memberToGame = new HashMap<>();
+    public static HashMap<Long, DGame> memberToGame = new HashMap<>();
     public static ArrayList<Integer> occupiedShards = new ArrayList<>();
 
     @Override
@@ -70,25 +70,25 @@ public class Duel implements Command {
         }
         else occupiedShards.add(shardId);
         if(options.isEmpty()) {
-            Game game = new Game();
-            game.homePlayer.member = event.getMember();
-            game.opposingPlayer.member = null; //AI
-            game.playerTurn = game.homePlayer;
-            game.playerNotTurn = game.opposingPlayer;
-            game.sendStartSelectMove(event, null);
-            game.setupTimeout(event.getChannel());
-            memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
+            DGame DGame = new DGame();
+            DGame.homePlayer.member = event.getMember();
+            DGame.opposingPlayer.member = null; //AI
+            DGame.playerTurn = DGame.homePlayer;
+            DGame.playerNotTurn = DGame.opposingPlayer;
+            DGame.sendStartSelectMove(event, null);
+            DGame.setupTimeout(event.getChannel());
+            memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), DGame);
         } else if(options.size() == 1) {
-            Game game = new Game();
+            DGame DGame = new DGame();
             Member target = options.get(0).getAsMember();
             if(target == event.getGuild().getSelfMember()) {
-                game.homePlayer.member = event.getMember();
-                game.opposingPlayer.member = null; //AI
-                game.playerTurn = game.homePlayer;
-                game.playerNotTurn = game.opposingPlayer;
-                game.sendStartSelectMove(event, null);
-                game.setupTimeout(event.getChannel());
-                memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), game);
+                DGame.homePlayer.member = event.getMember();
+                DGame.opposingPlayer.member = null; //AI
+                DGame.playerTurn = DGame.homePlayer;
+                DGame.playerNotTurn = DGame.opposingPlayer;
+                DGame.sendStartSelectMove(event, null);
+                DGame.setupTimeout(event.getChannel());
+                memberToGame.put(Objects.requireNonNull(event.getMember()).getIdLong(), DGame);
             } else {
                 if(target == null) {
                     event.replyEmbeds(new EmbedBuilder()
@@ -114,30 +114,30 @@ public class Duel implements Command {
                     ).queue();
                     return;
                 }
-                game.homePlayer.member = event.getMember();
-                game.opposingPlayer.member = target;
-                game.playerTurn = game.opposingPlayer;
-                game.playerNotTurn = game.homePlayer;
-                game.lastDisplay.add(event.reply(target.getAsMention()).complete().retrieveOriginal().complete());
+                DGame.homePlayer.member = event.getMember();
+                DGame.opposingPlayer.member = target;
+                DGame.playerTurn = DGame.opposingPlayer;
+                DGame.playerNotTurn = DGame.homePlayer;
+                DGame.lastDisplay.add(event.reply(target.getAsMention()).complete().retrieveOriginal().complete());
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription(event.getMember().getAsMention() + " requested to duel you! Do you accept their duel request?")
                         .setFooter("Quick! You have 30 seconds to accept!")
                         .build()
                 ).setActionRow(
                         Button.primary("accept", "accept")
-                ).queue(m -> game.lastDisplay.add(m));
-                game.timeout = event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                ).queue(m -> DGame.lastDisplay.add(m));
+                DGame.timeout = event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                         .setDescription(target.getAsMention() + " didn't arrive in time! The duel request expired...")
                         .setColor(Color.red)
                         .build()
                 ).queueAfter(30, TimeUnit.SECONDS, m -> {
-                    game.deleteDisplayMessagesFull();
+                    DGame.deleteDisplayMessagesFull();
                     Duel.memberToGame.remove(event.getMember().getIdLong());
                     Duel.memberToGame.remove(target.getIdLong());
                     occupiedShards.remove(Integer.valueOf(event.getJDA().getShardInfo().getShardId()));
                 });
-                Duel.memberToGame.put(event.getMember().getIdLong(), game);
-                Duel.memberToGame.put(target.getIdLong(), game);
+                Duel.memberToGame.put(event.getMember().getIdLong(), DGame);
+                Duel.memberToGame.put(target.getIdLong(), DGame);
             }
         }
     }

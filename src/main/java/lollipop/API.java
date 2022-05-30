@@ -10,6 +10,8 @@ import lollipop.commands.Top;
 import lollipop.commands.search.Search;
 import lollipop.commands.search.infos.Episodes;
 import lollipop.commands.search.infos.News;
+import lollipop.commands.trivia.Trivia;
+import awatch.model.Question;
 import lollipop.pages.AnimePage;
 import lollipop.pages.EpisodeList;
 import lollipop.pages.Newspaper;
@@ -24,9 +26,12 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -235,6 +240,42 @@ public class API implements RListener, AListener {
     }
 
     /**
+     * Gets a random trivia question for the trivia game
+     * @param message message
+     */
+    public void randomTrivia(InteractionHook message) {
+        HashSet<String> available = new HashSet<>(Cache.titles) {
+
+            /** Every call to iterator() will give a possibly unique iteration order, or not */
+            @Nonnull
+            @Override
+            public Iterator<String> iterator() {
+                return new RandomizingIterator<>(super.iterator());
+            }
+            class RandomizingIterator<T> implements Iterator<T> {
+                final Iterator<T> iterator;
+                private RandomizingIterator(@Nonnull final Iterator<T> iterator) {
+                    List<T> list = new ArrayList<>();
+                    while(iterator.hasNext()) list.add(iterator.next());
+                    Collections.shuffle(list);
+                    this.iterator = list.iterator();
+                }
+                @Override
+                public boolean hasNext() {
+                    return this.iterator.hasNext();
+                }
+                @Override
+                public T next() {
+                    return this.iterator.next();
+                }
+            }
+
+        };
+        animeClient.randomTrivia(available);
+        messageToEdit.push(message);
+    }
+
+    /**
      * Sends the requested anime list
      * @param animes anime list
      */
@@ -267,7 +308,7 @@ public class API implements RListener, AListener {
                         Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Search.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Search.messageToPage.remove(msg.getIdLong()));
     }
 
     /**
@@ -333,7 +374,7 @@ public class API implements RListener, AListener {
             page.episodes.put(page.pageNumber, new EpisodeList(pages,1, msg, event.getUser()));
             Episodes.messageToPage.put(msg.getIdLong(), page.episodes.get(page.pageNumber));
             message.editOriginalComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, me -> Episodes.messageToPage.remove(msg.getIdLong()));
+                    .queueAfter(3, TimeUnit.MINUTES, i -> Episodes.messageToPage.remove(msg.getIdLong()));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -366,7 +407,7 @@ public class API implements RListener, AListener {
             page.news.put(page.pageNumber, new Newspaper(articles, 1, msg, event.getUser()));
             News.messageToPage.put(m.getIdLong(), page.news.get(page.pageNumber));
             m.editMessageComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, me -> News.messageToPage.remove(m.getIdLong()));
+                    .queueAfter(3, TimeUnit.MINUTES, i -> News.messageToPage.remove(m.getIdLong()));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -450,7 +491,7 @@ public class API implements RListener, AListener {
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Top.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Top.messageToPage.remove(msg.getIdLong()));
     }
 
     /**
@@ -476,7 +517,7 @@ public class API implements RListener, AListener {
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, me -> Latest.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Latest.messageToPage.remove(msg.getIdLong()));
     }
 
     /**
@@ -495,7 +536,11 @@ public class API implements RListener, AListener {
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
         ).queue();
         message.editOriginalComponents()
-                .queueAfter(3, TimeUnit.MINUTES, me -> RandomAnime.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> RandomAnime.messageToPage.remove(msg.getIdLong()));
+        try {
+            Cache.addTitleToCache(random.title);
+        }
+        catch(IOException e) {}
     }
 
     /**
@@ -507,6 +552,35 @@ public class API implements RListener, AListener {
         InteractionHook message = messageToEdit.removeFirst();
         if(gif == null) return;
         message.editOriginalEmbeds(gif.toEmbed().build()).queue();
+    }
+
+    /**
+     * Sends the found trivia question in the channel
+     * @param question random trivia question
+     */
+    @Override
+    public void sendTrivia(Question question) {
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
+        Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
+        if (question.correct == null) return;
+        Trivia.openGames.get(msg.getIdLong()).question = question;
+        message.editOriginalEmbeds(question.toEmbed().build()).setActionRow(
+                Button.secondary(question.correct.title.equals(question.options.get(0)) ? "right" : "wrong1", question.options.get(0)),
+                Button.secondary(question.correct.title.equals(question.options.get(1)) ? "right" : "wrong2", question.options.get(1)),
+                Button.secondary(question.correct.title.equals(question.options.get(2)) ? "right" : "wrong3", question.options.get(2)),
+                Button.secondary(question.correct.title.equals(question.options.get(3)) ? "right" : "wrong4", question.options.get(3))
+        ).queue();
+        Trivia.openGames.get(msg.getIdLong()).gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
+                .setColor(Color.red)
+                .setDescription("Too late! You have to answer the trivia questions in under 15 seconds!")
+                .setImage("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
+                .build()
+        ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> Trivia.openGames.remove(msg.getIdLong()));
+        try {
+            Cache.addTitleToCache(question.correct.title);
+        }
+        catch(IOException e) {}
     }
 
 }
