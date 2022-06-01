@@ -196,3 +196,4 @@ https://api.kawaii.red/gif/shocked/shocked16.gif
 https://api.kawaii.red/gif/wink/wink2.gif
 https://api.kawaii.red/gif/spin/spin10.gif
 https://api.kawaii.red/gif/confused/confused2.gif
+https://api.kawaii.red/gif/salute/salute8.gif

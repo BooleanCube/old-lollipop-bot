@@ -62,11 +62,15 @@ public class Main {
         //JDA test = testClient.build();
 
         // Set top.gg Statistics and Server Count
-        DiscordBotListAPI topgg = new DiscordBotListAPI.Builder()
-                .token(Secret.TOPGG)
-                .botId("919061572649910292")
-                .build();
-        topgg.setStats(bot.getShardsRunning(), bot.getShardsTotal(), bot.getGuilds().size());
+        try {
+            DiscordBotListAPI topgg = new DiscordBotListAPI.Builder()
+                    .token(Secret.TOPGG)
+                    .botId(String.valueOf(Constant.BOT_ID))
+                    .build();
+            topgg.setStats(bot.getGuilds().size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Set Discord Bot List Statistics and Server Count
         HttpClient client = HttpClientBuilder.create().build();
@@ -84,7 +88,7 @@ public class Main {
             ex.printStackTrace();
         }
         finally {
-            // @Deprecated httpClient.getConnectionManager().shutdown();
+            // @Deprecated client.getConnectionManager().shutdown();
         }
 
         // Setup Cache Refresh Cycle

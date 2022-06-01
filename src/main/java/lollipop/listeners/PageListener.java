@@ -398,7 +398,7 @@ public class PageListener extends ListenerAdapter {
                                 .setTitle("Correct Answer!")
                                 .setColor(Color.green)
                                 .setDescription("You guessed the correct anime!")
-                                .setImage("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
+                                .setThumbnail("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
                                 .build()
                 ).setActionRows(Collections.emptyList()).queue();
             } else {
@@ -407,7 +407,7 @@ public class PageListener extends ListenerAdapter {
                                 .setTitle("Wrong Answer!")
                                 .setColor(Color.red)
                                 .setDescription("You guessed the wrong anime!")
-                                .setImage("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
+                                .setThumbnail("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
                                 .build()
                 ).setActionRows(Collections.emptyList()).queue();
             }

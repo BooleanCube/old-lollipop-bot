@@ -15,10 +15,10 @@ public class Cache {
     public static String absPath = System.getProperty("user.dir");
 
     // GIF file cache directory
-    public static String gifCache = "/src/main/java/lollipop/cache/gifs.txt";
+    public static String gifCache = "/src/main/java/cache/gifs.txt";
 
     // Anime Title file cache directory
-    public static String titleCache = "/src/main/java/lollipop/cache/titles.txt";
+    public static String titleCache = "/src/main/java/cache/titles.txt";
 
     static {
         BufferedReader bf = null;

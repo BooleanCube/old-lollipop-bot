@@ -562,7 +562,6 @@ public class API implements RListener, AListener {
     public void sendTrivia(Question question) {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
-        Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
         if (question.correct == null) return;
         Trivia.openGames.get(msg.getIdLong()).question = question;
         message.editOriginalEmbeds(question.toEmbed().build()).setActionRow(
@@ -574,9 +573,10 @@ public class API implements RListener, AListener {
         Trivia.openGames.get(msg.getIdLong()).gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
                 .setColor(Color.red)
                 .setDescription("Too late! You have to answer the trivia questions in under 15 seconds!")
-                .setImage("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
+                .setThumbnail("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
                 .build()
         ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> Trivia.openGames.remove(msg.getIdLong()));
+        Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
         try {
             Cache.addTitleToCache(question.correct.title);
         }

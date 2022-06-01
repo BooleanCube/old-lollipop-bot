@@ -42,12 +42,12 @@ public class Search implements Command {
 
     @Override
     public CommandData getSlashCmd() {
-        return Tools.defaultSlashCmd(this)
-                .addOptions(new OptionData(OptionType.STRING, "type", "anime / manga / character", true)
+        return Tools.defaultSlashCmd(this).addOptions(
+                new OptionData(OptionType.STRING, "type", "anime / manga / character", true)
                         .addChoice("anime", "anime")
                         .addChoice("character", "character")
-                        .addChoice("manga", "manga"))
-                .addOption(OptionType.STRING, "query", "search query", true);
+                        .addChoice("manga", "manga")
+        ).addOption(OptionType.STRING, "query", "search query", true);
     }
 
     static API api = new API();

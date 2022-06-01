@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
 import java.util.List;
@@ -32,8 +33,12 @@ public class Janken implements Command {
 
     @Override
     public CommandData getSlashCmd() {
-        return Tools.defaultSlashCmd(this)
-                .addOption(OptionType.STRING, "hand", "rock / paper / scissors", true);
+        return Tools.defaultSlashCmd(this).addOptions(
+                new OptionData(OptionType.STRING, "hand", "rock / paper / scissors", true)
+                        .addChoice("rock", "rock")
+                        .addChoice("paper", "paper")
+                        .addChoice("scissors", "scissors")
+        );
     }
 
     @Override
