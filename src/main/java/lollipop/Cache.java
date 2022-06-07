@@ -3,6 +3,8 @@ package lollipop;
 import java.io.*;
 import java.util.HashSet;
 
+import static lollipop.Constant.*;
+
 /**
  * Caches objects temporarily instead of using a database
  */
@@ -11,18 +13,9 @@ public class Cache {
     // Title cache in hashset
     public static HashSet<String> titles = new HashSet<>();
 
-    // Base directory
-    public static String absPath = System.getProperty("user.dir");
-
-    // GIF file cache directory
-    public static String gifCache = "/src/main/java/cache/gifs.txt";
-
-    // Anime Title file cache directory
-    public static String titleCache = "/src/main/java/cache/titles.txt";
-
     static {
         BufferedReader bf = null;
-        try { bf = new BufferedReader(new FileReader(absPath + titleCache)); }
+        try { bf = new BufferedReader(new FileReader(ABSPATH + TITLECACHE)); }
         catch (FileNotFoundException e) { /* continue */}
         String input;
         while (true) {
@@ -40,13 +33,13 @@ public class Cache {
      * @throws IOException for BufferedReader
      */
     public static void addGifToCache(String gif) throws IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(absPath + gifCache));
+        BufferedReader bf = new BufferedReader(new FileReader(ABSPATH + GIFCACHE));
         StringBuilder file = new StringBuilder();
         String line;
         while((line=bf.readLine()) != null) file.append(line).append("\n");
         file.append(gif).append("\n");
         bf.close();
-        FileWriter fw = new FileWriter(absPath + gifCache);
+        FileWriter fw = new FileWriter(ABSPATH + GIFCACHE);
         fw.write(file.toString());
         fw.close();
     }
@@ -59,13 +52,13 @@ public class Cache {
     public static void addTitleToCache(String title) throws IOException {
         if(titles.contains(title)) return;
         titles.add(title);
-        BufferedReader bf = new BufferedReader(new FileReader(absPath + titleCache));
+        BufferedReader bf = new BufferedReader(new FileReader(ABSPATH + TITLECACHE));
         StringBuilder file = new StringBuilder();
         String line;
         while((line=bf.readLine()) != null) file.append(line).append("\n");
         file.append(title).append("\n");
         bf.close();
-        FileWriter fw = new FileWriter(absPath + titleCache);
+        FileWriter fw = new FileWriter(ABSPATH + TITLECACHE);
         fw.write(file.toString());
         fw.close();
     }

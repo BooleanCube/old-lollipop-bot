@@ -109,6 +109,9 @@ public class Listener extends ListenerAdapter {
                         .build()
                 ).queue();
             }
+        } else if(event.getMessage().getContentRaw().startsWith("l!shutdown") && event.getAuthor().getIdLong() == Constant.OWNER_ID) {
+            event.getJDA().getShardManager().shutdown();
+            System.exit(0);
         }
     }
 

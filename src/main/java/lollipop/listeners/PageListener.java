@@ -4,6 +4,7 @@ import awatch.model.Anime;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
 import lollipop.commands.search.infos.*;
+import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
 import lollipop.pages.EpisodeList;
 import lollipop.pages.Newspaper;
@@ -391,7 +392,12 @@ public class PageListener extends ListenerAdapter {
             }
         }
         if(Trivia.openGames.containsKey(id)) {
-            Trivia.openGames.get(id).gameTimeout.cancel(false);
+            TGame game = Trivia.openGames.get(id);
+            game.gameTimeout.cancel(false);
+            if(event.getUser() != game.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
             if(Objects.equals(event.getButton().getId(), "right")) {
                 event.editMessageEmbeds(
                         new EmbedBuilder()

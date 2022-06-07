@@ -20,6 +20,7 @@ import org.discordbots.api.client.DiscordBotListAPI;
 import threading.ThreadManagement;
 
 import javax.security.auth.login.LoginException;
+import java.sql.SQLException;
 
 /**
  * MAIN CLASS
@@ -31,7 +32,7 @@ public class Main {
      * @param args string[] args
      * @throws LoginException for ShardMangerBuilder and JDABuilder
      */
-    public static void main(String[] args) throws LoginException {
+    public static void main(String[] args) throws LoginException, SQLException {
 
         // Configure log4j appenders for debugging
         BasicConfigurator.configure();
@@ -93,6 +94,9 @@ public class Main {
 
         // Setup Cache Refresh Cycle
         ThreadManagement.setupCacheRefresh();
+
+        // Setup Databases
+        Database.setupDatabases();
 
     }
 
