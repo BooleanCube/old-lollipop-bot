@@ -5,6 +5,7 @@ import lollipop.Command;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -40,25 +41,46 @@ public class Avatar implements Command {
     @Override
     public void run(SlashCommandInteractionEvent event) {
         final List<OptionMapping> options = event.getOptions();
-        if(options.isEmpty()) {
-            Member target = event.getMember();
-            assert target != null;
-            event.replyEmbeds(new EmbedBuilder()
-                    .setImage(target.getEffectiveAvatarUrl() + "?size=512")
-                    .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
-                    .build()
-            ).queue();
-        } else {
-            Member target = options.get(0).getAsMember();
-            if(target == null) {
-                event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
-                return;
+        if(event.isFromGuild()) {
+            if(options.isEmpty()) {
+                Member target = event.getMember();
+                if (target == null) {
+                    event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
+                    return;
+                }
+                event.replyEmbeds(new EmbedBuilder()
+                        .setImage(target.getEffectiveAvatarUrl() + "?size=512")
+                        .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
+                        .build()
+                ).queue();
+            } else {
+                Member target = options.get(0).getAsMember();
+                if (target == null) {
+                    event.replyEmbeds(new EmbedBuilder().setDescription("Could not find the specified member!").setColor(Color.red).build()).queue();
+                    return;
+                }
+                event.replyEmbeds(new EmbedBuilder()
+                        .setImage(target.getEffectiveAvatarUrl() + "?size=512")
+                        .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
+                        .build()
+                ).queue();
             }
-            event.replyEmbeds(new EmbedBuilder()
-                    .setImage(target.getEffectiveAvatarUrl() + "?size=512")
-                    .setAuthor(target.getEffectiveName(), target.getAvatarUrl())
-                    .build()
-            ).queue();
+        } else {
+            if(options.isEmpty()) {
+                User target = event.getUser();
+                event.replyEmbeds(new EmbedBuilder()
+                        .setImage(target.getEffectiveAvatarUrl() + "?size=512")
+                        .setAuthor(target.getName(), target.getAvatarUrl())
+                        .build()
+                ).queue();
+            } else {
+                User target = event.getOptions().get(0).getAsUser();
+                event.replyEmbeds(new EmbedBuilder()
+                        .setImage(target.getEffectiveAvatarUrl() + "?size=512")
+                        .setAuthor(target.getName(), target.getAvatarUrl())
+                        .build()
+                ).queue();
+            }
         }
     }
 

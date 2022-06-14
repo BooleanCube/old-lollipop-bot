@@ -73,7 +73,7 @@ public class ALoader {
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Character character = new Character();
-        character.parseData(data);
+        character.parseData(data.getArray("results").getObject(0));
         return character;
     }
 

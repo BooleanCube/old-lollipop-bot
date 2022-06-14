@@ -1,4 +1,4 @@
-package lollipop.commands;
+package lollipop.commands.eval;
 
 import groovy.lang.GroovyShell;
 import lollipop.Constant;
@@ -9,7 +9,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,16 +27,22 @@ public class Eval implements Command {
      */
     public Eval() {
         this.engine = new GroovyShell();
-        this.imports = "import java.io.*\n" +
-                "import java.lang.*\n" +
-                "import java.util.*\n" +
-                "import java.util.concurrent.*\n" +
-                "import net.dv8tion.jda.core.*\n" +
-                "import net.dv8tion.jda.core.entities.*\n" +
-                "import net.dv8tion.jda.core.entities.impl.*\n" +
-                "import net.dv8tion.jda.core.managers.*\n" +
-                "import net.dv8tion.jda.core.managers.impl.*\n" +
-                "import net.dv8tion.jda.core.utils.*\n";
+        this.imports = """
+                import java.io.*
+                import java.lang.*
+                import java.util.*
+                import java.nio.*;
+                import java.util.concurrent.*
+                import net.dv8tion.jda.core.*
+                import net.dv8tion.jda.core.entities.*
+                import net.dv8tion.jda.core.entities.impl.*
+                import net.dv8tion.jda.core.managers.*
+                import net.dv8tion.jda.core.managers.impl.*
+                import net.dv8tion.jda.core.utils.*
+                import lollipop.*;
+                import threading.*;
+                import discorddb.*;
+                """;
     }
 
     @Override
@@ -81,7 +91,23 @@ public class Eval implements Command {
             }
             String script = imports + event.getCommandString().split("\\s+", 2)[1];
             Object out = engine.evaluate(script);
-            event.reply(out == null ? "Executed without error" : out.toString()).queue();
+            if(out == null) {
+                event.reply("Executed without error").queue();
+                return;
+            }
+            String response = out.toString();
+            if(response.length() <= 2000) event.reply(response).queue();
+            else {
+                File file = new File(Constant.ABSPATH + "/src/main/java/lollipop/commands/eval/archive/response.txt");
+                if(file.exists()) {
+                    file.delete();
+                    file.createNewFile();
+                } else file.createNewFile();
+                FileWriter fw = new FileWriter(file);
+                fw.write(response);
+                fw.flush();
+                event.reply("response is too big ->").addFile(file, "message.txt").queue();
+            }
         } catch (Exception e) {event.reply(e.getMessage()).queue();}
     }
 

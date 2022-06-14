@@ -49,6 +49,15 @@ public class Duel implements Command {
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
+        if(!event.getInteraction().isFromGuild()) {
+            event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("This command can only be used in guilds!")
+                            .build()
+            ).queue();
+            return;
+        }
         final List<OptionMapping> options = event.getOptions();
         if(memberToGame.containsKey(event.getMember().getIdLong())) {
             event.replyEmbeds(new EmbedBuilder()

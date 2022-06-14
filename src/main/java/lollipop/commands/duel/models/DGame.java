@@ -1,6 +1,8 @@
 package lollipop.commands.duel.models;
 
+import lollipop.BotStatistics;
 import lollipop.Constant;
+import lollipop.Database;
 import lollipop.commands.duel.Duel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +45,28 @@ public class DGame {
             Button.primary("zawarudo", "za warudo"),
             Button.primary("yare", "yare yare daze")
     };
+    public static HashMap<String, String> gifMap;
     public static Button surrenderButton = Button.danger("ff", "surrender");
+    public static boolean hasEnded = false;
+
+    static {
+        gifMap = new HashMap<>();
+        gifMap.put("attack1", "https://c.tenor.com/6a42QlkVsCEAAAAd/anime-punch.gif");
+        gifMap.put("attack2", "https://c.tenor.com/1sTe1w12WHwAAAAC/nezuko-kamado-tanjiro-kamado.gif");
+        gifMap.put("attack3", "https://c.tenor.com/4AvIBPKxbOwAAAAd/demonslayer-headbutt.gif");
+        gifMap.put("attack4", "https://c.tenor.com/FMO5562dLt4AAAAd/one-punch-man2-saitama-v-garou.gif");
+        gifMap.put("heal", "https://c.tenor.com/W4sbl5pmQ6sAAAAC/sorey-heal.gif");
+        gifMap.put("strength", "https://c.tenor.com/WGGJBAiyhxQAAAAC/demon-slayer-kimetsu-no-yaiba.gif");
+        gifMap.put("defend1", "https://c.tenor.com/Z_0BQslObuIAAAAd/dragon-ball-barrier.gif");
+        gifMap.put("defend2", "https://c.tenor.com/Z8Q13fWVtQkAAAAC/block-deflect.gif");
+        gifMap.put("4thgear", "https://c.tenor.com/Z6xWNeyumJMAAAAC/one-piece-fight.gif");
+        gifMap.put("hinokami", "https://c.tenor.com/LUAKGZSLoD8AAAAd/demon-slayer-tanjiro.gif");
+        gifMap.put("rasengan", "https://c.tenor.com/_zEr-rdppKMAAAAC/minato-naruto.gif");
+        gifMap.put("ora", "https://c.tenor.com/LytxJSf81m4AAAAC/ora-beatdown-oraoraora.gif");
+        gifMap.put("seriouspunch", "https://c.tenor.com/vlsvbgqYz5QAAAAd/carnage-kabuto-saitama.gif");
+        gifMap.put("zawarudo", "https://c.tenor.com/ETlOjJ8aU7EAAAAC/za-warudo-jojo-bizarre-adventure.gif");
+        gifMap.put("yare", "https://c.tenor.com/Wtn31Gl1CpYAAAAC/jotaro-ora.gif");
+    }
 
     /**
      * Get a list of all moves possible
@@ -164,7 +188,7 @@ public class DGame {
                     surrenderButton
             ).complete());
         }
-        if(!event.isAcknowledged()) event.deferReply().queue();
+        if(!event.isAcknowledged()) event.deferReply().complete();
     }
 
     /**
@@ -260,13 +284,14 @@ public class DGame {
      * @param event triggered when a button is pressed
      * @param move move phrase
      */
-    public void sendSelectMove(ButtonInteractionEvent event, String move) {
+    public void sendSelectMove(ButtonInteractionEvent event, String move, String gif) {
         if(homePlayer.HP < 0) homePlayer.HP = 0;
         if(opposingPlayer.HP < 0) opposingPlayer.HP = 0;
         if(playerTurn.member == null) {
             String homePName = homePlayer.member.getEffectiveName();
             EmbedBuilder e = new EmbedBuilder()
                     .setDescription("**" + move + "**")
+                    .setImage(gif)
                     .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                     .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                     .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
@@ -278,6 +303,7 @@ public class DGame {
                 if(playerNotTurn.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage(gif)
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
@@ -295,7 +321,7 @@ public class DGame {
                             moveButtons[y].asDisabled(),
                             moveButtons[z].asDisabled(),
                             surrenderButton.asDisabled()
-                    ).queue();
+                    ).complete();
                     editTimeout = lastDisplay.get(1).editMessageComponents().setActionRow(
                             moveButtons[x],
                             moveButtons[y],
@@ -306,6 +332,7 @@ public class DGame {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage(gif)
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
@@ -315,6 +342,7 @@ public class DGame {
                 String oppoPName = opposingPlayer.member.getEffectiveName();
                 EmbedBuilder e = new EmbedBuilder()
                         .setDescription("**" + move + "**")
+                        .setImage(gif)
                         .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                         .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                         .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
@@ -322,6 +350,7 @@ public class DGame {
             } else if(opposingPlayer.isTimedOut()) {
                 EmbedBuilder e = new EmbedBuilder()
                         .setDescription("**" + move + "**")
+                        .setImage(gif)
                         .addField(homePName, "Health: `" + homePlayer.HP + " HP`\nStrength Gain: `" + homePlayer.strengthGain + " HP`", true)
                         .addField("Computer", "Health: `" + opposingPlayer.HP + " HP`\nStrength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                         .setAuthor(playerTurn.member.getEffectiveName(), playerTurn.member.getUser().getAvatarUrl(), playerTurn.member.getUser().getEffectiveAvatarUrl());
@@ -343,7 +372,7 @@ public class DGame {
                         moveButtons[y].asDisabled(),
                         moveButtons[z].asDisabled(),
                         surrenderButton.asDisabled()
-                ).queue();
+                ).complete();
                 editTimeout = lastDisplay.get(1).editMessageComponents().setActionRow(
                         moveButtons[x],
                         moveButtons[y],
@@ -367,7 +396,7 @@ public class DGame {
                         moveButtons[y].asDisabled(),
                         moveButtons[z].asDisabled(),
                         surrenderButton.asDisabled()
-                ).queue();
+                ).complete();
                 editTimeout = lastDisplay.get(1).editMessageComponents().setActionRow(
                         moveButtons[x],
                         moveButtons[y],
@@ -409,27 +438,35 @@ public class DGame {
 
     /**
      * Runs AI to calculate best move with arbitrarily chosen moves
-     * @param h home player
-     * @param o opponent player
-     * @return string
+     * @param h home player (player)
+     * @param o opponent player (bot)
+     * @return {@link String} move id
      */
     public String AIMove(Player h, Player o) {
 
-        // Decides move
-        String move;
-        if(!h.isDefending && ((h.HP <= 30 && Math.random()*8<6) || Math.random()*6<3)) move = "defend";
-        else if((h.HP <= 50 && Math.random()*5<3) || Math.random()*6<2) move = "heal";
-        else if(!h.isZaWarudo && h.HP <= 35 && Math.random()*18<4+Math.random()*2) move = "zawarudo";
-        else if((o.isDefending && Math.random()*11<6) || Math.random()*11<3) move = "strength";
-        else if(Math.random()*16<3) move = "4thgear";
-        else if(Math.random()*16<3) move = "hinokami";
-        else if(Math.random()*16<3) move = "rasengan";
-        else if(Math.random()*16<3) move = "ora";
-        else if((o.isDefending && Math.random()*16<6) || Math.random()*16<3) move = "seriouspunch";
-        else if(!h.isZaWarudo && Math.random()*16<3) move = "zawarudo";
-        else if((o.strengthGain >= 12 && Math.random()*16<8) || Math.random()*16<3) move = "yare";
-        else move = "attack";
+        int x = (int)(Math.random()*3);
+        int y = x + (int)(Math.random()*3)+1;
+        int z = y + (int)(Math.random()*9)+1;
 
+        String first = moveButtons[x].getId();
+        String second = moveButtons[y].getId();
+        String third = moveButtons[z].getId();
+
+        // Decides move
+        if(h.HP < 15-o.strengthGain) return first;
+        if(o.HP < 30 && (y==4 || ((y==6 || y==7) && !o.isDefending))) return second;
+        if(!o.isDefending && Math.random()<0.5) return second;
+        if(o.HP > h.HP && y==5) return second;
+        return third;
+
+    }
+
+    /**
+     * Implements move for AI bot
+     * @param move move to display
+     * @return {@link String} move description display text
+     */
+    public String getMoveString(String move) {
         // Implements move
         if(move.startsWith("attack")) {
             if(playerNotTurn.isDefending) {
@@ -513,7 +550,6 @@ public class DGame {
             playerTurn.isZaWarudo = true;
             return "ZA WARUDO!\n`Computer` stopped time. Their opponent is frozen for `5 seconds`.";
         }
-
         // Duel closes if anything above doesn't work for some reason
         Duel.memberToGame.remove(homePlayer.member.getIdLong());
         Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
@@ -527,16 +563,75 @@ public class DGame {
     public void setupTimeout(MessageChannel c) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
-        if(playerNotTurn.member == null) e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
-        else e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
-        e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
-        e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
-        timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
-            Duel.memberToGame.remove(playerTurn.member.getIdLong());
-            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
-            deleteDisplayMessagesFull();
-            if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
-        });
+        if(playerNotTurn.member == null) {
+            Runnable success = () -> {
+                int xp = (int)((int)(Math.random()*11)-20/Constant.MULTIPLIER);
+                e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
+                e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
+                this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
+                    Database.addToUserBalance(playerTurn.member.getId(), xp);
+                    Duel.memberToGame.remove(playerTurn.member.getIdLong());
+                    Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                    if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
+                    deleteDisplayMessagesFull();
+                });
+                if(hasEnded) timeout.cancel(false);
+            };
+            Runnable failure = () -> {
+                int xp = (int)(Math.random()*11)-20;
+                e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
+                e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
+                this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
+                    Database.addToUserBalance(playerTurn.member.getId(), xp);
+                    Duel.memberToGame.remove(playerTurn.member.getIdLong());
+                    Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                    if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
+                    deleteDisplayMessagesFull();
+                });
+                if(hasEnded) timeout.cancel(false);
+            };
+            BotStatistics.sendMultiplier(playerTurn.member.getId(), success, failure);
+        } else {
+            Runnable success = () -> {
+                int xp = (int)((int)(Math.random()*31)+70*Constant.MULTIPLIER);
+                e.setFooter(playerNotTurn.member.getEffectiveName() + " won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
+                e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
+                if(timeout != null && timeout.isCancelled()) {
+                    this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
+                        Database.addToUserBalance(playerNotTurn.member.getId(), xp);
+                        Duel.memberToGame.remove(playerTurn.member.getIdLong());
+                        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                        if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
+                        deleteDisplayMessagesFull();
+                    });
+                }
+                if(hasEnded) timeout.cancel(false);
+            };
+            Runnable failure = () -> {
+                int xp = (int)(Math.random()*31)+70;
+                e.setFooter(playerNotTurn.member.getEffectiveName() + " won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
+                e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
+                if(timeout != null && timeout.isCancelled()) {
+                    this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
+                        Database.addToUserBalance(playerNotTurn.member.getId(), xp);
+                        Duel.memberToGame.remove(playerTurn.member.getIdLong());
+                        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                        if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
+                        deleteDisplayMessagesFull();
+                    });
+                }
+                if(hasEnded) timeout.cancel(false);
+            };
+            BotStatistics.sendMultiplier(playerNotTurn.member.getId(), success, failure);
+        }
     }
 
     /**
@@ -548,29 +643,60 @@ public class DGame {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         if(homePlayer.HP <= 0) {
             editTimeout.cancel(false);
+            hasEnded = true;
+            if(!timeout.isCancelled()) timeout.cancel(false);
             deleteDisplayMessagesFull();
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
-            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type l!duel to start another duel with me!");
+            EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type /duel to start another duel with me!");
             if(opposingPlayer.member == null) {
                 e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
                 e.setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `0`\n" +
                         "> Computer's HP: `" + opposingPlayer.HP + "`");
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*11)-20;
+                    xp = (int)(xp/Constant.MULTIPLIER);
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*11)-20;
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(homePlayer.member.getId(), success, failure);
             } else {
                 e.setAuthor(opposingPlayer.member.getEffectiveName() + " won the duel!", opposingPlayer.member.getUser().getAvatarUrl(), opposingPlayer.member.getUser().getEffectiveAvatarUrl());
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
                 e.setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `0`\n" +
                         "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `" + opposingPlayer.HP + "`");
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    xp = (int)(xp*Constant.MULTIPLIER);
+                    Database.addToUserBalance(opposingPlayer.member.getId(), xp);
+                    e.setFooter(opposingPlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    Database.addToUserBalance(opposingPlayer.member.getId(), xp);
+                    e.setFooter(opposingPlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(opposingPlayer.member.getId(), success, failure);
             }
             Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
-            c.sendMessageEmbeds(e.build()).queue();
             return true;
         } else if(opposingPlayer.HP <= 0) {
+            editTimeout.cancel(false);
+            if(!timeout.isCancelled()) timeout.cancel(false);
+            hasEnded = true;
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
             if(opposingPlayer.member != null) {
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
-                editTimeout.cancel(false);
                 deleteDisplayMessagesFull();
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
@@ -579,9 +705,21 @@ public class DGame {
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `0`");
-                c.sendMessageEmbeds(e.build()).queue();
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    xp = (int)(xp*Constant.MULTIPLIER);
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(homePlayer.member.getId(), success, failure);
             } else {
-                editTimeout.cancel(false);
                 deleteDisplayMessagesFull();
                 EmbedBuilder e = new EmbedBuilder()
                         .setColor(Color.green)
@@ -590,7 +728,20 @@ public class DGame {
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> Computer's HP: `0`");
-                c.sendMessageEmbeds(e.build()).queue();
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    xp = (int)(xp*Constant.MULTIPLIER);
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*31)+70;
+                    Database.addToUserBalance(homePlayer.member.getId(), xp);
+                    e.setFooter(homePlayer.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    c.sendMessageEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(homePlayer.member.getId(), success, failure);
             }
             Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             return true;
@@ -612,13 +763,40 @@ public class DGame {
             e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
             e.setDescription(p.member.getEffectiveName() + " ran away from the duel!");
+            Runnable success = () -> {
+                int xp = (int)(Math.random()*11)-20;
+                xp = (int)(xp/Constant.MULTIPLIER);
+                Database.addToUserBalance(playerTurn.member.getId(), xp);
+                e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                c.sendMessageEmbeds(e.build()).queue();
+            };
+            Runnable failure = () -> {
+                int xp = (int)(Math.random()*11)-20;
+                Database.addToUserBalance(playerTurn.member.getId(), xp);
+                e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                c.sendMessageEmbeds(e.build()).queue();
+            };
+            BotStatistics.sendMultiplier(playerTurn.member.getId(), success, failure);
         } else {
             e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
             e.setDescription(p.member.getAsMention() + " ran away from the duel!");
             Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
+            Runnable success = () -> {
+                int xp = (int)(Math.random()*31)+70;
+                xp = (int)(xp*Constant.MULTIPLIER);
+                Database.addToUserBalance(playerNotTurn.member.getId(), xp);
+                e.setFooter(playerNotTurn.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                c.sendMessageEmbeds(e.build()).queue();
+            };
+            Runnable failure = () -> {
+                int xp = (int)(Math.random()*31)+70;
+                Database.addToUserBalance(playerNotTurn.member.getId(), xp);
+                e.setFooter(playerNotTurn.member.getEffectiveName() + " gained " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                c.sendMessageEmbeds(e.build()).queue();
+            };
+            BotStatistics.sendMultiplier(playerNotTurn.member.getId(), success, failure);
         }
-        c.sendMessageEmbeds(e.build()).queue();
     }
 
 }

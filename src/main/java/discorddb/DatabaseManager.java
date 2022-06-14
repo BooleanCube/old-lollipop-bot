@@ -18,8 +18,8 @@ public class DatabaseManager {
     private static final HashMap<String, DatabaseObject> databases;
     private static final String directory = Paths.get("").toAbsolutePath() + "/src/main/java/discorddb/files/";
 
-    /**
-     * Static block to init all the current databases and caches
+    /*
+      Static block to init all the current databases and caches
      */
     static {
         databases = new HashMap<>();
@@ -37,7 +37,7 @@ public class DatabaseManager {
 
     /**
      * Creates a database file and adds it to the cache
-     * @param dbName
+     * @param dbName database name
      * @return boolean indicating success or failure
      * @throws LimitExceededException 10 databases at max
      * @throws FileAlreadyExistsException no duplicate databases can be created
@@ -72,7 +72,7 @@ public class DatabaseManager {
     /**
      * Returns the database object based on the database name
      * @param dbName database name
-     * @return DatabaseObject representing a database
+     * @return {@link DatabaseObject} representing a database
      */
     public static DatabaseObject getDatabase(String dbName) {
         if(!databases.containsKey(dbName)) return null;

@@ -37,11 +37,11 @@ public class BotInfo implements Command {
                         "> [Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=919061572649910292&permissions=1515854359872&scope=bot%20applications.commands)\n" +
                         "> [Github Repository](https://github.com/BooleanCube/lollipop-bot)\n" +
                         "> [Discord Bot List](https://discordbotlist.com/bots/lollipop-4786)\n" +
-                        "> [Top.gg](https://top.gg/bot/919061572649910292)\n")
-                .addField("Support", "Did you encounter a bug? Join this [server](https://discord.gg/3ZDpPyR) and report in a support channel.", false)
+                        "> [Top.gg](https://top.gg/bot/919061572649910292)\n" +
+                        "> [Infinity Bot List](https://infinitybots.gg/bots/919061572649910292)\n")
                 .addField("Developer", "**BooleanCube** (" + event.getJDA().getShardManager().getGuildById(740316079523627128l).getOwner().getUser().getAsTag() + ")\n[MyAnimeList](https://myanimelist.net/profile/BooleanCube) - [Playlist](https://open.spotify.com/playlist/4KnWT1hszQuBi4IaKdm8Pk?si=91e0fe7e73b54853) - [Discord](https://discord.gg/3ZDpPyR) - [Github](https://github.com/BooleanCube) - [Youtube](https://www.youtube.com/channel/UCsivrachJyFVLi7V60lrd6g)", false)
                 .setFooter("konnichiwa, watashi wa lollipop desu")
-                .setThumbnail(event.getGuild().getSelfMember().getEffectiveAvatarUrl())
+                .setThumbnail(event.getJDA().getSelfUser().getEffectiveAvatarUrl())
                 .build()
         ).queue();
     }

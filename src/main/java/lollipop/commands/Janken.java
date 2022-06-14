@@ -1,8 +1,6 @@
 package lollipop.commands;
 
-import lollipop.Constant;
-import lollipop.Command;
-import lollipop.Tools;
+import lollipop.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -64,32 +62,105 @@ public class Janken implements Command {
             String[] tie = {"A worthy opponent!", "You are indeed powerful, but can you match my next move...", "Kuso! That was close!", "Try your hardest on me!", "Don't get afraid now..."};
             EmbedBuilder e = new EmbedBuilder();
             if(num == random) {
-                e.setDescription(tie[(int)(Math.random()*tie.length)]);
+                e.setTitle(tie[(int)(Math.random()*tie.length)]);
                 e.addField("Your Hand", choice, true);
                 e.addField("My Hand", myChoice, true);
+                e.setFooter("You didn't get any lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
                 e.setColor(Color.yellow);
+                event.replyEmbeds(e.build()).queue();
             } else if(random == 0 && num == 2) {
-                e.setDescription(loss[(int)(Math.random()*loss.length)]);
-                e.addField("Your Hand", choice, true);
-                e.addField("My Hand", myChoice, true);
-                e.setColor(Color.red);
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*6)-10;
+                    xp = (int)(xp/Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(loss[(int)(Math.random()*loss.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.red);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*6)-10;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(loss[(int)(Math.random()*loss.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.red);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(event.getUser().getId(), success, failure);
             } else if(random == 2 && num == 0) {
-                e.setDescription(victory[(int)(Math.random()*victory.length)]);
-                e.addField("Your Hand", choice, true);
-                e.addField("My Hand", myChoice, true);
-                e.setColor(Color.green);
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*6)+10;
+                    xp = (int)(xp*Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(victory[(int)(Math.random()*victory.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.green);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*6)+10;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(victory[(int)(Math.random()*victory.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.green);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(event.getUser().getId(), success, failure);
             } else if(random > num) {
-                e.setDescription(loss[(int)(Math.random()*loss.length)]);
-                e.addField("Your Hand", choice, true);
-                e.addField("My Hand", myChoice, true);
-                e.setColor(Color.red);
-            } else if(num > random) {
-                e.setDescription(victory[(int)(Math.random()*victory.length)]);
-                e.addField("Your Hand", choice, true);
-                e.addField("My Hand", myChoice, true);
-                e.setColor(Color.green);
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*6)-10;
+                    xp = (int)(xp/Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(loss[(int)(Math.random()*loss.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.red);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*6)-10;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(loss[(int)(Math.random()*loss.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.red);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(event.getUser().getId(), success, failure);
+            } else {
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*6)+10;
+                    xp = (int)(xp*Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(victory[(int)(Math.random()*victory.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.green);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*6)+10;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    e.setTitle(victory[(int)(Math.random()*victory.length)]);
+                    e.addField("Your Hand", choice, true);
+                    e.addField("My Hand", myChoice, true);
+                    e.setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
+                    e.setColor(Color.green);
+                    event.replyEmbeds(e.build()).queue();
+                };
+                BotStatistics.sendMultiplier(event.getUser().getId(), success, failure);
             }
-            event.replyEmbeds(e.build()).queue();
         } else Tools.wrongUsage(event, this);
     }
 

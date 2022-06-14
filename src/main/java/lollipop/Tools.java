@@ -1,9 +1,5 @@
 package lollipop;
 
-import awatch.controller.AConstants;
-import awatch.model.*;
-import awatch.model.Character;
-import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -12,7 +8,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.*;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 
 public class Tools {
 
@@ -51,6 +48,20 @@ public class Tools {
                 .setColor(Color.red)
                 .build()
         ).queue();
+    }
+
+    /**
+     * Sort a HashMap by its values
+     * @param hm hashmap
+     * @return sorted hashmap
+     */
+    public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
+        List<Map.Entry<String, Integer> > list = new LinkedList<>(hm.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+        Collections.reverse(list);
+        HashMap<String, Integer> result = new LinkedHashMap<>();
+        for(Map.Entry<String, Integer> entry : list) result.put(entry.getKey(), entry.getValue());
+        return result;
     }
 
 }

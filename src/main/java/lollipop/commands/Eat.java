@@ -35,7 +35,7 @@ public class Eat implements Command {
     public void run(SlashCommandInteractionEvent event) {
         String[] gifs = {"https://c.tenor.com/T6jB8_AfdwsAAAAC/inazuma-eleven-ina11.gif", "https://c.tenor.com/KJQ_GeUPtJcAAAAC/pokemon-eat.gif", "https://c.tenor.com/r_zzF127q5IAAAAC/cute-girl-eating-onigiri.gif", "https://c.tenor.com/wHrdMy11-h8AAAAC/anime-sailor-moon.gif", "https://c.tenor.com/Q5PWpPOZ6xMAAAAC/cutie-honey-hiroyuki-imaishi.gif", "https://c.tenor.com/NrW4P5Xv9UQAAAAC/anime-rice.gif", "https://c.tenor.com/JEdcT8vhffgAAAAC/spirited-away-chihiro.gif"};
         event.replyEmbeds(new EmbedBuilder()
-                .setDescription("*nom nom nom nom nom*\n" + event.getMember().getAsMention() + " is eating!")
+                .setDescription("*nom nom nom nom nom*\n" + event.getUser().getAsMention() + " is eating!")
                 .setImage(gifs[(int)(Math.random()*gifs.length)])
                 .build()).queue();
     }

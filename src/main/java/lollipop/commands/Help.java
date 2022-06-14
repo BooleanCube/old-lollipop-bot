@@ -4,6 +4,7 @@ import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Manager;
 import lollipop.Tools;
+import net.bytebuddy.matcher.CollectionOneToOneMatcher;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -64,7 +65,7 @@ public class Help implements Command {
             StringBuilder misc = new StringBuilder();
             manager.getCommands("Miscellaneous").forEach(command -> misc.append("**`").append(command.getAliases()[0]).append("`**, "));
             EmbedBuilder e = new EmbedBuilder()
-                    .setAuthor(Objects.requireNonNull(event.getMember()).getUser().getName(), event.getMember().getAvatarUrl(), event.getMember().getEffectiveAvatarUrl())
+                    .setAuthor(event.getUser().getName(), event.getUser().getAvatarUrl(), event.getUser().getEffectiveAvatarUrl())
                     .setFooter("Use " + Constant.PREFIX + "help [command] to get more information about a command!")
                     .setTitle("Lollipop Commands");
             //lmao
@@ -74,7 +75,7 @@ public class Help implements Command {
             e.addField("Fun", fun.substring(0, fun.length()-2), true);
             e.addField("Misc", misc.substring(0, misc.length()-2), true);
             e.addField("Roleplay", roleplay.substring(0, roleplay.length()-2), true);
-            if(event.getMember().getIdLong() == Constant.OWNER_ID) {
+            if(event.getUser().getIdLong() == Constant.OWNER_ID) {
                 StringBuilder owner = new StringBuilder();
                 manager.getCommands("Owner").forEach(command -> owner.append("**`").append(command.getAliases()[0]).append("`**, "));
                 e.addField("Owner", owner.substring(0, owner.length()-2), false);

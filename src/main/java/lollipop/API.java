@@ -10,6 +10,7 @@ import lollipop.commands.Top;
 import lollipop.commands.search.Search;
 import lollipop.commands.search.infos.Episodes;
 import lollipop.commands.search.infos.News;
+import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
 import awatch.model.Question;
 import lollipop.pages.AnimePage;
@@ -351,13 +352,14 @@ public class API implements RListener, AListener {
                 sb.append("Episode #").append(i+1).append(" - [").append(episodes.get(i).title)
                         .append("](").append(episodes.get(i).url).append(")\n");
             }
-            String moreUrl = "";
-            if(!episodes.get(0).url.equals("")) moreUrl = episodes.get(0).url.substring(0, episodes.get(0).url.length()-2);
+            if(episodes.size() == 0) sb.append("Could not find any episodes on MAL!");
+            String moreUrl = "https://myanimelist.net/";
+            if(episodes.size() > 0 && !episodes.get(0).url.equals("")) moreUrl = episodes.get(0).url.substring(0, episodes.get(0).url.length()-2);
             if(!sb.toString().equals("")) {
                 sb.append("\n> [Click for all episodes!](").append(moreUrl).append(")");
                 pages.add(sb);
             }
-            else
+            else if(pages.size()>0)
                 pages.get(pages.size()-1).append("\n> [Click for all episodes!](").append(moreUrl).append(")");
 
             message.editOriginalEmbeds(
@@ -563,24 +565,30 @@ public class API implements RListener, AListener {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if (question.correct == null) return;
-        Trivia.openGames.get(msg.getIdLong()).question = question;
+        TGame game = Trivia.openGames.get(msg.getIdLong());
+        game.question = question;
         message.editOriginalEmbeds(question.toEmbed().build()).setActionRow(
                 Button.secondary(question.correct.title.equals(question.options.get(0)) ? "right" : "wrong1", question.options.get(0)),
                 Button.secondary(question.correct.title.equals(question.options.get(1)) ? "right" : "wrong2", question.options.get(1)),
                 Button.secondary(question.correct.title.equals(question.options.get(2)) ? "right" : "wrong3", question.options.get(2)),
                 Button.secondary(question.correct.title.equals(question.options.get(3)) ? "right" : "wrong4", question.options.get(3))
         ).queue();
-        Trivia.openGames.get(msg.getIdLong()).gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
+        int xp = (int)(Math.random()*11)-20;
+        game.gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
                 .setColor(Color.red)
-                .setDescription("Too late! You have to answer the trivia questions in under 15 seconds!")
+                        .setTitle("Too late!")
+                .setDescription("You have to answer the trivia questions in under 15 seconds!")
                 .setThumbnail("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
+                .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
                 .build()
-        ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> Trivia.openGames.remove(msg.getIdLong()));
+        ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> {
+            Trivia.openGames.remove(msg.getIdLong());
+            Database.addToUserBalance(game.user.getId(), xp);
+        });
         Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
         try {
             Cache.addTitleToCache(question.correct.title);
-        }
-        catch(IOException e) {}
+        } catch(IOException e) {}
     }
 
 }

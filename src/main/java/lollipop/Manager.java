@@ -4,6 +4,7 @@ import lollipop.commands.RandomAnime;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
+import lollipop.commands.eval.Eval;
 import lollipop.commands.search.Search;
 import lollipop.commands.trivia.Trivia;
 import net.dv8tion.jda.api.JDA;
@@ -34,28 +35,26 @@ public class Manager {
         jda.updateCommands().addCommands(
                 new Duel().getSlashCmd(),
                 new Move().getSlashCmd(),
+                new Attack().getSlashCmd(),
                 new Avatar().getSlashCmd(),
                 new Baka().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
+                new Defend().getSlashCmd(),
                 new Eat().getSlashCmd(),
                 new Gif().getSlashCmd(),
-                new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
                 new Hentai().getSlashCmd(),
-                new Hinokami().getSlashCmd(),
-                new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
                 new Latest().getSlashCmd(),
-                new Onigiri().getSlashCmd(),
-                new Ora().getSlashCmd(),
+                new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
-                new Punch().getSlashCmd(),
+                new Profile().getSlashCmd(),
                 new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
-                new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
+                new Support().getSlashCmd(),
                 new Top().getSlashCmd(),
                 new Trivia().getSlashCmd()
         ).queue();
@@ -72,28 +71,26 @@ public class Manager {
         g.updateCommands().addCommands(
                 new Duel().getSlashCmd(),
                 new Move().getSlashCmd(),
+                new Attack().getSlashCmd(),
                 new Avatar().getSlashCmd(),
                 new Baka().getSlashCmd(),
                 new BitesTheDust().getSlashCmd(),
                 new BotInfo().getSlashCmd(),
+                new Defend().getSlashCmd(),
                 new Eat().getSlashCmd(),
                 new Gif().getSlashCmd(),
-                new Headbutt().getSlashCmd(),
                 new Help(this).getSlashCmd(),
                 new Hentai().getSlashCmd(),
-                new Hinokami().getSlashCmd(),
-                new InfiniteVoid().getSlashCmd(),
                 new Janken().getSlashCmd(),
                 new Latest().getSlashCmd(),
-                new Onigiri().getSlashCmd(),
-                new Ora().getSlashCmd(),
+                new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
-                new Punch().getSlashCmd(),
+                new Profile().getSlashCmd(),
                 new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
-                new Rasengan().getSlashCmd(),
                 new Search().getSlashCmd(),
+                new Support().getSlashCmd(),
                 new Top().getSlashCmd(),
                 new Trivia().getSlashCmd()
         ).queue();
@@ -132,7 +129,6 @@ public class Manager {
         addCommand(new Avatar());
         addCommand(new Eval());
         addCommand(new Dashboard());
-        addCommand(new Ora());
         addCommand(new Janken());
         addCommand(new Latest());
         addCommand(new Hentai());
@@ -140,18 +136,17 @@ public class Manager {
         addCommand(new RandomQuote());
         addCommand(new BitesTheDust());
         addCommand(new Pat());
-        addCommand(new Rasengan());
-        addCommand(new Onigiri());
         addCommand(new Eat());
-        addCommand(new Hinokami());
-        addCommand(new InfiniteVoid());
-        addCommand(new Headbutt());
         addCommand(new RandomAnime());
         addCommand(new Top());
-        addCommand(new Punch());
         addCommand(new Duel());
         addCommand(new Move());
         addCommand(new Trivia());
+        addCommand(new Profile());
+        addCommand(new Leaderboard());
+        addCommand(new Support());
+        addCommand(new Attack());
+        addCommand(new Defend());
     }
 
     /**
@@ -202,16 +197,27 @@ public class Manager {
      */
     void run(SlashCommandInteractionEvent event) {
         final String msg = event.getCommandString();
-        if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND) &&
-           !event.getGuild().getSelfMember().hasPermission(Permission.ADMINISTRATOR)) return;
-        final String command = event.getName();
-        if (commands.containsKey(command)) {
-            if(event.getMember().getUser().isBot()) {
-                event.reply("Nice try, you lowly peasant! Only my masters can command me!")
-                        .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
+        if(event.getInteraction().isFromGuild()) {
+            if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND))
                 return;
+            final String command = event.getName();
+            if (commands.containsKey(command)) {
+                if(event.getMember().getUser().isBot()) {
+                    event.reply("Nice try, you lowly peasant! Only my masters can command me!")
+                            .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
+                    return;
+                }
+                commands.get(command).run(event);
+                int xp = (int)(Math.random()*6)+1;
+                if(Math.random()<0.4) Database.addToUserBalance(event.getUser().getId(), xp);
             }
-            commands.get(command).run(event);
+        } else {
+            final String command = event.getName();
+            if(commands.containsKey(command)) {
+                commands.get(command).run(event);
+                int xp = (int)(Math.random()*6)+1;
+                if(Math.random()<0.4) Database.addToUserBalance(event.getUser().getId(), xp);
+            }
         }
     }
 

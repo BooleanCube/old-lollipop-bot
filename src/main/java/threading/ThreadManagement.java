@@ -1,6 +1,7 @@
 package threading;
 
 import awatch.controller.ALoader;
+import lollipop.BotStatistics;
 import mread.controller.RLoader;
 
 import java.util.concurrent.Executors;
@@ -14,11 +15,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadManagement {
 
-    public static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
+    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(8);
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    static {
+        executor.setMaximumPoolSize(10);
+    }
 
     /**
      * Execute a call from the API or from ALoader
-     * @param runnable
+     * @param runnable runnable action
      */
     public static void execute(Runnable runnable) {
         executor.execute(runnable);
@@ -28,13 +34,19 @@ public class ThreadManagement {
      * Setup a cache refresh cycle which refreshes the cache every day so the new animes and new information reaches as soon as possible
      */
     public static void setupCacheRefresh() {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         Runnable apiRefresh = () -> {
             ALoader.animeCache.clear();
             RLoader.mangaCache.clear();
         };
-        // Start API refresh cycle once a day to refresh animes everyday to make sure new data is cached later on
         scheduler.scheduleWithFixedDelay(apiRefresh, 1, 1, TimeUnit.DAYS);
+    }
+
+    /**
+     * Setup a statistics refresh cycle to reset the statistics on the bot list websites
+     */
+    public static void setupStatisticsCycle() {
+        Runnable statsRefresh = BotStatistics::setStatistics;
+        scheduler.scheduleWithFixedDelay(statsRefresh, 6, 12, TimeUnit.HOURS);
     }
 
 }

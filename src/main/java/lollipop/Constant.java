@@ -26,4 +26,7 @@ public class Constant {
     // Anime Title file cache directory
     public static String TITLECACHE = "/src/main/java/cache/titles.txt";
 
+    // Multiplier value
+    public static double MULTIPLIER = 1.5d;
+
 }

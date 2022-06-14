@@ -1,6 +1,9 @@
 package lollipop.listeners;
 
 import awatch.model.Anime;
+import lollipop.BotStatistics;
+import lollipop.Constant;
+import lollipop.Database;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
 import lollipop.commands.search.infos.*;
@@ -9,7 +12,6 @@ import lollipop.commands.trivia.Trivia;
 import lollipop.pages.EpisodeList;
 import lollipop.pages.Newspaper;
 import lollipop.pages.AnimePage;
-import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,7 +22,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -399,23 +400,63 @@ public class PageListener extends ListenerAdapter {
                 return;
             }
             if(Objects.equals(event.getButton().getId(), "right")) {
-                event.editMessageEmbeds(
-                        new EmbedBuilder()
-                                .setTitle("Correct Answer!")
-                                .setColor(Color.green)
-                                .setDescription("You guessed the correct anime!")
-                                .setThumbnail("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
-                                .build()
-                ).setActionRows(Collections.emptyList()).queue();
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*21)+40;
+                    xp = (int)(xp* Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle("Correct Answer!")
+                                    .setColor(Color.green)
+                                    .setDescription("You guessed the correct anime!")
+                                    .setThumbnail("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
+                                    .setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                                    .build()
+                    ).setActionRows(Collections.emptyList()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*21)+40;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle("Correct Answer!")
+                                    .setColor(Color.green)
+                                    .setDescription("You guessed the correct anime!")
+                                    .setThumbnail("https://cdn.discordapp.com/emojis/738541796174594108.webp?size=80&quality=lossless")
+                                    .setFooter("You won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                                    .build()
+                    ).setActionRows(Collections.emptyList()).queue();
+                };
+                BotStatistics.sendMultiplier(game.user.getId(), success, failure);
             } else {
-                event.editMessageEmbeds(
-                        new EmbedBuilder()
-                                .setTitle("Wrong Answer!")
-                                .setColor(Color.red)
-                                .setDescription("You guessed the wrong anime!")
-                                .setThumbnail("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
-                                .build()
-                ).setActionRows(Collections.emptyList()).queue();
+                Runnable success = () -> {
+                    int xp = (int)(Math.random()*11)-20;
+                    xp = (int)(xp/Constant.MULTIPLIER);
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle("Wrong Answer!")
+                                    .setColor(Color.red)
+                                    .setDescription("You guessed the wrong anime!")
+                                    .setThumbnail("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
+                                    .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                                    .build()
+                    ).setActionRows(Collections.emptyList()).queue();
+                };
+                Runnable failure = () -> {
+                    int xp = (int)(Math.random()*11)-20;
+                    Database.addToUserBalance(event.getUser().getId(), xp);
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle("Wrong Answer!")
+                                    .setColor(Color.red)
+                                    .setDescription("You guessed the wrong anime!")
+                                    .setThumbnail("https://cdn.discordapp.com/emojis/886080067195772970.webp?size=80&quality=lossless")
+                                    .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                                    .build()
+                    ).setActionRows(Collections.emptyList()).queue();
+                };
+                BotStatistics.sendMultiplier(game.user.getId(), success, failure);
             }
             Trivia.openGames.remove(id);
         }

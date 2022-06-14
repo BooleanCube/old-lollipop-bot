@@ -41,23 +41,23 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>4.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-jsr223</artifactId>
-            <version>3.0.0-alpha-4</version>
+            <version>3.0.10</version>
         </dependency>
         <!-- https://github.com/qos-ch/logback -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>org.discordbots</groupId>
             <artifactId>DBL-Java-Library</artifactId>
-            <version>2.0.1</version>
+            <version>19abf19</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>

@@ -54,6 +54,16 @@ public class Search implements Command {
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
+        if(!event.getInteraction().isFromGuild()) {
+            event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("This command can only be used in guilds for safety reasons!")
+                            .build()
+            ).queue();
+            return;
+        }
+
         final List<OptionMapping> options = event.getOptions();
         final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size()<2) { Tools.wrongUsage(event, this); return; }
@@ -71,9 +81,10 @@ public class Search implements Command {
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
                         .setDescription("""
-                                Could not find an anime with that search query!
+                                Could not find an anime with that search query! Try:
                                 > Search using japanese title (eg. Kimetsu no Yaiba)
-                                > Try again with a valid anime title that exists in MyAnimeList's database""")
+                                > Search with a valid anime title that exists in MyAnimeList's database
+                                > NSFW Animes only appear in NSFW channels""")
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();

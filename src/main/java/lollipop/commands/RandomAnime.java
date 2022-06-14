@@ -4,6 +4,7 @@ import awatch.model.Anime;
 import lollipop.*;
 import lollipop.pages.AnimePage;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -58,7 +59,9 @@ public class RandomAnime implements Command {
                         .build()
         ).queueAfter(5, TimeUnit.SECONDS, me -> messageToPage.remove(message.getIdLong()));
         messageToPage.put(message.getIdLong(), new AnimePage(message, event.getUser(), timeout));
-        api.randomAnime(interactionHook, event.getTextChannel().isNSFW());
+        boolean nsfw = false;
+        if(event.getChannel().getType() == ChannelType.TEXT) nsfw = event.getTextChannel().isNSFW();
+        api.randomAnime(interactionHook, nsfw);
     }
 
 }

@@ -158,9 +158,9 @@ public class DuelsListener extends ListenerAdapter {
                 if(DGame.playerNotTurn.member == null) DGame.setupTimeout(event.getChannel());
                 DGame.switchTurns();
                 if(DGame.playerTurn.member != null) DGame.setupTimeout(event.getChannel());
-                DGame.sendSelectMove(event, move);
+                DGame.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
             } else {
-                DGame.sendSelectMove(event, move);
+                DGame.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
                 if(DGame.playerTurn.member == null) DGame.setupTimeout(event.getChannel());
                 DGame.switchTurns();
                 if(DGame.playerTurn.member != null) DGame.setupTimeout(event.getChannel());
@@ -172,18 +172,21 @@ public class DuelsListener extends ListenerAdapter {
                 DGame.setupTimeout(event.getChannel());
             } else if(DGame.playerTurn.member == null) {
                 //AI
-                StringBuilder aiMove = new StringBuilder("> " + DGame.AIMove(DGame.playerTurn, DGame.playerNotTurn) + "\n\n");
-                DGame.sendSelectMove(event, aiMove.toString());
+                String moveId = DGame.AIMove(DGame.playerTurn, DGame.playerNotTurn);
+                String gif = DGame.gifMap.get(moveId);
+                StringBuilder aiMove = new StringBuilder("> " + DGame.getMoveString(moveId) + "\n\n");
+                DGame.sendSelectMove(event, aiMove.toString(), gif);
                 if(DGame.playerNotTurn.isTimedOut()) {
                     int turns = (int)(Math.random()*3)+2;
                     for(int i=0; i<turns; i++) aiMove.append("> ").append(DGame.AIMove(DGame.playerTurn, DGame.playerNotTurn)).append("\n");
-                    DGame.sendSelectMove(event, aiMove.toString());
+                    DGame.sendSelectMove(event, aiMove.toString(), gif);
                     DGame.playerNotTurn.timeoutDuration = 0;
                     DGame.playerTurn.isZaWarudo = false;
                     DGame.switchTurns();
                     int x = (int)(Math.random()*3);
                     int y = x + (int)(Math.random()*3)+1;
                     int z = y + (int)(Math.random()*9)+1;
+
                     DGame.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
                             .setAuthor(DGame.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", DGame.playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
@@ -207,10 +210,7 @@ public class DuelsListener extends ListenerAdapter {
             if(DGame.checkWin(event.getChannel())) {
                 DGame.timeout.cancel(false);
                 DGame.editTimeout.cancel(false);
-                return;
             }
-
-            DGame.checkWin(event.getChannel()); // ???????
         }
     }
 

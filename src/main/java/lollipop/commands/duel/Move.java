@@ -42,9 +42,11 @@ public class Move implements Command {
         final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size() >= 1) {
             if(args.size() == 1 && args.get(0).equalsIgnoreCase("all")) {
-                event.replyEmbeds(new EmbedBuilder()
-                        .setDescription(DGame.getAvailableMoves())
-                        .build()
+                event.replyEmbeds(
+                        new EmbedBuilder()
+                                .setTitle("Moves")
+                                .setDescription(DGame.getAvailableMoves())
+                                .build()
                 ).queue();
                 return;
             }

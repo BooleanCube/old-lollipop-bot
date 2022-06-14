@@ -39,17 +39,24 @@ public class DatabaseObject {
 
     /**
      * Get database name
-     * @return Database name
+     * @return {@link String} with database name
      */
     public String getName() {
         return dbName;
     }
 
     /**
-     * Get value given key
-     * from cache
+     * Get database file
+     * @return {@link File} with all of the data
+     */
+    public File getFile() {
+        return dbFile;
+    }
+
+    /**
+     * Get value given key from the cache
      * @param key String key
-     * @return value corresponding to key
+     * @return String value corresponding to key
      */
     public String getValue(String key) {
         if(!cache.containsKey(key)) return null;
@@ -57,10 +64,9 @@ public class DatabaseObject {
     }
 
     /**
-     * Get value given key as integer
-     * from cache
+     * Get value given key as integer from the cache
      * @param key String key
-     * @return int value corresponding to key
+     * @return Integer value corresponding to key
      */
     public Integer getValueInt(String key) {
         if(!cache.containsKey(key)) return null;
@@ -68,10 +74,9 @@ public class DatabaseObject {
     }
 
     /**
-     * Get value given key as long
-     * from cache
+     * Get value given key as a long from the cache
      * @param key String key
-     * @return long value corresponding to key
+     * @return Long value corresponding to key
      */
     public Long getValueLong(String key) {
         if(!cache.containsKey(key)) return null;
@@ -80,9 +85,9 @@ public class DatabaseObject {
 
     /**
      * Update value at key, Add if key does not exist
-     * both database and cache
-     * @param key key to new value
-     * @param value new value
+     * (both database and cache)
+     * @param key key String to new value
+     * @param value new value String
      */
     public void updateValue(String key, String value) {
         if(!cache.containsKey(key)) {
@@ -97,9 +102,9 @@ public class DatabaseObject {
 
     /**
      * Add key to value relationship
-     * both database and cache
-     * @param key key of value
-     * @param value value corresponding to key
+     * (both database and cache)
+     * @param key key String of value
+     * @param value value String corresponding to key
      */
     public void addKey(String key, String value) {
         cache.put(key, value);
@@ -111,7 +116,7 @@ public class DatabaseObject {
     /**
      * Remove key
      * both database and cache
-     * @param key key to be removed
+     * @param key key String to be removed
      */
     public void removeKey(String key) {
         cache.remove(key);
@@ -122,9 +127,9 @@ public class DatabaseObject {
 
     /**
      * Update part of the database
-     * @param key key to update
-     * @param value new value
-     * @throws IOException for BufferedReader
+     * @param key key String to update
+     * @param value new value String
+     * @throws IOException file does not exist
      */
     private void updateToDb(String key, String value) throws IOException {
         BufferedReader bf = new BufferedReader( new FileReader(dbFile));
@@ -139,8 +144,8 @@ public class DatabaseObject {
 
     /**
      * Remove part of the database
-     * @param key key to remove
-     * @throws IOException for BufferedReader
+     * @param key key String to remove
+     * @throws IOException file does not exist
      */
     private void removeFromDb(String key) throws IOException {
         BufferedReader bf = new BufferedReader( new FileReader(dbFile));
