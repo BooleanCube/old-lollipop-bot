@@ -209,7 +209,6 @@ https://api.kawaii.red/gif/wink/wink1.gif
 https://api.kawaii.red/gif/confused/confused7.gif
 https://api.kawaii.red/gif/alarm/alarm3.gif
 https://api.kawaii.red/gif/nom/nom20.gif
-
 https://api.kawaii.red/gif/hide/hide11.gif
 https://api.kawaii.red/gif/amazing/amazing4.gif
 https://api.kawaii.red/gif/smug/smug8.gif
