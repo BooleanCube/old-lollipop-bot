@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"discorddb","l":"DatabaseManager"},{"p":"discorddb","l":"DatabaseObject"}];updateSearchResults();
