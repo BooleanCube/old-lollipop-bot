@@ -33,16 +33,11 @@ public class ALoader {
         if(animeCache.containsKey(query)) return animeCache.get(query);
         String extension = !nsfw ? "&sfw=true" : "";
         URL web = new URL(AConstants.v4API+"/anime?q=" + query.replaceAll(" ", "%20") + extension);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         ArrayList<Anime> animes = new ArrayList<>();
-        DataArray arr = null;
+        DataArray arr;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
@@ -64,12 +59,7 @@ public class ALoader {
      */
     public static Character loadCharacter(String query) throws IOException {
         URL web = new URL(AConstants.v3API+"/search/character?q=" + query.replaceAll(" ", "%20"));
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Character character = new Character();
@@ -84,12 +74,7 @@ public class ALoader {
      */
     public static Quote loadQuote() throws IOException {
         URL web = new URL(AConstants.quoteAPI);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Connection Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Quote quote = new Quote();
@@ -105,16 +90,11 @@ public class ALoader {
      */
     public static ArrayList<Episode> loadEpisodes(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/episodes");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         ArrayList<Episode> episodes = new ArrayList<>();
-        DataArray arr = null;
+        DataArray arr;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
@@ -128,6 +108,31 @@ public class ALoader {
     }
 
     /**
+     * Loads the character list of the given anime
+     * @param id MAL id
+     * @return arraylist of characters
+     * @throws IOException for BufferedReader
+     */
+    public static ArrayList<Character> loadCharacterList(long id) throws IOException {
+        URL web = new URL(AConstants.v4API+"/anime/" + id + "/characters");
+        HttpsURLConnection con = configureConnection(web);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        ArrayList<Character> characters = new ArrayList<>();
+        DataArray arr;
+        try {
+            arr = data.getArray("data");
+        } catch(Exception e) { return null; }
+        for(int i=0; i<arr.length(); i++) {
+            DataObject res = arr.getObject(i);
+            Character character = new Character();
+            character.parseDataList(res);
+            characters.add(character);
+        }
+        return characters;
+    }
+
+    /**
      * Loads recent news from the given anime
      * @param id MAL id
      * @return arraylist of articles
@@ -135,16 +140,11 @@ public class ALoader {
      */
     public static ArrayList<Article> loadNews(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/news");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         ArrayList<Article> articles = new ArrayList<>();
-        DataArray arr = null;
+        DataArray arr;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
@@ -165,12 +165,7 @@ public class ALoader {
      */
     public static Statistic loadStatistics(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/statistics");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Statistic stats = new Statistic();
@@ -186,12 +181,7 @@ public class ALoader {
      */
     public static Themes loadThemes(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/themes");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Themes themes = new Themes();
@@ -207,12 +197,7 @@ public class ALoader {
      */
     public static Recommendation loadRecommendations(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/recommendations");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Recommendation recommendation = new Recommendation();
@@ -228,12 +213,7 @@ public class ALoader {
      */
     public static Review loadReview(long id) throws IOException {
         URL web = new URL(AConstants.v4API+"/anime/" + id + "/reviews");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Review review = new Review();
@@ -248,16 +228,36 @@ public class ALoader {
      */
     public static ArrayList<Anime> loadTop() throws IOException {
         URL web = new URL(AConstants.v4API+"/top/anime");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         ArrayList<Anime> animes = new ArrayList<>();
-        DataArray arr = null;
+        DataArray arr;
+        try {
+            arr = data.getArray("data");
+        } catch(Exception e) { return null; }
+        int size = Math.min(25, arr.length());
+        for(int i=0; i<size; i++) {
+            DataObject result = arr.getObject(i);
+            Anime anime = new Anime();
+            anime.parseData(result);
+            animes.add(anime);
+        }
+        return animes;
+    }
+
+    /**
+     * Load the top animes ranked in terms of popularity
+     * @return arraylist of anime
+     * @throws IOException for BufferedReader
+     */
+    public static ArrayList<Anime> loadPopular() throws IOException {
+        URL web = new URL(AConstants.v4API+"/top/anime?filter=bypopularity");
+        HttpsURLConnection con = configureConnection(web);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        ArrayList<Anime> animes = new ArrayList<>();
+        DataArray arr;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
@@ -278,16 +278,11 @@ public class ALoader {
      */
     public static ArrayList<Anime> loadLatest() throws IOException {
         URL web = new URL(AConstants.v4API+"/seasons/now");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         ArrayList<Anime> animes = new ArrayList<>();
-        DataArray arr = null;
+        DataArray arr;
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
@@ -310,16 +305,11 @@ public class ALoader {
     public static Anime loadRandom(boolean nsfw) throws IOException {
         String extension = !nsfw ? "?sfw" : "";
         URL web = new URL(AConstants.v4API+"/random/anime" + extension);
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Anime anime = new Anime();
-        DataObject result = null;
+        DataObject result;
         try {
             result = data.getObject("data");
         } catch(Exception e) { return null; }
@@ -336,12 +326,7 @@ public class ALoader {
         String[] types = {"alarm", "amazing", "ask", "baka", "bite", "blush", "blyat", "boop", "clap", "coffee", "confused", "cry", "cuddle", "cute", "dance", "destroy", "die", "disappear", "dodge", "error", "facedesk", "facepalm", "fbi", "fight", "happy", "hide", "highfive", "hug", "kill", "kiss", "laugh", "lick", "lonely", "love", "mad", "money", "nom", "nosebleed", "ok", "party", "pat", "peek", "poke", "pout", "protect", "puke", "punch", "purr", "pusheen", "run", "salute", "scared", "scream", "shame", "shocked", "shoot", "shrug", "sip", "sit", "slap", "sleepy", "smile", "smoke", "smug", "spin", "stare", "stomp", "tickle", "trap", "triggered", "uwu", "wasted", "wave", "wiggle", "wink", "yeet"};
         String type = types[(int)(Math.random()*types.length)];
         URL web = new URL(AConstants.kawaiiAPI + "/" + type + "/token=" + Secret.KAWAIIAPITOKEN + "/");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         GIF gif = new GIF();
@@ -356,16 +341,11 @@ public class ALoader {
      */
     public static Question loadTrivia(HashSet<String> available) throws IOException {
         URL web = new URL(AConstants.v4API+"/random/anime?sfw");
-        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
-        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         Anime anime = new Anime();
-        DataObject result = null;
+        DataObject result;
         try {
             result = data.getObject("data");
         } catch(Exception e) { return null; }
@@ -374,6 +354,22 @@ public class ALoader {
         question.generateOptions(available, 3);
         Collections.shuffle(question.options);
         return question;
+    }
+
+    /**
+     * Declare the HttpsURLConnection and configure for REST API
+     * @param web rest api url object
+     * @return {@link HttpsURLConnection} for the REST API
+     * @throws IOException for declaring and configuring {@link HttpsURLConnection}
+     */
+    public static HttpsURLConnection configureConnection(URL web) throws IOException{
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
+        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        return con;
     }
 
 }

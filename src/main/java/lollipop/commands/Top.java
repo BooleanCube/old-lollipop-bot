@@ -1,22 +1,22 @@
 package lollipop.commands;
 
-import awatch.model.Anime;
 import lollipop.*;
 import lollipop.pages.AnimePage;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Top implements Command {
 
@@ -34,7 +34,7 @@ public class Top implements Command {
 
     @Override
     public String getHelp() {
-        return "Retrieves the top 25 anime in the world!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
+        return "Gets the top 25 anime in the world!\nUsage: `" + Constant.PREFIX + getAliases()[0] + "`";
     }
 
     @Override

@@ -5,15 +5,18 @@ import awatch.controller.AListener;
 import awatch.model.*;
 import awatch.model.Character;
 import lollipop.commands.Latest;
+import lollipop.commands.Popular;
 import lollipop.commands.RandomAnime;
 import lollipop.commands.Top;
 import lollipop.commands.search.Search;
+import lollipop.commands.search.infos.Characters;
 import lollipop.commands.search.infos.Episodes;
 import lollipop.commands.search.infos.News;
 import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
 import awatch.model.Question;
 import lollipop.pages.AnimePage;
+import lollipop.pages.CharacterList;
 import lollipop.pages.EpisodeList;
 import lollipop.pages.Newspaper;
 import mread.controller.RClient;
@@ -24,15 +27,17 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,6 +55,8 @@ public class API implements RListener, AListener {
     final ArrayDeque<InteractionHook> messageToEdit = new ArrayDeque<>();
     final ArrayDeque<ButtonInteractionEvent> eventToReply = new ArrayDeque<>();
     final HashMap<ButtonInteractionEvent, AnimePage> eventToPage = new HashMap<>();
+    final ArrayDeque<SelectMenuInteractionEvent> compToReply = new ArrayDeque<>();
+    final HashMap<SelectMenuInteractionEvent, AnimePage> compToPage = new HashMap<>();
 
     /**
      * Searches for Manga given query
@@ -130,29 +137,37 @@ public class API implements RListener, AListener {
     /**
      * Retrieves the episodes from the given anime
      * @param event button interaction event
-     * @param message message
      * @param page anime page
      */
-    public void getEpisodes(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
+    public void getEpisodes(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getEpisodes(id);
-        eventToReply.push(event);
-        messageToEdit.push(message);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
+    }
+
+    /**
+     * Retrieves the characters from the given anime
+     * @param event button interaction event
+     * @param page anime page
+     */
+    public void getCharacters(SelectMenuInteractionEvent event, AnimePage page) {
+        long id = page.animes.get(page.pageNumber-1).malID;
+        animeClient.getCharacters(id);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
      * Retrieves recent news from the given anime
      * @param event button interaction event
-     * @param message message
      * @param page anime page
      */
-    public void getNews(ButtonInteractionEvent event, InteractionHook message, AnimePage page) {
+    public void getNews(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getNews(id);
-        eventToReply.push(event);
-        messageToEdit.push(message);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
@@ -160,11 +175,11 @@ public class API implements RListener, AListener {
      * @param event button interaction event
      * @param page anime page
      */
-    public void getStatistics(ButtonInteractionEvent event, AnimePage page) {
+    public void getStatistics(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getStatistics(id);
-        eventToReply.push(event);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
@@ -172,11 +187,11 @@ public class API implements RListener, AListener {
      * @param event button interaction event
      * @param page anime page
      */
-    public void getThemes(ButtonInteractionEvent event, AnimePage page) {
+    public void getThemes(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getThemes(id);
-        eventToReply.push(event);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
@@ -184,11 +199,11 @@ public class API implements RListener, AListener {
      * @param event button interaction event
      * @param page anime page
      */
-    public void getRecommendation(ButtonInteractionEvent event, AnimePage page) {
+    public void getRecommendation(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getRecommendation(id);
-        eventToReply.push(event);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
@@ -196,11 +211,11 @@ public class API implements RListener, AListener {
      * @param event button interaction event
      * @param page anime page
      */
-    public void getReview(ButtonInteractionEvent event, AnimePage page) {
+    public void getReview(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getReview(id);
-        eventToReply.push(event);
-        eventToPage.put(event, page);
+        compToReply.push(event);
+        compToPage.put(event, page);
     }
 
     /**
@@ -209,6 +224,15 @@ public class API implements RListener, AListener {
      */
     public void getTop(InteractionHook message) {
         animeClient.getTop();
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Retrieves the top 25 ranked animes in terms of popularity
+     * @param message message
+     */
+    public void getPopularAnime(InteractionHook message) {
+        animeClient.getPopular();
         messageToEdit.push(message);
     }
 
@@ -292,24 +316,64 @@ public class API implements RListener, AListener {
             if(a.popularity < 1) return Integer.MAX_VALUE;
             return a.popularity;
         }));
-        //this filters out 0 popularity search results rather than sending them to the back of the queue
-        //animes = (ArrayList<Anime>) animes.stream().filter(a -> a.popularity > 0).collect(Collectors.toList());
-        message.editOriginalEmbeds(animes.get(0).toEmbed().setFooter("Page 1/" + animes.size()).build()).setActionRow(
-                Button.secondary("left", Emoji.fromUnicode("⬅")),
-                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
-                Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes"),
-                Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info"),
-                Button.secondary("right", Emoji.fromUnicode("➡"))
+        message.editOriginalEmbeds(animes.get(0).toEmbed().setFooter("Page 1/" + animes.size()).build()).setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder("Sort by popularity")
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by ranks", "ranks")
+                                .addOption("Sort by latest", "time")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Trailer", "Trailer")
+                                .addOption("Episodes", "Episodes")
+                                .addOption("Characters", "Characters")
+                                .addOption("Themes", "Themes")
+                                .addOption("Recommendations", "Recommendations")
+                                .addOption("News", "News")
+                                .addOption("Review", "Review")
+                                .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
         ).complete();
         message.editOriginalComponents()
-                .setActionRow(
-                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
-                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
-                        Button.primary("episodes", Emoji.fromUnicode("⏯")).withLabel("Episodes").asDisabled(),
-                        Button.primary("more", Emoji.fromUnicode("\uD83D\uDD0E")).withLabel("More Info").asDisabled(),
-                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
-                )
-                .queueAfter(3, TimeUnit.MINUTES, i -> Search.messageToPage.remove(msg.getIdLong()));
+                .setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                        )
+                ).queueAfter(3, TimeUnit.MINUTES, i -> {
+                    Search.messageToPage.remove(msg.getIdLong());
+                    for(Anime anime : animes) {
+                        anime.news = null;
+                        anime.stats = null;
+                        anime.episodeList = null;
+                        anime.themes = null;
+                        anime.review = null;
+                        anime.recommendations = null;
+                    }
+                });
     }
 
     /**
@@ -338,9 +402,7 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendEpisodes(ArrayList<Episode> episodes) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
-        InteractionHook message = messageToEdit.removeFirst();
-        Message msg = message.retrieveOriginal().complete();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -353,37 +415,144 @@ public class API implements RListener, AListener {
                         .append("](").append(episodes.get(i).url).append(")\n");
             }
             if(episodes.size() == 0) sb.append("Could not find any episodes on MAL!");
-            String moreUrl = "https://myanimelist.net/";
+            String moreUrl = "";
             if(episodes.size() > 0 && !episodes.get(0).url.equals("")) moreUrl = episodes.get(0).url.substring(0, episodes.get(0).url.length()-2);
-            if(!sb.toString().equals("")) {
+            if(!sb.toString().equals("") && !moreUrl.equals("")) {
                 sb.append("\n> [Click for all episodes!](").append(moreUrl).append(")");
                 pages.add(sb);
             }
-            else if(pages.size()>0)
+            else if(pages.size()>0 && !moreUrl.equals(""))
                 pages.get(pages.size()-1).append("\n> [Click for all episodes!](").append(moreUrl).append(")");
 
-            message.editOriginalEmbeds(
+            InteractionHook msg = event.replyEmbeds(
                     new EmbedBuilder()
                             .setTitle("Episode List")
                             .setDescription(pages.get(0))
                             .setFooter("Page 1/" + pages.size())
                             .build()
-            ).setActionRow(
+            ).setEphemeral(true).addActionRow(
                     Button.secondary("left", Emoji.fromUnicode("⬅")),
                     Button.secondary("right", Emoji.fromUnicode("➡"))
+            ).complete();
+
+            Message message = msg.retrieveOriginal().complete();
+            AnimePage page = compToPage.remove(event);
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
             ).queue();
-            AnimePage page = eventToPage.remove(event);
-            page.episodes.put(page.pageNumber, new EpisodeList(pages,1, msg, event.getUser()));
-            Episodes.messageToPage.put(msg.getIdLong(), page.episodes.get(page.pageNumber));
-            message.editOriginalComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, i -> Episodes.messageToPage.remove(msg.getIdLong()));
+            page.animes.get(page.pageNumber-1).episodeList = new EpisodeList(pages,1, message, event.getUser());
+            Episodes.messageToPage.put(message.getIdLong(), page.animes.get(page.pageNumber-1).episodeList);
+            msg.editOriginalComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, i -> Episodes.messageToPage.remove(message.getIdLong()));
         }
         catch (Exception e) {
             e.printStackTrace();
-            message.editOriginalEmbeds(
+            if(event.isAcknowledged()) return;
+            event.replyEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any episodes from that anime! Please try again later!")
+                            .build()
+            ).queue();
+        }
+    }
+
+    /**
+     * Sends the requested anime character list
+     * @param characters episodes
+     */
+    @Override
+    public void sendCharacterList(ArrayList<Character> characters) {
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        try {
+            ArrayList<StringBuilder> pages = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i<characters.size(); i++) {
+                if(i%10 == 0 && i != 0) {
+                    pages.add(sb);
+                    sb = new StringBuilder();
+                }
+                sb.append("[").append(characters.get(i).name)
+                        .append("](").append(characters.get(i).url).append(") (").append(characters.get(i).role).append(" character)\n");
+            }
+            if(characters.size() == 0) sb.append("Could not find any characters for this anime on MAL!");
+
+            InteractionHook msg = event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setTitle("Character List")
+                            .setDescription(pages.get(0))
+                            .setFooter("Page 1/" + pages.size())
+                            .build()
+            ).setEphemeral(true).addActionRow(
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.secondary("right", Emoji.fromUnicode("➡"))
+            ).complete();
+
+            Message message = msg.retrieveOriginal().complete();
+            AnimePage page = compToPage.remove(event);
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
+            ).queue();
+            page.animes.get(page.pageNumber-1).characterList = new CharacterList(pages,1, message, event.getUser());
+            Characters.messageToPage.put(message.getIdLong(), page.animes.get(page.pageNumber-1).characterList);
+            msg.editOriginalComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, i -> Characters.messageToPage.remove(message.getIdLong()));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            if(event.isAcknowledged()) return;
+            event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setColor(Color.red)
+                            .setDescription("Could not find any characters from that anime! Please try again later!")
                             .build()
             ).queue();
         }
@@ -395,25 +564,55 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendNews(ArrayList<Article> articles) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
-        InteractionHook message = messageToEdit.removeFirst();
-        Message msg = message.retrieveOriginal().complete();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         try {
             if(articles == null || articles.isEmpty()) throw new Exception();
             Collections.reverse(articles);
-            Message m = message.editOriginalEmbeds(articles.get(0).toEmbed().setFooter("Page 1/" + articles.size()).build()).setActionRow(
+            InteractionHook m = event.replyEmbeds(
+                    articles.get(0).toEmbed()
+                            .setFooter("Page 1/" + articles.size())
+                            .build()
+            ).setEphemeral(true).addActionRow(
                     Button.secondary("left", Emoji.fromUnicode("⬅")),
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
-            AnimePage page = eventToPage.remove(event);
-            page.news.put(page.pageNumber, new Newspaper(articles, 1, msg, event.getUser()));
-            News.messageToPage.put(m.getIdLong(), page.news.get(page.pageNumber));
-            m.editMessageComponents()
-                    .queueAfter(3, TimeUnit.MINUTES, i -> News.messageToPage.remove(m.getIdLong()));
+            Message message = m.retrieveOriginal().complete();
+            AnimePage page = compToPage.remove(event);
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
+            ).queue();
+            page.animes.get(page.pageNumber-1).news = new Newspaper(articles, 1, message, event.getUser());
+            News.messageToPage.put(message.getIdLong(), page.animes.get(page.pageNumber-1).news);
+            m.editOriginalComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, i -> News.messageToPage.remove(message.getIdLong()));
         }
         catch (Exception e) {
-            e.printStackTrace();
-            message.editOriginalEmbeds(
+            if(event.isAcknowledged()) return;
+            event.replyEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any articles from that anime! Please try again later!")
@@ -428,10 +627,37 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendStatistics(Statistic statistics) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         event.replyEmbeds(statistics.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = eventToPage.remove(event);
-        page.stats.put(page.pageNumber, statistics.toEmbed().build());
+        AnimePage page = compToPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by ranks", "ranks")
+                                .addOption("Sort by latest", "time")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Trailer", "Trailer")
+                                .addOption("Episodes", "Episodes")
+                                .addOption("Characters", "Characters")
+                                .addOption("Themes", "Themes")
+                                .addOption("Recommendations", "Recommendations")
+                                .addOption("News", "News")
+                                .addOption("Review", "Review")
+                                .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+        page.animes.get(page.pageNumber-1).stats = statistics.toEmbed().build();
     }
 
     /**
@@ -440,10 +666,37 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendThemes(Themes themes) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         event.replyEmbeds(themes.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = eventToPage.remove(event);
-        page.themes.put(page.pageNumber, themes.toEmbed().build());
+        AnimePage page = compToPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by ranks", "ranks")
+                                .addOption("Sort by latest", "time")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Trailer", "Trailer")
+                                .addOption("Episodes", "Episodes")
+                                .addOption("Characters", "Characters")
+                                .addOption("Themes", "Themes")
+                                .addOption("Recommendations", "Recommendations")
+                                .addOption("News", "News")
+                                .addOption("Review", "Review")
+                                .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+        page.animes.get(page.pageNumber-1).themes = themes.toEmbed().build();
     }
 
     /**
@@ -452,10 +705,37 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendRecommendation(Recommendation recommendation) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         event.replyEmbeds(recommendation.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = eventToPage.remove(event);
-        page.recommendations.put(page.pageNumber, recommendation.toEmbed().build());
+        AnimePage page = compToPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by ranks", "ranks")
+                                .addOption("Sort by latest", "time")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Trailer", "Trailer")
+                                .addOption("Episodes", "Episodes")
+                                .addOption("Characters", "Characters")
+                                .addOption("Themes", "Themes")
+                                .addOption("Recommendations", "Recommendations")
+                                .addOption("News", "News")
+                                .addOption("Review", "Review")
+                                .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+        page.animes.get(page.pageNumber-1).recommendations = recommendation.toEmbed().build();
     }
 
     /**
@@ -464,10 +744,37 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendReview(Review review) {
-        ButtonInteractionEvent event = eventToReply.removeFirst();
+        SelectMenuInteractionEvent event = compToReply.removeFirst();
         event.replyEmbeds(review.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = eventToPage.remove(event);
-        page.review.put(page.pageNumber, review.toEmbed().build());
+        AnimePage page = compToPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by ranks", "ranks")
+                                .addOption("Sort by latest", "time")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Trailer", "Trailer")
+                                .addOption("Episodes", "Episodes")
+                                .addOption("Characters", "Characters")
+                                .addOption("Themes", "Themes")
+                                .addOption("Recommendations", "Recommendations")
+                                .addOption("News", "News")
+                                .addOption("Review", "Review")
+                                .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+        page.animes.get(page.pageNumber-1).review = review.toEmbed().build();
     }
 
     /**
@@ -486,7 +793,7 @@ public class API implements RListener, AListener {
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
                 Button.secondary("right", Emoji.fromUnicode("➡"))
         ).complete();
-        Top.messageToPage.get(msg.getIdLong()).animes = top;
+        page.animes = top;
         message.editOriginalComponents()
                 .setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
@@ -494,6 +801,32 @@ public class API implements RListener, AListener {
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
                 .queueAfter(3, TimeUnit.MINUTES, i -> Top.messageToPage.remove(msg.getIdLong()));
+    }
+
+    /**
+     * Sends the 25 most popular requested animes
+     * @param popular popular anime list
+     */
+    @Override
+    public void sendPopularAnime(ArrayList<Anime> popular) {
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
+        if(popular == null) return;
+        AnimePage page = Popular.messageToPage.get(msg.getIdLong());
+        page.timeout.cancel(false);
+        message.editOriginalEmbeds(popular.get(0).toEmbed().setFooter("Page 1/" + popular.size()).build()).setActionRow(
+                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
+                Button.secondary("right", Emoji.fromUnicode("➡"))
+        ).complete();
+        page.animes = popular;
+        message.editOriginalComponents()
+                .setActionRow(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                        Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
+                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                )
+                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToPage.remove(msg.getIdLong()));
     }
 
     /**
@@ -573,18 +906,35 @@ public class API implements RListener, AListener {
                 Button.secondary(question.correct.title.equals(question.options.get(2)) ? "right" : "wrong3", question.options.get(2)),
                 Button.secondary(question.correct.title.equals(question.options.get(3)) ? "right" : "wrong4", question.options.get(3))
         ).queue();
-        int xp = (int)(Math.random()*11)-20;
-        game.gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
-                .setColor(Color.red)
-                        .setTitle("Too late!")
-                .setDescription("You have to answer the trivia questions in under 15 seconds!")
-                .setThumbnail("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
-                .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
-                .build()
-        ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> {
-            Trivia.openGames.remove(msg.getIdLong());
-            Database.addToUserBalance(game.user.getId(), xp);
-        });
+        Runnable success = () -> {
+            int xp = (int)((int)(Math.random()*11)-20/Constant.MULTIPLIER);
+            game.gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setTitle("Too late!")
+                    .setDescription("You have to answer the trivia questions in under 15 seconds!")
+                    .setThumbnail("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
+                    .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                    .build()
+            ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> {
+                Trivia.openGames.remove(msg.getIdLong());
+                Database.addToUserBalance(game.user.getId(), xp);
+            });
+        };
+        Runnable failure = () -> {
+            int xp = (int)(Math.random()*11)-20;
+            game.gameTimeout = message.editOriginalEmbeds(new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setTitle("Too late!")
+                    .setDescription("You have to answer the trivia questions in under 15 seconds!")
+                    .setThumbnail("https://cdn.discordapp.com/emojis/738539027401146528.webp?size=80&quality=lossless")
+                    .setFooter("You lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png")
+                    .build()
+            ).setActionRows(Collections.emptyList()).queueAfter(15, TimeUnit.SECONDS, i -> {
+                Trivia.openGames.remove(msg.getIdLong());
+                Database.addToUserBalance(game.user.getId(), xp);
+            });
+        };
+        BotStatistics.sendMultiplier(game.user.getId(), success, failure);
         Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
         try {
             Cache.addTitleToCache(question.correct.title);

@@ -72,7 +72,7 @@ public class DatabaseManager {
     /**
      * Returns the database object based on the database name
      * @param dbName database name
-     * @return {@link DatabaseObject} representing a database
+     * @return {@link DatabaseObject} object representing a database
      */
     public static DatabaseObject getDatabase(String dbName) {
         if(!databases.containsKey(dbName)) return null;

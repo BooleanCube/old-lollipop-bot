@@ -5,6 +5,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import javax.swing.text.DateFormatter;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 /**
@@ -38,12 +42,13 @@ public class Article implements ModelData {
      */
     @Override
     public void parseData(DataObject data) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
         this.author = data.getString("author_username", "");
         this.authorUrl = data.getString("author_url", "");
         this.url = data.getString("url", "");
         this.title = data.getString("title", "");
         this.comments = data.getInt("comments", 0);
-        this.date = data.getString("date", "");
+        this.date = OffsetDateTime.parse(data.getString("date", "")).format(dateTimeFormatter);
         this.desc = data.getString("excerpt", "");
         this.forum = data.getString("forum_url", "");
         this.image = data.getObject("images").getObject("jpg").getString("image_url", "");
@@ -51,7 +56,7 @@ public class Article implements ModelData {
 
     /**
      * Parses all the data
-     * @param data
+     * @param data data array from json
      */
     @Override
     public void parseData(DataArray data) {

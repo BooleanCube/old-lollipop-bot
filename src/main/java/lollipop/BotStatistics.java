@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import threading.ThreadManagement;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class BotStatistics extends ListenerAdapter {
 
@@ -45,6 +46,7 @@ public class BotStatistics extends ListenerAdapter {
                     .botId(String.valueOf(Constant.BOT_ID))
                     .build();
             topgg.setStats(guilds);
+            topgg.setStats(bot.getShards().stream().map(b -> b.getGuilds().size()).collect(Collectors.toList()));
         } catch (Exception e) {
             throw new RuntimeException();
         }

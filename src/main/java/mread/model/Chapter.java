@@ -2,6 +2,7 @@ package mread.model;
 
 import mread.ModelData;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jsoup.nodes.Element;
 
 import java.util.List;
 
@@ -43,6 +44,15 @@ public class Chapter implements ModelData {
 	private String ifNull(String val) {
 		return val == null ? "" : val;
 	}
+
+    /**
+     * Parse the data from a document into the chapter object
+     * @param document document to parse from
+     */
+    @Override
+    public void parseData(Element document) {
+
+    }
 
     /**
      * Compressed all data into an EmbedBuilder

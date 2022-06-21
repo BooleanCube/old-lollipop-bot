@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Episode List model to keep track of all the episodes of a certain anime
  */
 public class EpisodeList {
+
     public ArrayList<StringBuilder> pages;
     public int pageNumber = 0;
     public Message msg = null;

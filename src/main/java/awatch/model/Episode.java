@@ -30,7 +30,7 @@ public class Episode implements ModelData {
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data object
      */
     @Override
     public void parseData(DataObject data) {
@@ -40,7 +40,7 @@ public class Episode implements ModelData {
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data array
      */
     @Override
     public void parseData(DataArray data) {

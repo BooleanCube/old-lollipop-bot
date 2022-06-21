@@ -29,7 +29,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>5.0.0-alpha.12</version>
         </dependency>
         <!-- jsoup HTML parser library @ https://jsoup.org/ -->
         <dependency>

@@ -209,7 +209,6 @@ https://api.kawaii.red/gif/wink/wink1.gif
 https://api.kawaii.red/gif/confused/confused7.gif
 https://api.kawaii.red/gif/alarm/alarm3.gif
 https://api.kawaii.red/gif/nom/nom20.gif
-
 https://api.kawaii.red/gif/hide/hide11.gif
 https://api.kawaii.red/gif/amazing/amazing4.gif
 https://api.kawaii.red/gif/smug/smug8.gif
@@ -223,3 +222,5 @@ https://api.kawaii.red/gif/party/party9.gif
 https://api.kawaii.red/gif/dance/dance20.gif
 https://api.kawaii.red/gif/punch/punch2.gif
 https://api.kawaii.red/gif/tickle/tickle1.gif
+https://api.kawaii.red/gif/laugh/laugh9.gif
+https://api.kawaii.red/gif/shrug/shrug3.gif

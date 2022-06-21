@@ -69,6 +69,18 @@ public class AClient {
     }
 
     /**
+     * Runs a thread to get characters of an anime
+     * @param id MAL id
+     */
+    public void getCharacters(long id) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendCharacterList(ALoader.loadCharacterList(id));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
      * Runs a thread to get news of an anime
      * @param id MAL id
      */
@@ -135,6 +147,17 @@ public class AClient {
         ThreadManagement.execute(() -> {
             try {
                 listener.sendTop(ALoader.loadTop());
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to get the top 25 animes ranked in terms of popularity
+     */
+    public void getPopular() {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendPopularAnime(ALoader.loadPopular());
             } catch (IOException e) { throw new RuntimeException(e); }
         });
     }

@@ -43,12 +43,15 @@ public class Themes implements ModelData {
                 String result = arr.getString(i, "No opening themes found!");
                 opening.append(result).append("\n");
             }
+            if(opening.isEmpty()) opening.append("Unknown");
             arr = res.getArray("endings");
             for(int i=0; i<arr.length(); i++) {
                 String result = arr.getString(i, "No ending themes found!");
                 ending.append(result).append("\n");
             }
-        } catch(Exception e) { return; }
+            if(ending.isEmpty()) ending.append("Unknown");
+
+        } catch(Exception ignored) {}
     }
 
     /**

@@ -9,25 +9,26 @@ public interface Command {
 
     /**
      * Aliases for the command
-     * @return alias list - string[]
+     * @return String[] for the alias list
+     * (no longer needed to be a string[] after the slash command implementation)
      */
     String[] getAliases();
 
     /**
      * Get command category for help command
-     * @return command category - string
+     * @return String for the command category
      */
     String getCategory();
 
     /**
      * Get command description and help
-     * @return command help - string
+     * @return String for the command help
      */
     String getHelp();
 
     /**
      * Get slash command data
-     * @return slash command data - CommandData
+     * @return {@link CommandData} with all the slash command data
      */
     CommandData getSlashCmd();
 

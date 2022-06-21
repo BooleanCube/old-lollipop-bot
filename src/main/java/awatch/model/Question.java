@@ -62,9 +62,18 @@ public class Question implements ModelData {
                 .addField("Type", correct.type, true)
                 .addField("Rating", correct.rating, true)
                 .addField("Score", Double.toString(correct.score), true)
+                .addField("Rank", "#"+correct.rank, true)
+                .addField("Popularity", "#"+correct.popularity, true)
+                .addField("Source", correct.source, true)
                 .addField("Status", correct.status, true)
-                .addField("Rank", Integer.toString(correct.rank), true)
-                .addField("Episode Count", Integer.toString(correct.episodeCount), true)
+                .addField("Aired", correct.aired, true)
+                .addField("Season", correct.season, true)
+                .addField("Episode Count", "#"+correct.episodeCount, true)
+                .addField("Broadcast", correct.broadcast, true)
+                .addField("Duration", correct.duration, true)
+                .addField("Studios", correct.studios, true)
+                .addField("Genres", correct.genres, true)
+                .addField("Demographics", correct.demographics, true)
                 .setFooter("Quick! You have 15 seconds to answer!");
     }
 

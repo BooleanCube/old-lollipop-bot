@@ -20,6 +20,7 @@ public class Character implements ModelData {
     public String url;
     public String anime = "None";
     public String manga = "None";
+    public String role = "Unknown";
 
     /**
      * Returns a string with all the data
@@ -31,7 +32,7 @@ public class Character implements ModelData {
 
     /**
      * Parses all the data
-     * @param data
+     * @param data data object for data
      */
     @Override
     public void parseData(DataObject data) {
@@ -52,8 +53,19 @@ public class Character implements ModelData {
     }
 
     /**
+     * Special parse data method for character list
+     * @param data data object to parse
+     */
+    public void parseDataList(DataObject data) {
+        DataObject res = data.getObject("character");
+        this.name = res.getString("name", "Unknown");
+        this.url = res.getString("url", "https://myanimelist.net/");
+        this.role = data.getString("role", "Unknown");
+    }
+
+    /**
      * Parses all the data
-     * @param data
+     * @param data parse data from the data array
      */
     @Override
     public void parseData(DataArray data) {

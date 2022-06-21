@@ -28,7 +28,7 @@ public class Recommendation implements ModelData {
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data object from json
      */
     @Override
     public void parseData(DataObject data) {
@@ -42,12 +42,13 @@ public class Recommendation implements ModelData {
                 String url = res.getObject("entry").getString("url", "https://myanimelist.net/");
                 recommendationList.append("#").append(i+1).append(" - [").append(title).append("](").append(url).append(")\n");
             }
+            if(recommendationList.isEmpty()) recommendationList.append("None found!");
         } catch(Exception e) {}
     }
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data array
      */
     @Override
     public void parseData(DataArray data) {

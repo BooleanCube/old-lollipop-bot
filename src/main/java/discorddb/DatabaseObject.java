@@ -3,7 +3,7 @@ package discorddb;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Model for Database Object
@@ -23,7 +23,7 @@ public class DatabaseObject {
         this.dbName = dbName;
         this.dbFile = dbFile;
         this.cache = new HashMap<>();
-        try { initCache(); } catch (IOException e) {}
+        try { initCache(); } catch (IOException ignored) {}
     }
 
     /**
@@ -51,6 +51,22 @@ public class DatabaseObject {
      */
     public File getFile() {
         return dbFile;
+    }
+
+    /**
+     * Get all of the keys stored inside the database
+     * @return {@link Set<String>} string set of keys
+     */
+    public Set<String> getKeys() {
+        return cache.keySet();
+    }
+
+    /**
+     * Get all of the values stored inside the database
+     * @return {@link Collection<String>} string collection of values
+     */
+    public Collection<String> getValues() {
+        return cache.values();
     }
 
     /**
@@ -88,16 +104,15 @@ public class DatabaseObject {
      * (both database and cache)
      * @param key key String to new value
      * @param value new value String
+     * @throws IOException for FileWriter
      */
-    public void updateValue(String key, String value) {
+    public void updateValue(String key, String value) throws IOException {
         if(!cache.containsKey(key)) {
             addKey(key, value);
             return;
         }
         cache.replace(key, value);
-        try {
-            updateToDb(key, value);
-        } catch (IOException e) {}
+        updateToDb(key, value);
     }
 
     /**
@@ -105,24 +120,22 @@ public class DatabaseObject {
      * (both database and cache)
      * @param key key String of value
      * @param value value String corresponding to key
+     * @throws IOException for FileWriter
      */
-    public void addKey(String key, String value) {
+    public void addKey(String key, String value) throws IOException {
         cache.put(key, value);
-        try {
-            updateToDb(key, value);
-        } catch (IOException e) {}
+        updateToDb(key, value);
     }
 
     /**
      * Remove key
      * both database and cache
      * @param key key String to be removed
+     * @throws IOException for FileWriter
      */
-    public void removeKey(String key) {
+    public void removeKey(String key) throws IOException {
         cache.remove(key);
-        try {
-            removeFromDb(key);
-        } catch (IOException e) {}
+        removeFromDb(key);
     }
 
     /**

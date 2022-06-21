@@ -55,7 +55,7 @@ public class DGame {
         gifMap.put("attack2", "https://c.tenor.com/1sTe1w12WHwAAAAC/nezuko-kamado-tanjiro-kamado.gif");
         gifMap.put("attack3", "https://c.tenor.com/4AvIBPKxbOwAAAAd/demonslayer-headbutt.gif");
         gifMap.put("attack4", "https://c.tenor.com/FMO5562dLt4AAAAd/one-punch-man2-saitama-v-garou.gif");
-        gifMap.put("heal", "https://c.tenor.com/W4sbl5pmQ6sAAAAC/sorey-heal.gif");
+        gifMap.put("heal", "https://c.tenor.com/NUt8vwChgIcAAAAC/luffy-eating.gif");
         gifMap.put("strength", "https://c.tenor.com/WGGJBAiyhxQAAAAC/demon-slayer-kimetsu-no-yaiba.gif");
         gifMap.put("defend1", "https://c.tenor.com/Z_0BQslObuIAAAAd/dragon-ball-barrier.gif");
         gifMap.put("defend2", "https://c.tenor.com/Z8Q13fWVtQkAAAAC/block-deflect.gif");
@@ -122,10 +122,11 @@ public class DGame {
         } else {
             String homePName = homePlayer.member.getEffectiveName();
             if(move == null) {
-                move = "I will accept this challenge and become your opponent! Let the duel begin!";
+                move = "I will accept this challenge and become your opponent! Bring it on!";
                 if(playerNotTurn.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage("https://c.tenor.com/2C1HHrXGzbMAAAAC/anime-fight.gif")
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
@@ -148,6 +149,7 @@ public class DGame {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage("https://c.tenor.com/2C1HHrXGzbMAAAAC/anime-fight.gif")
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
@@ -211,10 +213,11 @@ public class DGame {
         } else {
             String homePName = homePlayer.member.getEffectiveName();
             if(move == null) {
-                move = "I will accept this challenge and become your opponent! Let the duel begin!";
+                move = "I will accept this challenge and become your opponent! Bring it on!";
                 if(playerNotTurn.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage("https://c.tenor.com/2C1HHrXGzbMAAAAC/anime-fight.gif")
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField("Computer", "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor("Computer", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
@@ -237,6 +240,7 @@ public class DGame {
                     String oppoPName = opposingPlayer.member.getEffectiveName();
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
+                            .setImage("https://c.tenor.com/2C1HHrXGzbMAAAAC/anime-fight.gif")
                             .addField(homePName, "> Health: `" + homePlayer.HP + " HP`\n> Strength Gain: `" + homePlayer.strengthGain + " HP`", true)
                             .addField(oppoPName, "> Health: `" + opposingPlayer.HP + " HP`\n> Strength Gain: `" + opposingPlayer.strengthGain + " HP`", true)
                             .setAuthor(playerTurn.member.getEffectiveName(), "https://github.com/BooleanCube/lollipop-bot", playerTurn.member.getEffectiveAvatarUrl());
@@ -299,7 +303,7 @@ public class DGame {
         } else {
             String homePName = homePlayer.member.getEffectiveName();
             if(move == null) {
-                move = "I will accept this challenge and become your opponent! Let the duel begin!";
+                move = "I will accept this challenge and become your opponent! Bring it on!";
                 if(playerNotTurn.member == null) {
                     EmbedBuilder e = new EmbedBuilder()
                             .setDescription("**" + move + "**")
@@ -454,9 +458,10 @@ public class DGame {
 
         // Decides move
         if(h.HP < 15-o.strengthGain) return first;
-        if(o.HP < 30 && (y==4 || ((y==6 || y==7) && !o.isDefending))) return second;
+        if(h.HP-o.HP > 40 && (second.startsWith("heal") || (second.startsWith("defend") && !o.isDefending))) return second;
         if(!o.isDefending && Math.random()<0.5) return second;
-        if(o.HP > h.HP && y==5) return second;
+        if(o.HP > h.HP && second.startsWith("strength")) return second;
+        if(h.isDefending && Math.random()<0.5) return first;
         return third;
 
     }
@@ -569,6 +574,7 @@ public class DGame {
                 e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
                 e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
                 this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                     Database.addToUserBalance(playerTurn.member.getId(), xp);
@@ -584,6 +590,7 @@ public class DGame {
                 e.setFooter(playerTurn.member.getEffectiveName() + " lost " + (-1*xp) + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
                 e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
                 this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                     Database.addToUserBalance(playerTurn.member.getId(), xp);
@@ -601,6 +608,7 @@ public class DGame {
                 e.setFooter(playerNotTurn.member.getEffectiveName() + " won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
                 e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
                 if(timeout != null && timeout.isCancelled()) {
                     this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
@@ -618,6 +626,7 @@ public class DGame {
                 e.setFooter(playerNotTurn.member.getEffectiveName() + " won " + xp + " lollipops!", "https://www.dictionary.com/e/wp-content/uploads/2018/11/lollipop-emoji.png");
                 e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription(playerTurn.member.getAsMention() + " didn't react fast enough, so I assumed they surrendered!");
                 if(timeout != null && timeout.isCancelled()) {
                     this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
@@ -651,6 +660,7 @@ public class DGame {
             if(opposingPlayer.member == null) {
                 e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `0`\n" +
                         "> Computer's HP: `" + opposingPlayer.HP + "`");
                 Runnable success = () -> {
@@ -670,6 +680,7 @@ public class DGame {
             } else {
                 e.setAuthor(opposingPlayer.member.getEffectiveName() + " won the duel!", opposingPlayer.member.getUser().getAvatarUrl(), opposingPlayer.member.getUser().getEffectiveAvatarUrl());
                 e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+                e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
                 e.setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `0`\n" +
                         "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `" + opposingPlayer.HP + "`");
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
@@ -703,6 +714,7 @@ public class DGame {
                         .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
                         .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
+                        .setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif")
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> " + opposingPlayer.member.getEffectiveName() + "'s HP: `0`");
                 Runnable success = () -> {
@@ -726,6 +738,7 @@ public class DGame {
                         .setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!")
                         .setAuthor(homePlayer.member.getEffectiveName() + " won the duel!", homePlayer.member.getUser().getAvatarUrl(), homePlayer.member.getUser().getEffectiveAvatarUrl())
                         .setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)])
+                        .setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif")
                         .setDescription("> " + homePlayer.member.getEffectiveName() + "'s HP: `" + homePlayer.HP + "`\n" +
                                 "> Computer's HP: `0`");
                 Runnable success = () -> {
@@ -762,6 +775,7 @@ public class DGame {
         if(playerNotTurn.member == null) {
             e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+            e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
             e.setDescription(p.member.getEffectiveName() + " ran away from the duel!");
             Runnable success = () -> {
                 int xp = (int)(Math.random()*11)-20;
@@ -780,6 +794,7 @@ public class DGame {
         } else {
             e.setAuthor(playerNotTurn.member.getEffectiveName() + " won the duel!", playerNotTurn.member.getUser().getAvatarUrl(), playerNotTurn.member.getUser().getEffectiveAvatarUrl());
             e.setTitle(victoryMsg[(int)(Math.random()*victoryMsg.length)]);
+            e.setImage("https://c.tenor.com/1WSdEj1xWfAAAAAd/one-punch-man-anime.gif");
             e.setDescription(p.member.getAsMention() + " ran away from the duel!");
             Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
             Runnable success = () -> {

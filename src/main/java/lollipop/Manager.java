@@ -50,13 +50,15 @@ public class Manager {
                 new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
+                new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
                 new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Search().getSlashCmd(),
                 new Support().getSlashCmd(),
                 new Top().getSlashCmd(),
-                new Trivia().getSlashCmd()
+                new Trivia().getSlashCmd(),
+                new Vote().getSlashCmd()
         ).queue();
     }
 
@@ -86,13 +88,15 @@ public class Manager {
                 new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
+                new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
                 new RandomAnime().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Search().getSlashCmd(),
                 new Support().getSlashCmd(),
                 new Top().getSlashCmd(),
-                new Trivia().getSlashCmd()
+                new Trivia().getSlashCmd(),
+                new Vote().getSlashCmd()
         ).queue();
         g.updateCommands()
                 .addCommands(dashCmd.setDefaultEnabled(false), evalCmd.setDefaultEnabled(false))
@@ -147,6 +151,8 @@ public class Manager {
         addCommand(new Support());
         addCommand(new Attack());
         addCommand(new Defend());
+        addCommand(new Vote());
+        addCommand(new Popular());
     }
 
     /**

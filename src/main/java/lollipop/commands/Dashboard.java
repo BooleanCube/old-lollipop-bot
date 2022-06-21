@@ -47,7 +47,7 @@ public class Dashboard implements Command {
         if(event.getJDA().getSelfUser().getIdLong() == Constant.TEST_ID) return;
         EmbedBuilder msg = new EmbedBuilder()
                 .setTitle("Lollipop Dashboard")
-                .setFooter("lollipop v10.3")
+                .setFooter("lollipop " + Constant.VERSION)
                 .addField("System", osInfo(), true)
                 .addField("Memory", memInfo(), true)
                 .addField("CPU", cpuInfo(), false)

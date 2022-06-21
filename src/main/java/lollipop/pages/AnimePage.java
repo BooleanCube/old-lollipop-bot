@@ -14,28 +14,21 @@ import java.util.concurrent.ScheduledFuture;
  * Anime Page Model represents a singular page in pagination commands
  */
 public class AnimePage {
+
     public ArrayList<Anime> animes = null;
-    public ArrayList<Manga> mangas = null;
     public Message msg;
     public int pageNumber;
     public User user;
     public ScheduledFuture<?> timeout;
-
-    public HashMap<Integer, MessageEmbed> stats = new HashMap<>();
-    public HashMap<Integer, Newspaper> news = new HashMap<>();
-    public HashMap<Integer, String> picture = new HashMap<>();
-    public HashMap<Integer, EpisodeList> episodes = new HashMap<>();
-    public HashMap<Integer, MessageEmbed> themes = new HashMap<>();
-    public HashMap<Integer, MessageEmbed> review = new HashMap<>();
-    public HashMap<Integer, MessageEmbed> recommendations = new HashMap<>();
+    public String currentPlaceholder = "Sort by popularity";
 
     /**
      * Anime List Constructor
-     * @param as
-     * @param m
-     * @param pn
-     * @param u
-     * @param t
+     * @param as animes
+     * @param m message
+     * @param pn page number
+     * @param u user
+     * @param t timeout
      */
     public AnimePage(ArrayList<Anime> as, Message m, int pn, User u, ScheduledFuture<?> t) {
         animes = as;
@@ -46,24 +39,10 @@ public class AnimePage {
     }
 
     /**
-     * Manga List Constructor
-     * @param ms
-     * @param pn
-     * @param m
-     * @param u
-     */
-    public AnimePage(ArrayList<Manga> ms, int pn, Message m, User u) {
-        mangas = ms;
-        msg = m;
-        pageNumber = pn;
-        user = u;
-    }
-
-    /**
      * Singular Anime Constructor
-     * @param a
-     * @param m
-     * @param u
+     * @param a anime
+     * @param m message
+     * @param u user
      */
     public AnimePage(Anime a, Message m, User u) {
         animes = new ArrayList<>();
@@ -74,9 +53,9 @@ public class AnimePage {
 
     /**
      * Constructor for starting search command with timeout
-     * @param m
-     * @param u
-     * @param t
+     * @param m message
+     * @param u user
+     * @param t timeout
      */
     public AnimePage(Message m, User u, ScheduledFuture<?> t) {
         animes = new ArrayList<>();

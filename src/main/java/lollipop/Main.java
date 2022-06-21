@@ -14,7 +14,6 @@ import org.apache.log4j.BasicConfigurator;
 import threading.ThreadManagement;
 
 import javax.security.auth.login.LoginException;
-import java.sql.SQLException;
 
 /**
  * MAIN CLASS
@@ -26,7 +25,7 @@ public class Main {
      * @param args string[] args
      * @throws LoginException for ShardMangerBuilder and JDABuilder
      */
-    public static void main(String[] args) throws LoginException, SQLException {
+    public static void main(String[] args) throws LoginException {
 
         // Configure log4j appenders for debugging
         BasicConfigurator.configure();

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
@@ -31,13 +32,8 @@ public class News {
      * @param event button interaction event
      * @param page anime page
      */
-    public static void run(ButtonInteractionEvent event, AnimePage page) {
-        InteractionHook msg = event.replyEmbeds(
-                new EmbedBuilder()
-                        .setDescription("Searching for news...")
-                        .build()
-        ).setEphemeral(true).complete();
-        api.getNews(event, msg, page);
+    public static void run(SelectMenuInteractionEvent event, AnimePage page) {
+        api.getNews(event, page);
     }
 
 }

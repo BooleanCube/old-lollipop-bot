@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import java.awt.*;
 import java.util.Arrays;
 
 /**
@@ -19,6 +20,7 @@ public class Review implements ModelData {
     public String details;
     public int votes = 0;
     public int score = 0;
+    private boolean isEmpty = false;
 
     public Review() {}
 
@@ -32,7 +34,7 @@ public class Review implements ModelData {
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data object from json
      */
     @Override
     public void parseData(DataObject data) {
@@ -40,6 +42,10 @@ public class Review implements ModelData {
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return; }
+        if(arr.length() == 0) {
+            isEmpty = true;
+            return;
+        }
         DataObject res = arr.getObject(0);
         this.authorName = res.getObject("user").getString("username", "Unkown Name");
         this.authorIcon = res.getObject("user").getObject("images").getObject("jpg").getString("image_url", "https://api-private.atlassian.com/users/63729d1b358a0c5f1c38cf368ad9d693/avatar");
@@ -52,7 +58,7 @@ public class Review implements ModelData {
 
     /**
      * Parses all of the data
-     * @param data
+     * @param data data array from json
      */
     @Override
     public void parseData(DataArray data) {
@@ -65,15 +71,21 @@ public class Review implements ModelData {
      */
     @Override
     public EmbedBuilder toEmbed() {
-        return new EmbedBuilder()
-                .setAuthor(authorName, authorUrl, authorIcon)
-                .setTitle("Top Review")
-                .setDescription(
-                        details.length()>=1970 ?
-                                details.substring(0,1960) + "...\n[Read More!](" + url + ")" :
-                                details + "\n[Read More!](" + url + ")" )
-                .addField("Votes", Integer.toString(votes), true)
-                .addField("Score", Integer.toString(score), true);
+        if(!isEmpty) {
+            return new EmbedBuilder()
+                    .setAuthor(authorName, authorUrl, authorIcon)
+                    .setTitle("Top Review")
+                    .setDescription(
+                            details.length()>=1970 ?
+                                    details.substring(0,1960) + "...\n[Read More!](" + url + ")" :
+                                    details + "\n[Read More!](" + url + ")" )
+                    .addField("Votes", Integer.toString(votes), true)
+                    .addField("Score", Integer.toString(score), true);
+        } else {
+            return new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("Could not find any reviews for this anime!");
+        }
     }
 
 }

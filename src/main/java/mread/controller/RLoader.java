@@ -2,11 +2,10 @@ package mread.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import awatch.model.Anime;
-import lollipop.API;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jsoup.Jsoup;
@@ -37,7 +36,8 @@ public class RLoader {
 				String art = manga.select("div[class=poster-with-subject]").select("img").attr("src");
 				List<String> tags = new ArrayList<>();
 				for (Element tag : manga.select("span[class=genres]").select("a")) { tags.add(tag.attr("title")); }
-				Manga m = new Manga(title, url, summary, rating, art, tags);
+				Manga m = new Manga(title, url, summary, art, tags);
+                m.parseData(manga);
 				mangaList.add(m);
 			}
 		} catch (IOException e) { e.printStackTrace(); }
@@ -69,7 +69,7 @@ public class RLoader {
 		manga.chapters = chapterList;
 		manga.author = author;
 		manga.status = status;
-		manga.chapter = String.valueOf(chapterList.size());
+		manga.chapter = chapterList.size();
 		return manga;
 	}
 
@@ -86,7 +86,7 @@ public class RLoader {
 		}
 		chapter.pages = pages;
 		return chapter;
-	}
+    }
 
 	public static List<Manga> search(String query) {
         if(mangaCache.containsKey(query)) return mangaCache.get(query);
@@ -103,7 +103,7 @@ public class RLoader {
 			DataObject json = DataObject.fromJson(doc);
 			DataArray array;
 			try { array = json.getArray("manga"); } catch(Exception e) { return mangaList; }
-			for (int i = 0; i < array.length(); i++) {
+			for (int i = 0; i < Math.min(25, array.length()); i++) {
 				DataObject obj = array.getObject(i);
 				String title = "Unkown", url = null, art = null;
 				ArrayList<String> tokens = new ArrayList<>();
@@ -114,42 +114,23 @@ public class RLoader {
 					DataArray tokensArr = obj.getArray("tokens");
 					for(int j=0; j<tokensArr.length(); j++) tokens.add(tokensArr.getString(j));
 				}
-				Manga m = new Manga(title, url, "summary", "0", art, tokens);
+				Manga m = new Manga(title, url, "summary", art, tokens);
 				mangaList.add(m);
-
-				// This limits the search results to only 1
-				// I only did this for time efficiency because otherwise it would take ages iterating and web scraping over all the search results.
-				break;
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		for(Manga manga : mangaList) {
-			List<Chapter> chapterList = new ArrayList<>();
-			String author = "Unkown", status = "Unkown", summary = "Summary not found!", rating = "Unknown";
-			int chapterCount = -1;
 			try {
 				Element doc = Jsoup.connect(RApiBuilder.buildCombo(manga.url)).userAgent(RConstants.USER_AGENT).get()
 						.body();
-				author = doc.select("div[class=first_and_last]").text();
-				status = doc.select("span[class=series-status aqua]").text();
-				chapterCount = doc.select("section[class=episodes-box]").select("table[class=ui basic unstackable table]").size();
-				summary = doc.select("div[class=series-summary-wrapper]").text();
-				rating = doc.select("div[class=color-imdb]").text();
+                manga.parseData(doc);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			manga.author = author;
-			manga.status = status;
-			if(manga.status.equalsIgnoreCase("ongoing")) manga.status = "On Going";
-			else if(manga.status.equalsIgnoreCase("completed")) manga.status = "Completed";
-			else manga.status = "Unknown";
-			manga.chapter = Integer.toString(chapterCount);
-			manga.summary = summary;
-			manga.rating = rating;
 		}
+        mangaList.sort(Comparator.comparingInt(m -> -(int)(m.score*10+m.views)));
 		mangaCache.put(query, mangaList);
 		return mangaList;
 	}

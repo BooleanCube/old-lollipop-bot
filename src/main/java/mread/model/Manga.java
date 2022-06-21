@@ -3,6 +3,7 @@ package mread.model;
 import awatch.controller.AConstants;
 import mread.ModelData;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jsoup.nodes.Element;
 
 import java.util.List;
 
@@ -10,13 +11,17 @@ public class Manga implements ModelData {
 	public String title;
 	public String art;
 	public String url;
-	public String chapter;
-	public String rating;
+	public int chapter;
+	public double score;
 
 	// more details
+    public String type;
+    public int subscibers;
+    public int views;
 	public String status;
 	public String summary;
 	public String author;
+    public String genres;
 	public String authorUrl;
 	public List<String> tags;
 	public List<Chapter> chapters;
@@ -26,17 +31,15 @@ public class Manga implements ModelData {
      * @param title manga title
      * @param url manga url
      * @param summary manga summary
-     * @param rating manga rating
      * @param art manga poster link
      * @param tags manga tags
      */
-	public Manga(String title, String url, String summary, String rating, String art, List<String> tags) {
+	public Manga(String title, String url, String summary, String art, List<String> tags) {
 		super();
 
 		this.title = ifNull(title);
 		this.art = ifNull(art);
 		this.url = ifNull(url);
-		this.rating = ifNull(rating);
 		this.summary = ifNull(summary);
 		this.tags = tags;
 	}
@@ -47,7 +50,7 @@ public class Manga implements ModelData {
      */
 	@Override
 	public String toString() {
-		return "Manga [title=" + title + ", art=" + art + ", url=" + url + ", chapter=" + chapter + ", rating=" + rating
+		return "Manga [title=" + title + ", art=" + art + ", url=" + url + ", chapter=" + chapter + ", rating=" + score
 				+ ", status=" + status + ", summary=" + summary + ", author=" + author + ", authorUrl=" + authorUrl
 				+ ", tags=" + tags + ", chapters=" + chapters + "]";
 	}
@@ -62,6 +65,28 @@ public class Manga implements ModelData {
 	}
 
     /**
+     * Parse all of the data inside the document
+     * @param doc document to parse data from
+     */
+    @Override
+    public void parseData(Element doc) {
+        this.author = doc.select("div[class=first_and_last]").text().replaceAll(" Author", ", Author").replaceAll(" Artist", ", Artist");
+        this.status = doc.select("span[class=series-status aqua]").text();
+        if(this.status.equalsIgnoreCase("ongoing")) this.status = "Ongoing";
+        if(this.status.equalsIgnoreCase("completed")) this.status = "Completed";
+        if(this.status.equals("")) this.status = "Unknown";
+        this.summary = doc.select("div[class=series-summary-wrapper]").text();
+        this.genres = summary.substring(summary.indexOf("Genre")).split(" ", 2)[1];
+        this.summary = summary.substring(0, summary.indexOf("Genre"));
+        String[] infoTable = doc.select("div[class=media-meta]").select("table[class=ui unstackable single line celled table]").text().split(" ");
+        this.type = infoTable[1];
+        this.chapter = Integer.parseInt(infoTable[3]);
+        this.subscibers = Integer.parseInt(infoTable[5]);
+        this.score = Double.parseDouble(infoTable[7]);
+        this.views = Integer.parseInt(infoTable[9].replaceAll(",",""));
+    }
+
+    /**
      * Compressed data into an EmbedBuilder
      * @return embedbuilder for discord bot developers
      */
@@ -72,11 +97,15 @@ public class Manga implements ModelData {
                 .setAuthor(this.title, AConstants.readmAPI+this.url)
                 .setDescription(this.summary.replaceAll("SUMMARY", "").trim())
                 .setImage(AConstants.readmAPI +this.art)
-                .addField("Authors",this.author,true)
-                .addField("Chapters",this.chapter,true)
-                .addField("Rating", this.rating, true)
+                .addField("Type", this.type, true)
+                .addField("Chapters", Integer.toString(this.chapter),true)
                 .addField("Status", this.status,true)
-                .addField("Tags", String.join(", ", this.tags), false);
+                .addField("Score", this.score + "/10", true)
+                .addField("Views", Integer.toString(this.views), true)
+                .addField("Subscribers", Integer.toString(this.subscibers), true)
+                .addField("Authors",this.author,true)
+                .addField("Tags", String.join(", ", this.tags), true)
+                .addField("Genres", this.genres, false);
     }
 
 }

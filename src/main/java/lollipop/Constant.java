@@ -29,4 +29,7 @@ public class Constant {
     // Multiplier value
     public static double MULTIPLIER = 1.5d;
 
+    // Software Version Value
+    public static String VERSION = "v2.7.8";
+
 }
