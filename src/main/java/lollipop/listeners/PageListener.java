@@ -1,21 +1,23 @@
 package lollipop.listeners;
 
 import awatch.model.Anime;
+import lollipop.API;
 import lollipop.BotStatistics;
 import lollipop.Constant;
 import lollipop.Database;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
-import lollipop.commands.search.infos.*;
+import lollipop.commands.search.animecomps.*;
+import lollipop.commands.search.mangacomps.Chapters;
 import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
-import lollipop.pages.CharacterList;
-import lollipop.pages.EpisodeList;
-import lollipop.pages.Newspaper;
-import lollipop.pages.AnimePage;
+import lollipop.pages.*;
+import mread.model.Chapter;
+import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -26,15 +28,16 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Responds to page interactions for commands which include pagination
  */
 public class PageListener extends ListenerAdapter {
+
+    static API api = new API();
 
     /**
      * Triggered when a button is pressed
@@ -179,8 +182,8 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
-        if(Search.messageToPage.containsKey(id)) {
-            AnimePage page = Search.messageToPage.get(id);
+        if(Search.messageToAnimePage.containsKey(id)) {
+            AnimePage page = Search.messageToAnimePage.get(id);
             if (event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
@@ -206,6 +209,37 @@ public class PageListener extends ListenerAdapter {
                     page.pageNumber = 1;
                     event.editMessageEmbeds(
                             page.animes.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.animes.size()).build()
+                    ).queue();
+                }
+            }
+        }
+        if(Search.messageToMangaPage.containsKey(id)) {
+            MangaPage page = Search.messageToMangaPage.get(id);
+            if (event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if (Objects.equals(event.getButton().getId(), "left")) {
+                if (page.pageNumber > 1)
+                    event.editMessageEmbeds(
+                            page.mangas.get(--page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                else {
+                    int loop = page.mangas.size()-1;
+                    page.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(loop).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            } else if (Objects.equals(event.getButton().getId(), "right")) {
+                if (page.pageNumber < page.mangas.size()) {
+                    event.editMessageEmbeds(
+                            page.mangas.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                } else {
+                    page.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
                     ).queue();
                 }
             }
@@ -315,6 +349,38 @@ public class PageListener extends ListenerAdapter {
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
             }
         }
+        if(ChapterList.messageToChapter.containsKey(id)) {
+            Chapter chapter = ChapterList.messageToChapter.get(id);
+            if(event.getUser() != chapter.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `latest` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(chapter.pageNumber>1)
+                    event.editMessageEmbeds(
+                            chapter.embedPage(--chapter.pageNumber-1).build()
+                    ).queue();
+                else {
+                    int loop = chapter.pages.size()-1;
+                    chapter.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            chapter.embedPage(loop).build()
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if(chapter.pageNumber<chapter.pages.size()) {
+                    event.editMessageEmbeds(
+                            chapter.embedPage(++chapter.pageNumber - 1).build()
+                    ).queue();
+                }
+                else {
+                    chapter.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            chapter.embedPage(0).build()
+                    ).queue();
+                }
+            }
+        }
         if(RandomAnime.messageToPage.containsKey(id)) {
             AnimePage page = RandomAnime.messageToPage.get(id);
             if(event.getUser() != page.user) {
@@ -324,6 +390,199 @@ public class PageListener extends ListenerAdapter {
             if(Objects.equals(event.getButton().getId(), "trailer")) {
                 Anime a = page.animes.get(0);
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
+            }
+        }
+        if(Chapters.messageToPage.containsKey(id)) {
+            ChapterList page = Chapters.messageToPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(page.pageNumber>1) {
+                    int startIndex = --page.pageNumber;
+                    startIndex--;
+                    startIndex *= 4;
+                    List<SelectMenu> menus = page.menus.subList(startIndex, Math.min(startIndex+4, page.menus.size()));
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle(embed.getTitle())
+                                    .setDescription(embed.getDescription())
+                                    .setFooter("Page " + page.pageNumber + "/" + page.pages)
+                                    .build()
+                    ).setActionRows(
+                            ActionRow.of(menus.get(0)),
+                            ActionRow.of(
+                                    1 >= menus.size() ?
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(1)
+                            ),
+                            ActionRow.of(
+                                    2 >= menus.size() ?
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(2)
+                            ),
+                            ActionRow.of(
+                                    3 >= menus.size() ?
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(3)
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                    Button.secondary("right", Emoji.fromUnicode("➡"))
+                            )
+                    ).queue();
+                }
+                else {
+                    int loop = page.pages-1;
+                    page.pageNumber = loop+1;
+                    int startIndex = (page.pageNumber-1) * 4;
+                    List<SelectMenu> menus = page.menus.subList(startIndex, Math.min(startIndex+4, page.menus.size()));
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle(embed.getTitle())
+                                    .setDescription(embed.getDescription())
+                                    .setFooter("Page " + page.pageNumber + "/" + page.pages)
+                                    .build()
+                    ).setActionRows(
+                            ActionRow.of(menus.get(0)),
+                            ActionRow.of(
+                                    1 >= menus.size() ?
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(1)
+                            ),
+                            ActionRow.of(
+                                    2 >= menus.size() ?
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(2)
+                            ),
+                            ActionRow.of(
+                                    3 >= menus.size() ?
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(3)
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                    Button.secondary("right", Emoji.fromUnicode("➡"))
+                            )
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if(page.pageNumber<page.pages) {
+                    int startIndex = page.pageNumber++;
+                    startIndex *= 4;
+                    List<SelectMenu> menus = page.menus.subList(startIndex, Math.min(startIndex+4, page.menus.size()));
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle(embed.getTitle())
+                                    .setDescription(embed.getDescription())
+                                    .setFooter("Page " + page.pageNumber + "/" + page.pages)
+                                    .build()
+                    ).setActionRows(
+                            ActionRow.of(menus.get(0)),
+                            ActionRow.of(
+                                    1 >= menus.size() ?
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(1)
+                            ),
+                            ActionRow.of(
+                                    2 >= menus.size() ?
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(2)
+                            ),
+                            ActionRow.of(
+                                    3 >= menus.size() ?
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(3)
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                    Button.secondary("right", Emoji.fromUnicode("➡"))
+                            )
+                    ).queue();
+                }
+                else {
+                    page.pageNumber = 1;
+                    int startIndex = 0;
+                    List<SelectMenu> menus = page.menus.subList(startIndex, Math.min(startIndex+4, page.menus.size()));
+                    event.editMessageEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle(embed.getTitle())
+                                    .setDescription(embed.getDescription())
+                                    .setFooter("Page " + page.pageNumber + "/" + page.pages)
+                                    .build()
+                    ).setActionRows(
+                            ActionRow.of(menus.get(0)),
+                            ActionRow.of(
+                                    1 >= menus.size() ?
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(1)
+                            ),
+                            ActionRow.of(
+                                    2 >= menus.size() ?
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(2)
+                            ),
+                            ActionRow.of(
+                                    3 >= menus.size() ?
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            menus.get(3)
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                    Button.secondary("right", Emoji.fromUnicode("➡"))
+                            )
+                    ).queue();
+                }
             }
         }
         if(Trivia.openGames.containsKey(id)) {
@@ -400,8 +659,8 @@ public class PageListener extends ListenerAdapter {
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
         if(event.getUser().isBot()) return;
         long id = event.getMessageIdLong();
-        if(Search.messageToPage.containsKey(id)) {
-            AnimePage page = Search.messageToPage.get(id);
+        if(Search.messageToAnimePage.containsKey(id)) {
+            AnimePage page = Search.messageToAnimePage.get(id);
             if(event.getInteraction().getValues().get(0).equals("popularity")) {
                 page.animes.sort(Comparator.comparingInt(a -> a.popularity));
                 page.currentPlaceholder = "Sort by popularity";
@@ -435,8 +694,7 @@ public class PageListener extends ListenerAdapter {
                                 Button.secondary("right", Emoji.fromUnicode("➡"))
                         )
                 ).queue();
-            }
-            else if(event.getInteraction().getValues().get(0).equals("ranks")) {
+            } else if(event.getInteraction().getValues().get(0).equals("ranks")) {
                 page.animes.sort(Comparator.comparingInt(a -> a.rank));
                 page.currentPlaceholder = "Sort by ranks";
                 page.pageNumber = 1;
@@ -469,8 +727,7 @@ public class PageListener extends ListenerAdapter {
                                 Button.secondary("right", Emoji.fromUnicode("➡"))
                         )
                 ).queue();
-            }
-            else if(event.getInteraction().getValues().get(0).equals("time")) {
+            } else if(event.getInteraction().getValues().get(0).equals("time")) {
                 page.animes.sort((a,b) -> b.lastAired.compareTo(a.lastAired));
                 page.currentPlaceholder = "Sort by latest";
                 page.pageNumber = 1;
@@ -653,6 +910,154 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
+        if(Chapters.messageToPage.containsKey(id)) {
+            if(event.getInteraction().getValues().get(0).chars().allMatch(Character::isDigit)) {
+                ChapterList list = Chapters.messageToPage.get(id);
+                int chapterNum = Integer.parseInt(event.getInteraction().getValues().get(0));
+                Chapter chapter = list.chapters.get(chapterNum);
+                api.getPages(event, chapter);
+            }
+        }
+        if(Search.messageToMangaPage.containsKey(id)) {
+            MangaPage page = Search.messageToMangaPage.get(id);
+            if(event.getInteraction().getValues().get(0).equals("views")) {
+                page.mangas.sort(Comparator.comparingInt(a -> -a.views-(a.subscibers*10)));
+                page.currentPlaceholder = "Sort by popularity";
+                page.pageNumber = 1;
+                event.editMessageEmbeds(
+                        page.mangas.get(0).toEmbed().setFooter("Page 1/" + page.mangas.size()).build()
+                ).setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder("Sort by popularity")
+                                        .addOption("Sort by popularity", "views")
+                                        .addOption("Sort by ranks", "ranks")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Show component")
+                                        .addOption("Chapters", "Chapters")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                Button.secondary("right", Emoji.fromUnicode("➡"))
+                        )
+                ).queue();
+            } else if(event.getInteraction().getValues().get(0).equals("score")) {
+                page.mangas.sort(Comparator.comparingDouble(a -> -a.score));
+                page.currentPlaceholder = "Sort by score";
+                page.pageNumber = 1;
+                event.editMessageEmbeds(
+                        page.mangas.get(0).toEmbed().setFooter("Page 1/" + page.mangas.size()).build()
+                ).setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder("Sort by score")
+                                        .addOption("Sort by popularity", "views")
+                                        .addOption("Sort by score", "score")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Show component")
+                                        .addOption("Chapters", "Chapters")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                Button.secondary("right", Emoji.fromUnicode("➡"))
+                        )
+                ).queue();
+            } else if(event.getInteraction().getValues().get(0).equals("Chapters")) {
+                if(page.mangas.get(page.pageNumber-1).chapters == null)
+                    Chapters.run(event, page);
+                else {
+                    Manga manga = page.mangas.get(page.pageNumber - 1);
+                    ChapterList chapterList = manga.chapters;
+                    InteractionHook msg = event.replyEmbeds(
+                            new EmbedBuilder()
+                                    .setTitle(manga.title + " Chapter List")
+                                    .setFooter("Page 1/" + chapterList.pages)
+                                    .build()
+                    ).setEphemeral(true).addActionRows(
+                            ActionRow.of(chapterList.menus.get(0)),
+                            ActionRow.of(
+                                    1 >= chapterList.menus.size() ?
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            chapterList.menus.get(1)
+                            ),
+                            ActionRow.of(
+                                    2 >= chapterList.menus.size() ?
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            chapterList.menus.get(2)
+                            ),
+                            ActionRow.of(
+                                    3 >= chapterList.menus.size() ?
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh","really")
+                                                    .setDisabled(true)
+                                                    .build() :
+                                            chapterList.menus.get(3)
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                    Button.secondary("right", Emoji.fromUnicode("➡"))
+                            )
+                    ).complete();
+
+                    Message message = msg.retrieveOriginal().complete();
+                    editDefaultSearchComp(event, page);
+
+                    Chapters.messageToPage.put(message.getIdLong(), manga.chapters);
+                    msg.editOriginalComponents()
+                            .setActionRows(
+                                    ActionRow.of(
+                                            SelectMenu.create("disabled1")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh", "really")
+                                                    .setDisabled(true)
+                                                    .build()
+                                    ),
+                                    ActionRow.of(
+                                            SelectMenu.create("disabled2")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh", "really")
+                                                    .setDisabled(true)
+                                                    .build()
+                                    ),
+                                    ActionRow.of(
+                                            SelectMenu.create("disabled3")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh", "really")
+                                                    .setDisabled(true)
+                                                    .build()
+                                    ),
+                                    ActionRow.of(
+                                            SelectMenu.create("disabled4")
+                                                    .setPlaceholder("Disabled")
+                                                    .addOption("bruh", "really")
+                                                    .setDisabled(true)
+                                                    .build()
+                                    ),
+                                    ActionRow.of(
+                                            Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                            Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                                    )
+                            ).queueAfter(25, TimeUnit.MINUTES, i -> Chapters.messageToPage.remove(message.getIdLong()));
+                }
+            }
+        }
     }
 
     private static void editDefaultSearchComp(SelectMenuInteractionEvent event, AnimePage page) {
@@ -676,6 +1081,28 @@ public class PageListener extends ListenerAdapter {
                                 .addOption("News", "News")
                                 .addOption("Review", "Review")
                                 .addOption("Statistics", "Statistics")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+    }
+
+    private static void editDefaultSearchComp(SelectMenuInteractionEvent event, MangaPage page) {
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "views")
+                                .addOption("Sort by ranks", "ranks")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Chapters", "Chapters")
                                 .build()
                 ),
                 ActionRow.of(

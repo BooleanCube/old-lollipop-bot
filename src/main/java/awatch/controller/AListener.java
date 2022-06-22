@@ -21,7 +21,7 @@ public interface AListener {
     void sendReview(Review review);
     void sendTop(ArrayList<Anime> top);
     void sendPopularAnime(ArrayList<Anime> popular);
-    void sendLatest(ArrayList<Anime> latest);
+    void sendLatestAnime(ArrayList<Anime> latest);
     void sendRandomAnime(Anime random);
     void sendRandomGIF(GIF gif);
     void sendTrivia(Question question);

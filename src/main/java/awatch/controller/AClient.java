@@ -168,7 +168,7 @@ public class AClient {
     public void getLatest() {
         ThreadManagement.execute(() -> {
             try {
-                listener.sendLatest(ALoader.loadLatest());
+                listener.sendLatestAnime(ALoader.loadLatest());
             } catch (IOException e) { throw new RuntimeException(e); }
         });
     }

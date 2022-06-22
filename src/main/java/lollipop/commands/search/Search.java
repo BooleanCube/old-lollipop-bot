@@ -1,10 +1,9 @@
 package lollipop.commands.search;
 
-import awatch.model.Anime;
 import lollipop.*;
 import lollipop.pages.AnimePage;
+import lollipop.pages.MangaPage;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -12,10 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +35,8 @@ public class Search implements Command {
         return "Searches for an anime/manga/charcater and NSFW content is locked to NSFW channels only!\nUsage: `" + Constant.PREFIX + getAliases()[0] + " [anime/manga/character] [query]`";
     }
 
-    public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
+    public static HashMap<Long, AnimePage> messageToAnimePage = new HashMap<>();
+    public static HashMap<Long, MangaPage> messageToMangaPage = new HashMap<>();
 
     @Override
     public CommandData getSlashCmd() {
@@ -88,7 +86,7 @@ public class Search implements Command {
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();
-                Search.messageToPage.put(m.getIdLong(), new AnimePage(null, m, 1, event.getUser(), timeout));
+                messageToAnimePage.put(m.getIdLong(), new AnimePage(null, m, 1, event.getUser(), timeout));
                 api.searchAnime(msg, query, event.getTextChannel().isNSFW());
             }
             catch(Exception ignored) {}
@@ -96,7 +94,23 @@ public class Search implements Command {
 
         else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
             String query = String.join(" ", args.subList(1, args.size()));
-            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
+            InteractionHook msg = event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Searching for `" + query + "`...")
+                            .build()
+            ).complete();
+            ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription("""
+                                Could not find a manga with that search query! Try:
+                                > Search using japanese title (eg. Kimetsu no Yaiba)
+                                > Search with a valid manga title that exists in Readm's database
+                                > There was a small error, just try again.
+                                """)
+                    .build()
+            ).queueAfter(5, TimeUnit.SECONDS);
+            Message m = msg.retrieveOriginal().complete();
+            messageToMangaPage.put(m.getIdLong(), new MangaPage(null, m, 1, event.getUser(), timeout));
             api.searchMangas(query, msg);
         }
 

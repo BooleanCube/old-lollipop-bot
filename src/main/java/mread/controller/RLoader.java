@@ -19,8 +19,8 @@ public class RLoader {
     // Manga Cache
     public static HashMap<String, ArrayList<Manga>> mangaCache = new HashMap<>();
 
-	public static List<Manga> browse(int page, String genre) {
-		List<Manga> mangaList = new ArrayList<>();
+	public static ArrayList<Manga> browse(int page, String genre) {
+		ArrayList<Manga> mangaList = new ArrayList<>();
 		try {
 			String pageUrl;
 			if (genre == null) pageUrl = RApiBuilder.buildBrowse(page);
@@ -45,12 +45,11 @@ public class RLoader {
 		return mangaList;
 	}
 
-	public static Manga getChapters(Manga manga) {
-		List<Chapter> chapterList = new ArrayList<>();
+	public static ArrayList<Chapter> getChapters(Manga manga) {
+		ArrayList<Chapter> chapterList = new ArrayList<>();
 		String author = null, status = null;
 
 		try {
-
 			Element doc = Jsoup.connect(RApiBuilder.buildCombo(manga.url)).userAgent(RConstants.USER_AGENT).get().body();
 			
 			author = doc.select("div[class=sub-title pt-sm]").text();
@@ -66,15 +65,14 @@ public class RLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		manga.chapters = chapterList;
 		manga.author = author;
 		manga.status = status;
 		manga.chapter = chapterList.size();
-		return manga;
+		return chapterList;
 	}
 
-	public static Chapter getPages(Chapter chapter) {
-		List<String> pages = new ArrayList<>();
+	public static ArrayList<String> getPages(Chapter chapter) {
+		ArrayList<String> pages = new ArrayList<>();
 		try {
 			Element doc = Jsoup.connect(RApiBuilder.buildCombo(chapter.url)).userAgent(RConstants.USER_AGENT).get().body();
 			for (Element pg : doc.select("img[class=img-responsive scroll-down]")) {
@@ -84,11 +82,10 @@ public class RLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		chapter.pages = pages;
-		return chapter;
+		return pages;
     }
 
-	public static List<Manga> search(String query) {
+	public static ArrayList<Manga> search(String query) {
         if(mangaCache.containsKey(query)) return mangaCache.get(query);
 		ArrayList<Manga> mangaList = new ArrayList<>();
 		try {
@@ -103,7 +100,7 @@ public class RLoader {
 			DataObject json = DataObject.fromJson(doc);
 			DataArray array;
 			try { array = json.getArray("manga"); } catch(Exception e) { return mangaList; }
-			for (int i = 0; i < Math.min(25, array.length()); i++) {
+			for (int i=0; i < Math.min(5, array.length()); i++) {
 				DataObject obj = array.getObject(i);
 				String title = "Unkown", url = null, art = null;
 				ArrayList<String> tokens = new ArrayList<>();

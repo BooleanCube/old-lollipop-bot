@@ -9,16 +9,14 @@ import lollipop.commands.Popular;
 import lollipop.commands.RandomAnime;
 import lollipop.commands.Top;
 import lollipop.commands.search.Search;
-import lollipop.commands.search.infos.Characters;
-import lollipop.commands.search.infos.Episodes;
-import lollipop.commands.search.infos.News;
+import lollipop.commands.search.animecomps.Characters;
+import lollipop.commands.search.animecomps.Episodes;
+import lollipop.commands.search.animecomps.News;
+import lollipop.commands.search.mangacomps.Chapters;
 import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
 import awatch.model.Question;
-import lollipop.pages.AnimePage;
-import lollipop.pages.CharacterList;
-import lollipop.pages.EpisodeList;
-import lollipop.pages.Newspaper;
+import lollipop.pages.*;
 import mread.controller.RClient;
 import mread.controller.RListener;
 import mread.model.Chapter;
@@ -26,7 +24,8 @@ import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -53,10 +52,10 @@ public class API implements RListener, AListener {
 
     //sending
     final ArrayDeque<InteractionHook> messageToEdit = new ArrayDeque<>();
-    final ArrayDeque<ButtonInteractionEvent> eventToReply = new ArrayDeque<>();
-    final HashMap<ButtonInteractionEvent, AnimePage> eventToPage = new HashMap<>();
-    final ArrayDeque<SelectMenuInteractionEvent> compToReply = new ArrayDeque<>();
-    final HashMap<SelectMenuInteractionEvent, AnimePage> compToPage = new HashMap<>();
+    final ArrayDeque<SelectMenuInteractionEvent> eventToReply = new ArrayDeque<>();
+    final HashMap<SelectMenuInteractionEvent, AnimePage> eventToAnimePage = new HashMap<>();
+    final HashMap<SelectMenuInteractionEvent, MangaPage> eventToMangaPage = new HashMap<>();
+    final HashMap<SelectMenuInteractionEvent, Chapter> eventToChapter = new HashMap<>();
 
     /**
      * Searches for Manga given query
@@ -68,40 +67,265 @@ public class API implements RListener, AListener {
         messageToEdit.push(message);
     }
 
+    public void getChapters(SelectMenuInteractionEvent event, MangaPage page) {
+        Manga manga = page.mangas.get(page.pageNumber-1);
+        mangaClient.chapters(manga);
+        eventToReply.push(event);
+        eventToMangaPage.put(event, page);
+    }
+
+    public void getPages(SelectMenuInteractionEvent event, Chapter chapter) {
+        mangaClient.pages(chapter);
+        eventToReply.push(event);
+        eventToChapter.put(event, chapter);
+    }
+
     /**
      * Send Manga that was searched
      * @param mangas manga list
      */
     @Override
-    public void sendMangas(List<Manga> mangas) {
-        if(mangas.isEmpty()) {
-            messageToEdit.removeFirst().editOriginalEmbeds(
-                    new EmbedBuilder()
-                            .setColor(Color.red)
-                            .setDescription("Could not find any results with that search query! Please try again with a valid manga!")
-                            .build()).queue();
-            return;
-        }
-        messageToEdit.removeFirst().editOriginalEmbeds(mangas.get(0).toEmbed().build()).queue();
+    public void sendMangas(ArrayList<Manga> mangas) {
+        InteractionHook message = messageToEdit.removeFirst();
+        Message msg = message.retrieveOriginal().complete();
+        // this takes care of the none found possibility
+        if(mangas.isEmpty()) return;
+        MangaPage page = Search.messageToMangaPage.get(msg.getIdLong());
+        page.timeout.cancel(false);
+        page.mangas = mangas;
+        page.mangas.sort(Comparator.comparingInt(m -> -m.views-(m.subscibers*10)));
+        message.editOriginalEmbeds(
+                mangas.get(0).toEmbed()
+                        .setFooter("Page 1/"+mangas.size())
+                        .build()
+        ).setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder("Sort by popularity")
+                                .addOption("Sort by popularity", "views")
+                                .addOption("Sort by score", "score")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Chapters", "Chapters")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).complete();
+        message.editOriginalComponents()
+                .setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                        )
+                ).queueAfter(3, TimeUnit.MINUTES, i -> {
+                    Search.messageToMangaPage.remove(msg.getIdLong());
+                    for(Manga manga : mangas) {
+                        manga.chapters = null;
+                    }
+                });
     }
 
     /**
      * Send chapters from searched manga
-     * @param manga manga
+     * @param chapters {@link ArrayList<Chapter>} chapter list
      */
     @Override
-    public void sendChapters(Manga manga) {
-        for (Chapter c : manga.chapters) System.out.println(c);
-        mangaClient.pages(manga.chapters.get(0));
+    public void sendChapters(ArrayList<Chapter> chapters) {
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        try {
+            ArrayList<SelectMenu> menus = new ArrayList<>();
+            SelectMenu.Builder currentMenu = null;
+            int last = 0;
+            for (int i = 0; i < chapters.size(); i++) {
+                if (i % 25 == 0) {
+                    if (i != 0) {
+                        currentMenu.setPlaceholder(chapters.get(i - 25).title + " - " + chapters.get(i - 1).title);
+                        last = i;
+                        menus.add(currentMenu.build());
+                    }
+                    currentMenu = SelectMenu.create("menu" + i / 25);
+                }
+                currentMenu.addOption("Read " + chapters.get(i).title, Integer.toString(i));
+            }
+            if(currentMenu != null && !currentMenu.getOptions().isEmpty()) {
+                currentMenu.setPlaceholder(chapters.get(last).title + " - " + chapters.get(chapters.size()-1).title);
+                menus.add(currentMenu.build());
+            }
+            if (chapters.isEmpty()) throw new Exception();
+            if(menus.isEmpty()) throw new Exception();
+
+            MangaPage page = eventToMangaPage.remove(event);
+            int pages = (int)Math.ceil(menus.size()/4.0);
+            Manga manga = page.mangas.get(page.pageNumber - 1);
+            InteractionHook msg = event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setTitle(manga.title + " Chapter List")
+                            .setDescription("If the pages are unreadable, you can click on the title of the embed for that chapter and read it in your browser of choice!")
+                            .setFooter("Page 1/" + pages)
+                            .build()
+            ).setEphemeral(true).addActionRows(
+                    ActionRow.of(menus.get(0)),
+                    ActionRow.of(
+                            1 >= menus.size() ?
+                                    SelectMenu.create("disabled1")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh","really")
+                                            .setDisabled(true)
+                                            .build() :
+                                    menus.get(1)
+                    ),
+                    ActionRow.of(
+                            2 >= menus.size() ?
+                                    SelectMenu.create("disabled2")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh","really")
+                                            .setDisabled(true)
+                                            .build() :
+                                    menus.get(2)
+                    ),
+                    ActionRow.of(
+                            3 >= menus.size() ?
+                                    SelectMenu.create("disabled3")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh","really")
+                                            .setDisabled(true)
+                                            .build() :
+                                    menus.get(3)
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
+            ).complete();
+
+            Message message = msg.retrieveOriginal().complete();
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "views")
+                                    .addOption("Sort by score", "score")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Chapters", "Chapters")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
+            ).queue();
+
+            manga.chapters = new ChapterList(chapters, menus, 1, pages, message, event.getUser());
+            Chapters.messageToPage.put(message.getIdLong(), manga.chapters);
+            msg.editOriginalComponents()
+                    .setActionRows(
+                            ActionRow.of(
+                                    SelectMenu.create("disabled1")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh", "really")
+                                            .setDisabled(true)
+                                            .build()
+                            ),
+                            ActionRow.of(
+                                    SelectMenu.create("disabled2")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh", "really")
+                                            .setDisabled(true)
+                                            .build()
+                            ),
+                            ActionRow.of(
+                                    SelectMenu.create("disabled3")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh", "really")
+                                            .setDisabled(true)
+                                            .build()
+                            ),
+                            ActionRow.of(
+                                    SelectMenu.create("disabled4")
+                                            .setPlaceholder("Disabled")
+                                            .addOption("bruh", "really")
+                                            .setDisabled(true)
+                                            .build()
+                            ),
+                            ActionRow.of(
+                                    Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                    Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                            )
+                    ).queueAfter(25, TimeUnit.MINUTES, i -> Chapters.messageToPage.remove(message.getIdLong()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not find any chapters for this manga!")
+                            .setColor(Color.red)
+                            .build()
+            ).setEphemeral(true).queue();
+        }
     }
 
     /**
      * Sent pages from a manga chapter
-     * @param chapter chapter
+     * @param pages {@link ArrayList<String>} list of urls to pages
      */
     @Override
-    public void sendPages(Chapter chapter) {
-        for (String s : chapter.pages) System.out.println(s);
+    public void sendPages(ArrayList<String> pages) {
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        Chapter chapter = eventToChapter.remove(event);
+        try {
+            if(pages == null || pages.isEmpty()) throw new Exception();
+            chapter.pages = pages;
+
+            InteractionHook message = event.replyEmbeds(
+                    chapter.toEmbed()
+                            .build()
+            ).setEphemeral(true).addActionRow(
+                    Button.secondary("left", Emoji.fromUnicode("⬅")),
+                    Button.secondary("right", Emoji.fromUnicode("➡"))
+            ).complete();
+            SelectMenu menu = event.getSelectMenu();
+            event.editSelectMenu(
+                    menu.createCopy()
+                            .build()
+            ).queue();
+
+            Message msg = message.retrieveOriginal().complete();
+            chapter.user = event.getUser();
+            ChapterList.messageToChapter.put(msg.getIdLong(), chapter);
+            message.editOriginalComponents()
+                    .queueAfter(5, TimeUnit.MINUTES, i -> ChapterList.messageToChapter.remove(msg.getIdLong()));
+        } catch(Exception e) {
+            e.printStackTrace();
+            event.replyEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not find any pages for this chapter!\n> Try reading [" + chapter.title + "](" + chapter.url + ") from the website.")
+                            .setColor(Color.red)
+                            .build()
+            ).setEphemeral(true).queue();
+        }
     }
 
     /**
@@ -142,8 +366,8 @@ public class API implements RListener, AListener {
     public void getEpisodes(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getEpisodes(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -154,8 +378,8 @@ public class API implements RListener, AListener {
     public void getCharacters(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getCharacters(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -166,8 +390,8 @@ public class API implements RListener, AListener {
     public void getNews(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getNews(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -178,8 +402,8 @@ public class API implements RListener, AListener {
     public void getStatistics(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getStatistics(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -190,8 +414,8 @@ public class API implements RListener, AListener {
     public void getThemes(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getThemes(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -202,8 +426,8 @@ public class API implements RListener, AListener {
     public void getRecommendation(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getRecommendation(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -214,8 +438,8 @@ public class API implements RListener, AListener {
     public void getReview(SelectMenuInteractionEvent event, AnimePage page) {
         long id = page.animes.get(page.pageNumber-1).malID;
         animeClient.getReview(id);
-        compToReply.push(event);
-        compToPage.put(event, page);
+        eventToReply.push(event);
+        eventToAnimePage.put(event, page);
     }
 
     /**
@@ -309,10 +533,10 @@ public class API implements RListener, AListener {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if(animes == null || animes.isEmpty()) return;
-        AnimePage page = Search.messageToPage.get(msg.getIdLong());
+        AnimePage page = Search.messageToAnimePage.get(msg.getIdLong());
         page.timeout.cancel(false);
         page.animes = animes;
-        animes.sort(Comparator.comparingInt(a -> {
+        page.animes.sort(Comparator.comparingInt(a -> {
             if(a.popularity < 1) return Integer.MAX_VALUE;
             return a.popularity;
         }));
@@ -364,7 +588,7 @@ public class API implements RListener, AListener {
                                 Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                         )
                 ).queueAfter(3, TimeUnit.MINUTES, i -> {
-                    Search.messageToPage.remove(msg.getIdLong());
+                    Search.messageToAnimePage.remove(msg.getIdLong());
                     for(Anime anime : animes) {
                         anime.news = null;
                         anime.stats = null;
@@ -402,7 +626,7 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendEpisodes(ArrayList<Episode> episodes) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -436,7 +660,7 @@ public class API implements RListener, AListener {
             ).complete();
 
             Message message = msg.retrieveOriginal().complete();
-            AnimePage page = compToPage.remove(event);
+            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -487,7 +711,7 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendCharacterList(ArrayList<Character> characters) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -513,7 +737,7 @@ public class API implements RListener, AListener {
             ).complete();
 
             Message message = msg.retrieveOriginal().complete();
-            AnimePage page = compToPage.remove(event);
+            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -564,7 +788,7 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendNews(ArrayList<Article> articles) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         try {
             if(articles == null || articles.isEmpty()) throw new Exception();
             Collections.reverse(articles);
@@ -577,7 +801,7 @@ public class API implements RListener, AListener {
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
             Message message = m.retrieveOriginal().complete();
-            AnimePage page = compToPage.remove(event);
+            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -627,9 +851,9 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendStatistics(Statistic statistics) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(statistics.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = compToPage.remove(event);
+        AnimePage page = eventToAnimePage.remove(event);
         event.getMessage().editMessageComponents().setActionRows(
                 ActionRow.of(
                         SelectMenu.create("order")
@@ -666,9 +890,9 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendThemes(Themes themes) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(themes.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = compToPage.remove(event);
+        AnimePage page = eventToAnimePage.remove(event);
         event.getMessage().editMessageComponents().setActionRows(
                 ActionRow.of(
                         SelectMenu.create("order")
@@ -705,9 +929,9 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendRecommendation(Recommendation recommendation) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(recommendation.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = compToPage.remove(event);
+        AnimePage page = eventToAnimePage.remove(event);
         event.getMessage().editMessageComponents().setActionRows(
                 ActionRow.of(
                         SelectMenu.create("order")
@@ -744,9 +968,9 @@ public class API implements RListener, AListener {
      */
     @Override
     public void sendReview(Review review) {
-        SelectMenuInteractionEvent event = compToReply.removeFirst();
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
         event.replyEmbeds(review.toEmbed().build()).setEphemeral(true).queue();
-        AnimePage page = compToPage.remove(event);
+        AnimePage page = eventToAnimePage.remove(event);
         event.getMessage().editMessageComponents().setActionRows(
                 ActionRow.of(
                         SelectMenu.create("order")
@@ -834,7 +1058,7 @@ public class API implements RListener, AListener {
      * @param latest latest anime list
      */
     @Override
-    public void sendLatest(ArrayList<Anime> latest) {
+    public void sendLatestAnime(ArrayList<Anime> latest) {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if(latest == null) return;
@@ -875,7 +1099,7 @@ public class API implements RListener, AListener {
         try {
             Cache.addTitleToCache(random.title);
         }
-        catch(IOException e) {}
+        catch(IOException ignored) {}
     }
 
     /**
@@ -938,7 +1162,7 @@ public class API implements RListener, AListener {
         Trivia.openGames.get(msg.getIdLong()).startTimeout.cancel(false);
         try {
             Cache.addTitleToCache(question.correct.title);
-        } catch(IOException e) {}
+        } catch(IOException ignored) {}
     }
 
 }

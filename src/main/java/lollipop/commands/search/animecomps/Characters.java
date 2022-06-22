@@ -1,4 +1,4 @@
-package lollipop.commands.search.infos;
+package lollipop.commands.search.animecomps;
 
 import lollipop.API;
 import lollipop.pages.AnimePage;
@@ -14,7 +14,7 @@ public class Characters {
 
     /**
      * Runs a request to get anime characters
-     * @param event button interaction event
+     * @param event select menu interaction event
      * @param page anime page
      */
     public static void run(SelectMenuInteractionEvent event, AnimePage page) {

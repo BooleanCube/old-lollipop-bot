@@ -1,12 +1,8 @@
-package lollipop.commands.search.infos;
+package lollipop.commands.search.animecomps;
 
 import lollipop.API;
 import lollipop.pages.AnimePage;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
-
-import java.io.IOException;
 
 /**
  * Runs a request to get anime themes
@@ -17,7 +13,7 @@ public class Themes {
 
     /**
      * Runs a request to get anime themes
-     * @param event button interaction event
+     * @param event select menu interaction event
      * @param page anime page
      */
     public static void run(SelectMenuInteractionEvent event, AnimePage page) {

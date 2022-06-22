@@ -2,15 +2,21 @@ package mread.model;
 
 import mread.ModelData;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import org.jsoup.nodes.Element;
 
 import java.util.List;
 
 public class Chapter implements ModelData {
+
+    public User user;
+    public int pageNumber = 1;
 	public String title;
 	public String url;
 	public String publication;
 	public List<String> pages;
+
+    private static final String BASE_URL = "https://www.readm.org/";
 
     /**
      * Initialize variables in the constructor
@@ -29,7 +35,7 @@ public class Chapter implements ModelData {
 
     /**
      * Compressed data into string
-     * @return
+     * @return String representing chapter and its contents
      */
 	@Override
 	public String toString() {
@@ -61,8 +67,24 @@ public class Chapter implements ModelData {
      */
     @Override
     public EmbedBuilder toEmbed() {
-        // empty
-        return null;
+        return new EmbedBuilder()
+                .setTitle(this.title, BASE_URL + this.url)
+                .setDescription(this.publication + " ago")
+                .setImage(BASE_URL + this.pages.get(0))
+                .setFooter("Page " + pageNumber + "/" + pages.size());
+    }
+
+    /**
+     * Get the chapter embed for a specific page
+     * @param page page number
+     * @return {@link EmbedBuilder} embed builder to send
+     */
+    public EmbedBuilder embedPage(int page) {
+        return new EmbedBuilder()
+                .setTitle(this.title, BASE_URL + this.url)
+                .setDescription(this.publication + " ago")
+                .setImage(BASE_URL + this.pages.get(page))
+                .setFooter("Page " + pageNumber + "/" + pages.size());
     }
 
 }

@@ -1,6 +1,7 @@
 package mread.model;
 
 import awatch.controller.AConstants;
+import lollipop.pages.ChapterList;
 import mread.ModelData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jsoup.nodes.Element;
@@ -24,7 +25,7 @@ public class Manga implements ModelData {
     public String genres;
 	public String authorUrl;
 	public List<String> tags;
-	public List<Chapter> chapters;
+	public ChapterList chapters;
 
     /**
      * Initialize variables in constructor
