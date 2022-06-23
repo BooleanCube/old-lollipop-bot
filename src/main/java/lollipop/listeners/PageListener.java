@@ -1,6 +1,7 @@
 package lollipop.listeners;
 
 import awatch.model.Anime;
+import awatch.model.Character;
 import lollipop.API;
 import lollipop.BotStatistics;
 import lollipop.Constant;
@@ -8,6 +9,9 @@ import lollipop.Database;
 import lollipop.commands.*;
 import lollipop.commands.search.*;
 import lollipop.commands.search.animecomps.*;
+import lollipop.commands.search.charactercomps.Animes;
+import lollipop.commands.search.charactercomps.Mangas;
+import lollipop.commands.search.charactercomps.VoiceActors;
 import lollipop.commands.search.mangacomps.Chapters;
 import lollipop.commands.trivia.TGame;
 import lollipop.commands.trivia.Trivia;
@@ -381,6 +385,38 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
+        if(Search.messageToCharacterPage.containsKey(id)) {
+            CharacterPage page = Search.messageToCharacterPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `latest` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(page.pageNumber>1)
+                    event.editMessageEmbeds(
+                            page.characters.get(--page.pageNumber-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.characters.size()).build()
+                    ).queue();
+                else {
+                    int loop = page.characters.size()-1;
+                    page.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            page.characters.get(loop).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.characters.size()).build()
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if(page.pageNumber<page.characters.size()) {
+                    event.editMessageEmbeds(
+                            page.characters.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.characters.size()).build()
+                    ).queue();
+                }
+                else {
+                    page.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            page.characters.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.characters.size()).build()
+                    ).queue();
+                }
+            }
+        }
         if(RandomAnime.messageToPage.containsKey(id)) {
             AnimePage page = RandomAnime.messageToPage.get(id);
             if(event.getUser() != page.user) {
@@ -661,6 +697,12 @@ public class PageListener extends ListenerAdapter {
         long id = event.getMessageIdLong();
         if(Search.messageToAnimePage.containsKey(id)) {
             AnimePage page = Search.messageToAnimePage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
             if(event.getInteraction().getValues().get(0).equals("popularity")) {
                 page.animes.sort(Comparator.comparingInt(a -> a.popularity));
                 page.currentPlaceholder = "Sort by popularity";
@@ -670,7 +712,7 @@ public class PageListener extends ListenerAdapter {
                 ).setActionRows(
                         ActionRow.of(
                                 SelectMenu.create("order")
-                                        .setPlaceholder("Sort by popularity")
+                                        .setPlaceholder(page.currentPlaceholder)
                                         .addOption("Sort by popularity", "popularity")
                                         .addOption("Sort by ranks", "ranks")
                                         .addOption("Sort by latest", "time")
@@ -703,7 +745,7 @@ public class PageListener extends ListenerAdapter {
                 ).setActionRows(
                         ActionRow.of(
                                 SelectMenu.create("order")
-                                        .setPlaceholder("Sort by ranks")
+                                        .setPlaceholder(page.currentPlaceholder)
                                         .addOption("Sort by popularity", "popularity")
                                         .addOption("Sort by ranks", "ranks")
                                         .addOption("Sort by latest", "time")
@@ -736,7 +778,7 @@ public class PageListener extends ListenerAdapter {
                 ).setActionRows(
                         ActionRow.of(
                                 SelectMenu.create("order")
-                                        .setPlaceholder("Sort by latest")
+                                        .setPlaceholder(page.currentPlaceholder)
                                         .addOption("Sort by popularity", "popularity")
                                         .addOption("Sort by ranks", "ranks")
                                         .addOption("Sort by latest", "time")
@@ -911,8 +953,14 @@ public class PageListener extends ListenerAdapter {
             }
         }
         if(Chapters.messageToPage.containsKey(id)) {
-            if(event.getInteraction().getValues().get(0).chars().allMatch(Character::isDigit)) {
-                ChapterList list = Chapters.messageToPage.get(id);
+            ChapterList list = Chapters.messageToPage.get(id);
+            if(event.getUser() != list.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+            if(event.getInteraction().getValues().get(0).chars().allMatch(java.lang.Character::isDigit)) {
                 int chapterNum = Integer.parseInt(event.getInteraction().getValues().get(0));
                 Chapter chapter = list.chapters.get(chapterNum);
                 api.getPages(event, chapter);
@@ -920,8 +968,14 @@ public class PageListener extends ListenerAdapter {
         }
         if(Search.messageToMangaPage.containsKey(id)) {
             MangaPage page = Search.messageToMangaPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
             if(event.getInteraction().getValues().get(0).equals("views")) {
-                page.mangas.sort(Comparator.comparingInt(a -> -a.views-(a.subscibers*10)));
+                page.mangas.sort(Comparator.comparingInt(m -> -m.views-(m.subscibers*10)));
                 page.currentPlaceholder = "Sort by popularity";
                 page.pageNumber = 1;
                 event.editMessageEmbeds(
@@ -929,7 +983,7 @@ public class PageListener extends ListenerAdapter {
                 ).setActionRows(
                         ActionRow.of(
                                 SelectMenu.create("order")
-                                        .setPlaceholder("Sort by popularity")
+                                        .setPlaceholder(page.currentPlaceholder)
                                         .addOption("Sort by popularity", "views")
                                         .addOption("Sort by ranks", "ranks")
                                         .build()
@@ -946,7 +1000,7 @@ public class PageListener extends ListenerAdapter {
                         )
                 ).queue();
             } else if(event.getInteraction().getValues().get(0).equals("score")) {
-                page.mangas.sort(Comparator.comparingDouble(a -> -a.score));
+                page.mangas.sort(Comparator.comparingDouble(m -> -m.score));
                 page.currentPlaceholder = "Sort by score";
                 page.pageNumber = 1;
                 event.editMessageEmbeds(
@@ -954,7 +1008,7 @@ public class PageListener extends ListenerAdapter {
                 ).setActionRows(
                         ActionRow.of(
                                 SelectMenu.create("order")
-                                        .setPlaceholder("Sort by score")
+                                        .setPlaceholder(page.currentPlaceholder)
                                         .addOption("Sort by popularity", "views")
                                         .addOption("Sort by score", "score")
                                         .build()
@@ -1058,6 +1112,111 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
+        if(Search.messageToCharacterPage.containsKey(id)) {
+            CharacterPage page = Search.messageToCharacterPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `search` command to be able to use buttons!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+            if(event.getInteraction().getValues().get(0).equals("popularity")) {
+                page.characters.sort(Comparator.comparingInt(c -> -c.favorites));
+                page.currentPlaceholder = "Sort by popularity";
+                page.pageNumber = 1;
+                event.editMessageEmbeds(
+                        page.characters.get(0).toEmbed().setFooter("Page 1/" + page.characters.size()).build()
+                ).setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder(page.currentPlaceholder)
+                                        .addOption("Sort by popularity", "popularity")
+                                        .addOption("Sort by alphabetical order", "alphabetical")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Show component")
+                                        .addOption("Animes", "Animes")
+                                        .addOption("Mangas", "Mangas")
+                                        .addOption("Voice Actors", "Voices")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                Button.secondary("right", Emoji.fromUnicode("➡"))
+                        )
+                ).queue();
+            } else if(event.getInteraction().getValues().get(0).equals("alphabetical")) {
+                page.characters.sort(Comparator.comparing(c -> c.name));
+                page.currentPlaceholder = "Sort by alphabetical order";
+                page.pageNumber = 1;
+                event.editMessageEmbeds(
+                        page.characters.get(0).toEmbed().setFooter("Page 1/" + page.characters.size()).build()
+                ).setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder(page.currentPlaceholder)
+                                        .addOption("Sort by popularity", "popularity")
+                                        .addOption("Sort by alphabetical order", "alphabetical")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Show component")
+                                        .addOption("Animes", "Animes")
+                                        .addOption("Mangas", "Mangas")
+                                        .addOption("Voice Actors", "Voices")
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")),
+                                Button.secondary("right", Emoji.fromUnicode("➡"))
+                        )
+                ).queue();
+            } else {
+                if(event.getInteraction().getValues().get(0).equals("Animes")) {
+                    Character character = page.characters.get(page.pageNumber-1);
+                    if(character.animes == null)
+                        Animes.run(event, page);
+                    else {
+                        event.replyEmbeds(
+                                new EmbedBuilder()
+                                        .setTitle(character.name + " Anime List")
+                                        .setDescription(character.animes)
+                                        .build()
+                        ).setEphemeral(true).queue();
+                        editDefaultSearchComp(event, page);
+                    }
+                } else if(event.getInteraction().getValues().get(0).equals("Mangas")) {
+                    Character character = page.characters.get(page.pageNumber-1);
+                    if(character.mangas == null)
+                        Mangas.run(event, page);
+                    else {
+                        event.replyEmbeds(
+                                new EmbedBuilder()
+                                        .setTitle(character.name + " Manga List")
+                                        .setDescription(character.mangas)
+                                        .build()
+                        ).setEphemeral(true).queue();
+                        editDefaultSearchComp(event, page);
+                    }
+                } else if(event.getInteraction().getValues().get(0).equals("Voices")) {
+                    Character character = page.characters.get(page.pageNumber-1);
+                    if(character.voiceActors == null)
+                        VoiceActors.run(event, page);
+                    else {
+                        event.replyEmbeds(
+                                new EmbedBuilder()
+                                        .setTitle(character.name + " Voice Actor List")
+                                        .setDescription(character.voiceActors)
+                                        .build()
+                        ).setEphemeral(true).queue();
+                        editDefaultSearchComp(event, page);
+                    }
+                }
+            }
+        }
     }
 
     private static void editDefaultSearchComp(SelectMenuInteractionEvent event, AnimePage page) {
@@ -1103,6 +1262,30 @@ public class PageListener extends ListenerAdapter {
                         SelectMenu.create("components")
                                 .setPlaceholder("Show component")
                                 .addOption("Chapters", "Chapters")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+    }
+
+    private static void editDefaultSearchComp(SelectMenuInteractionEvent event, CharacterPage page) {
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by alphabetical order", "alphabetical")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Animes", "Animes")
+                                .addOption("Mangas", "Mangas")
+                                .addOption("Voice Actors", "Voices")
                                 .build()
                 ),
                 ActionRow.of(

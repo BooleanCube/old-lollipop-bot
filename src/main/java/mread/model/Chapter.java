@@ -9,12 +9,14 @@ import java.util.List;
 
 public class Chapter implements ModelData {
 
-    public User user;
-    public int pageNumber = 1;
 	public String title;
 	public String url;
 	public String publication;
 	public List<String> pages;
+
+    // components
+    public User user;
+    public int pageNumber = 1;
 
     private static final String BASE_URL = "https://www.readm.org/";
 
@@ -70,7 +72,7 @@ public class Chapter implements ModelData {
         return new EmbedBuilder()
                 .setTitle(this.title, BASE_URL + this.url)
                 .setDescription(this.publication + " ago")
-                .setImage(BASE_URL + this.pages.get(0))
+                .setImage(BASE_URL + this.pages.get(pageNumber-1))
                 .setFooter("Page " + pageNumber + "/" + pages.size());
     }
 

@@ -2,6 +2,7 @@ package lollipop.commands.search;
 
 import lollipop.*;
 import lollipop.pages.AnimePage;
+import lollipop.pages.CharacterPage;
 import lollipop.pages.MangaPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -37,14 +38,17 @@ public class Search implements Command {
 
     public static HashMap<Long, AnimePage> messageToAnimePage = new HashMap<>();
     public static HashMap<Long, MangaPage> messageToMangaPage = new HashMap<>();
+    public static HashMap<Long, CharacterPage> messageToCharacterPage = new HashMap<>();
+    public static HashMap<Long, ScheduledFuture<?>> messageToUserTimeout = new HashMap<>();
 
     @Override
     public CommandData getSlashCmd() {
         return Tools.defaultSlashCmd(this).addOptions(
-                new OptionData(OptionType.STRING, "type", "anime / manga / character", true)
+                new OptionData(OptionType.STRING, "type", "anime / manga / character / user", true)
                         .addChoice("anime", "anime")
                         .addChoice("character", "character")
                         .addChoice("manga", "manga")
+                        .addChoice("user", "user")
         ).addOption(OptionType.STRING, "query", "search query", true);
     }
 
@@ -66,13 +70,26 @@ public class Search implements Command {
         final List<String> args = options.stream().map(OptionMapping::getAsString).collect(Collectors.toList());
         if(args.size()<2) { Tools.wrongUsage(event, this); return; }
 
-        if(args.get(0).equalsIgnoreCase("c") || args.get(0).equalsIgnoreCase("character")) {
-            String query = String.join(" ", args.subList(1, args.size()));
-            InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
-            api.searchCharacter(msg, query);
+        if(args.get(0).equalsIgnoreCase("character")) {
+            try {
+                String query = String.join(" ", args.subList(1, args.size()));
+                InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
+                ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
+                        .setColor(Color.red)
+                        .setDescription("""
+                                Could not find a character with that search query! Try:
+                                > Search using japanese title (eg. Kuujou Joutarou)
+                                > Search with a valid character name that exists in MyAnimeList's database
+                                """)
+                        .build()
+                ).queueAfter(5, TimeUnit.SECONDS);
+                Message m = msg.retrieveOriginal().complete();
+                messageToCharacterPage.put(m.getIdLong(), new CharacterPage(null, m, 1, event.getUser(), timeout));
+                api.searchCharacter(msg, query);
+            } catch(Exception ignored) {}
         }
 
-        else if(args.get(0).equalsIgnoreCase("a") || args.get(0).equalsIgnoreCase("anime")) {
+        else if(args.get(0).equalsIgnoreCase("anime")) {
             try {
                 String query = String.join(" ", args.subList(1, args.size()));
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
@@ -92,7 +109,7 @@ public class Search implements Command {
             catch(Exception ignored) {}
         }
 
-        else if(args.get(0).equalsIgnoreCase("m") || args.get(0).equalsIgnoreCase("manga")) {
+        else if(args.get(0).equalsIgnoreCase("manga")) {
             String query = String.join(" ", args.subList(1, args.size()));
             InteractionHook msg = event.replyEmbeds(
                     new EmbedBuilder()
@@ -112,6 +129,22 @@ public class Search implements Command {
             Message m = msg.retrieveOriginal().complete();
             messageToMangaPage.put(m.getIdLong(), new MangaPage(null, m, 1, event.getUser(), timeout));
             api.searchMangas(query, msg);
+        }
+
+        else if(args.get(0).equalsIgnoreCase("user")) {
+            try {
+                String query = String.join(" ", args.subList(1, args.size()));
+                InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
+                ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
+                        .setColor(Color.red)
+                        .setDescription("Could not find a user with that username on MAL!")
+                        .build()
+                ).queueAfter(5, TimeUnit.SECONDS);
+                Message m = msg.retrieveOriginal().complete();
+                messageToUserTimeout.put(m.getIdLong(), timeout);
+                api.searchUser(msg, query);
+            }
+            catch(Exception ignored) {}
         }
 
         else Tools.wrongUsage(event, this);

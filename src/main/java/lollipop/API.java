@@ -24,8 +24,6 @@ import mread.model.Manga;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -55,6 +53,7 @@ public class API implements RListener, AListener {
     final ArrayDeque<SelectMenuInteractionEvent> eventToReply = new ArrayDeque<>();
     final HashMap<SelectMenuInteractionEvent, AnimePage> eventToAnimePage = new HashMap<>();
     final HashMap<SelectMenuInteractionEvent, MangaPage> eventToMangaPage = new HashMap<>();
+    final HashMap<SelectMenuInteractionEvent, CharacterPage> eventToCharacterPage = new HashMap<>();
     final HashMap<SelectMenuInteractionEvent, Chapter> eventToChapter = new HashMap<>();
 
     /**
@@ -67,6 +66,11 @@ public class API implements RListener, AListener {
         messageToEdit.push(message);
     }
 
+    /**
+     * gets the chapters of a specific manga
+     * @param event select menu interaction event
+     * @param page manga page
+     */
     public void getChapters(SelectMenuInteractionEvent event, MangaPage page) {
         Manga manga = page.mangas.get(page.pageNumber-1);
         mangaClient.chapters(manga);
@@ -74,6 +78,11 @@ public class API implements RListener, AListener {
         eventToMangaPage.put(event, page);
     }
 
+    /**
+     * get pages of a specified chater
+     * @param event select menu interaction event
+     * @param chapter chapter to get pages from
+     */
     public void getPages(SelectMenuInteractionEvent event, Chapter chapter) {
         mangaClient.pages(chapter);
         eventToReply.push(event);
@@ -316,7 +325,7 @@ public class API implements RListener, AListener {
             chapter.user = event.getUser();
             ChapterList.messageToChapter.put(msg.getIdLong(), chapter);
             message.editOriginalComponents()
-                    .queueAfter(5, TimeUnit.MINUTES, i -> ChapterList.messageToChapter.remove(msg.getIdLong()));
+                    .queueAfter(10, TimeUnit.MINUTES, i -> ChapterList.messageToChapter.remove(msg.getIdLong()));
         } catch(Exception e) {
             e.printStackTrace();
             event.replyEmbeds(
@@ -347,6 +356,52 @@ public class API implements RListener, AListener {
     public void searchCharacter(InteractionHook message, String query) {
         animeClient.searchCharacter(query);
         messageToEdit.push(message);
+    }
+
+    /**
+     * Searches for a user given a query
+     * @param message message
+     * @param query username
+     */
+    public void searchUser(InteractionHook message, String query) {
+        animeClient.searchUser(query);
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Gets the animes with the specified character
+     * @param event select menu interaction event
+     * @param page character page
+     */
+    public void getCharacterAnimes(SelectMenuInteractionEvent event, CharacterPage page) {
+        Character character = page.characters.get(page.pageNumber-1);
+        animeClient.getCharacterAnimes(character);
+        eventToReply.push(event);
+        eventToCharacterPage.put(event, page);
+    }
+
+    /**
+     * Gets the mangas with the specified character
+     * @param event select menu interaction event
+     * @param page character page
+     */
+    public void getCharacterMangas(SelectMenuInteractionEvent event, CharacterPage page) {
+        Character character = page.characters.get(page.pageNumber-1);
+        animeClient.getCharacterMangas(character);
+        eventToReply.push(event);
+        eventToCharacterPage.put(event, page);
+    }
+
+    /**
+     * Gets the voice actors with the specified character
+     * @param event select menu interaction event
+     * @param page character page
+     */
+    public void getCharacterVoices(SelectMenuInteractionEvent event, CharacterPage page) {
+        Character character = page.characters.get(page.pageNumber-1);
+        animeClient.getCharacterVoices(character);
+        eventToReply.push(event);
+        eventToCharacterPage.put(event, page);
     }
 
     /**
@@ -602,12 +657,191 @@ public class API implements RListener, AListener {
 
     /**
      * Sends the requested character
-     * @param character character
+     * @param characters list of characters
      */
     @Override
-    public void sendSearchCharacter(Character character) {
+    public void sendSearchCharacter(ArrayList<Character> characters) {
         InteractionHook message = messageToEdit.removeFirst();
-        message.editOriginalEmbeds(character.toEmbed().build()).queue();
+        Message msg = message.retrieveOriginal().complete();
+        if(characters == null || characters.isEmpty()) return;
+        CharacterPage page = Search.messageToCharacterPage.get(msg.getIdLong());
+        page.timeout.cancel(false);
+        page.characters = characters;
+        page.characters.sort(Comparator.comparingInt(a -> -a.favorites));
+        message.editOriginalEmbeds(characters.get(0).toEmbed().setFooter("Page 1/" + characters.size()).build()).setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder("Sort by popularity")
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by alphabetical order", "alphabetical")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Animes", "Animes")
+                                .addOption("Mangas", "Mangas")
+                                .addOption("Voice Actors", "Voices")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).complete();
+        message.editOriginalComponents()
+                .setActionRows(
+                        ActionRow.of(
+                                SelectMenu.create("order")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                SelectMenu.create("components")
+                                        .setPlaceholder("Disabled")
+                                        .addOption("bruh", "really")
+                                        .setDisabled(true)
+                                        .build()
+                        ),
+                        ActionRow.of(
+                                Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+                                Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+                        )
+                ).queueAfter(3, TimeUnit.MINUTES, i -> {
+                    Search.messageToCharacterPage.remove(msg.getIdLong());
+                    for(Character character : characters) {
+                        character.animes = null;
+                        character.mangas = null;
+                        character.voiceActors = null;
+                    }
+                });
+    }
+
+    /**
+     * Send the searched user profile
+     * @param user user searched for
+     */
+    @Override
+    public void sendSearchUser(User user) {
+        InteractionHook message = messageToEdit.removeFirst();
+        if(user == null) return;
+        Message msg = message.retrieveOriginal().complete();
+        Search.messageToUserTimeout.remove(msg.getIdLong()).cancel(false);
+        message.editOriginalEmbeds(user.toEmbed().build()).queue();
+    }
+
+    /**
+     * Send the character animes
+     * @param character character with components
+     */
+    @Override
+    public void sendCharacterAnimes(Character character) {
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(
+                new EmbedBuilder()
+                        .setTitle(character.name + " Anime List")
+                        .setDescription(character.animes)
+                        .build()
+        ).setEphemeral(true).queue();
+        CharacterPage page = eventToCharacterPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by alphabetical order", "alphabetical")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Animes", "Animes")
+                                .addOption("Mangas", "Mangas")
+                                .addOption("Voice Actors", "Voices")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+    }
+
+    /**
+     * Send the character mangas
+     * @param character character with components
+     */
+    @Override
+    public void sendCharacterMangas(Character character) {
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(
+                new EmbedBuilder()
+                        .setTitle(character.name + " Manga List")
+                        .setDescription(character.mangas)
+                        .build()
+        ).setEphemeral(true).queue();
+        CharacterPage page = eventToCharacterPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by alphabetical order", "alphabetical")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Animes", "Animes")
+                                .addOption("Mangas", "Mangas")
+                                .addOption("Voice Actors", "Voices")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+    }
+
+    /**
+     * Send the character voice actors
+     * @param character character with components
+     */
+    @Override
+    public void sendCharacterVoices(Character character) {
+        SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        event.replyEmbeds(
+                new EmbedBuilder()
+                        .setTitle(character.name + " Voice Actor List")
+                        .setDescription(character.voiceActors)
+                        .build()
+        ).setEphemeral(true).queue();
+        CharacterPage page = eventToCharacterPage.remove(event);
+        event.getMessage().editMessageComponents().setActionRows(
+                ActionRow.of(
+                        SelectMenu.create("order")
+                                .setPlaceholder(page.currentPlaceholder)
+                                .addOption("Sort by popularity", "popularity")
+                                .addOption("Sort by alphabetical order", "alphabetical")
+                                .build()
+                ),
+                ActionRow.of(
+                        SelectMenu.create("components")
+                                .setPlaceholder("Show component")
+                                .addOption("Animes", "Animes")
+                                .addOption("Mangas", "Mangas")
+                                .addOption("Voice Actors", "Voices")
+                                .build()
+                ),
+                ActionRow.of(
+                        Button.secondary("left", Emoji.fromUnicode("⬅")),
+                        Button.secondary("right", Emoji.fromUnicode("➡"))
+                )
+        ).queue();
+
     }
 
     /**
@@ -627,6 +861,7 @@ public class API implements RListener, AListener {
     @Override
     public void sendEpisodes(ArrayList<Episode> episodes) {
         SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        AnimePage page = eventToAnimePage.remove(event);
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -660,7 +895,6 @@ public class API implements RListener, AListener {
             ).complete();
 
             Message message = msg.retrieveOriginal().complete();
-            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -694,13 +928,39 @@ public class API implements RListener, AListener {
                     .queueAfter(3, TimeUnit.MINUTES, i -> Episodes.messageToPage.remove(message.getIdLong()));
         }
         catch (Exception e) {
-            e.printStackTrace();
             if(event.isAcknowledged()) return;
             event.replyEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any episodes from that anime! Please try again later!")
                             .build()
+            ).setEphemeral(true).queue();
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
             ).queue();
         }
     }
@@ -712,6 +972,7 @@ public class API implements RListener, AListener {
     @Override
     public void sendCharacterList(ArrayList<Character> characters) {
         SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        AnimePage page = eventToAnimePage.remove(event);
         try {
             ArrayList<StringBuilder> pages = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -737,7 +998,6 @@ public class API implements RListener, AListener {
             ).complete();
 
             Message message = msg.retrieveOriginal().complete();
-            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -771,13 +1031,39 @@ public class API implements RListener, AListener {
                     .queueAfter(3, TimeUnit.MINUTES, i -> Characters.messageToPage.remove(message.getIdLong()));
         }
         catch (Exception e) {
-            e.printStackTrace();
             if(event.isAcknowledged()) return;
             event.replyEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.red)
                             .setDescription("Could not find any characters from that anime! Please try again later!")
                             .build()
+            ).setEphemeral(true).queue();
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
             ).queue();
         }
     }
@@ -789,6 +1075,7 @@ public class API implements RListener, AListener {
     @Override
     public void sendNews(ArrayList<Article> articles) {
         SelectMenuInteractionEvent event = eventToReply.removeFirst();
+        AnimePage page = eventToAnimePage.remove(event);
         try {
             if(articles == null || articles.isEmpty()) throw new Exception();
             Collections.reverse(articles);
@@ -801,7 +1088,6 @@ public class API implements RListener, AListener {
                     Button.secondary("right", Emoji.fromUnicode("➡"))
             ).complete();
             Message message = m.retrieveOriginal().complete();
-            AnimePage page = eventToAnimePage.remove(event);
             event.getMessage().editMessageComponents().setActionRows(
                     ActionRow.of(
                             SelectMenu.create("order")
@@ -841,6 +1127,33 @@ public class API implements RListener, AListener {
                             .setColor(Color.red)
                             .setDescription("Could not find any articles from that anime! Please try again later!")
                             .build()
+            ).setEphemeral(true).queue();
+            event.getMessage().editMessageComponents().setActionRows(
+                    ActionRow.of(
+                            SelectMenu.create("order")
+                                    .setPlaceholder(page.currentPlaceholder)
+                                    .addOption("Sort by popularity", "popularity")
+                                    .addOption("Sort by ranks", "ranks")
+                                    .addOption("Sort by latest", "time")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            SelectMenu.create("components")
+                                    .setPlaceholder("Show component")
+                                    .addOption("Trailer", "Trailer")
+                                    .addOption("Episodes", "Episodes")
+                                    .addOption("Characters", "Characters")
+                                    .addOption("Themes", "Themes")
+                                    .addOption("Recommendations", "Recommendations")
+                                    .addOption("News", "News")
+                                    .addOption("Review", "Review")
+                                    .addOption("Statistics", "Statistics")
+                                    .build()
+                    ),
+                    ActionRow.of(
+                            Button.secondary("left", Emoji.fromUnicode("⬅")),
+                            Button.secondary("right", Emoji.fromUnicode("➡"))
+                    )
             ).queue();
         }
     }

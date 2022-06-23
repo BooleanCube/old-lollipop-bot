@@ -1,5 +1,6 @@
 package awatch.controller;
 
+import awatch.model.Character;
 import threading.ThreadManagement;
 
 import java.io.IOException;
@@ -41,6 +42,54 @@ public class AClient {
         ThreadManagement.execute(() -> {
             try {
                 listener.sendSearchCharacter(ALoader.loadCharacter(query));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to make a search user call
+     * @param query username
+     */
+    public void searchUser(String query) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendSearchUser(ALoader.loadSearchUser(query));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to make a get character animes call
+     * @param character character
+     */
+    public void getCharacterAnimes(Character character) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendCharacterAnimes(ALoader.loadCharacterInfo(character));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to make a get character mangas call
+     * @param character character
+     */
+    public void getCharacterMangas(Character character) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendCharacterMangas(ALoader.loadCharacterInfo(character));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to make a get character voice actors call
+     * @param character character
+     */
+    public void getCharacterVoices(Character character) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendCharacterVoices(ALoader.loadCharacterInfo(character));
             } catch (IOException e) { throw new RuntimeException(e); }
         });
     }

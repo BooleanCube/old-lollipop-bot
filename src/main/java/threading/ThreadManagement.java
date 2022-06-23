@@ -36,6 +36,7 @@ public class ThreadManagement {
     public static void setupCacheRefresh() {
         Runnable apiRefresh = () -> {
             ALoader.animeCache.clear();
+            ALoader.characterCache.clear();
             RLoader.mangaCache.clear();
         };
         scheduler.scheduleWithFixedDelay(apiRefresh, 1, 1, TimeUnit.DAYS);

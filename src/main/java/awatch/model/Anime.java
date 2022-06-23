@@ -21,6 +21,7 @@ public class Anime implements ModelData {
     public int malID;
     public String rating = "Unknown";
     public String title;
+    public String titleJapanese;
     public String art;
     public String url;
     public int episodeCount;
@@ -73,6 +74,7 @@ public class Anime implements ModelData {
         this.score = data.getDouble("score", 0);
         this.summary = data.getString("synopsis", "");
         this.title = data.getString("title", "");
+        this.titleJapanese = data.getString("title_japanese", "わからない");
         this.url = data.getString("url", "");
         this.rank = data.getInt("rank", Integer.MAX_VALUE);
         if(this.rank == 0) rank = Integer.MAX_VALUE;
@@ -147,7 +149,7 @@ public class Anime implements ModelData {
         EmbedBuilder e = new EmbedBuilder()
                 .setAuthor("ID: " + this.malID, this.url)
                 .setDescription(this.summary != null ? this.summary + " [Read More!](" + this.url + ")" : "[Read Here](" + this.url + ")")
-                .setTitle(this.title)
+                .setTitle(this.title + " (" + this.titleJapanese + ")")
                 .addField("Type", this.type, true)
                 .addField("Rating", this.rating, true)
                 .addField("Source", this.source, true)

@@ -11,6 +11,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -21,6 +22,7 @@ public class ALoader {
 
     // Anime Cache
     public static HashMap<String, ArrayList<Anime>> animeCache = new HashMap<>();
+    public static HashMap<String, ArrayList<Character>> characterCache = new HashMap<>();
 
     /**
      * Load Animes from a certain search query
@@ -54,16 +56,57 @@ public class ALoader {
     /**
      * Load a character given query
      * @param query character name
-     * @return character
+     * @return list of characters
      * @throws IOException for BufferedReader
      */
-    public static Character loadCharacter(String query) throws IOException {
-        URL web = new URL(AConstants.v3API+"/search/character?q=" + query.replaceAll(" ", "%20"));
+    public static ArrayList<Character> loadCharacter(String query) throws IOException {
+        URL web = new URL(AConstants.v4API+"/characters?q=" + query.replaceAll(" ", "%20"));
         HttpsURLConnection con = configureConnection(web);
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
-        Character character = new Character();
-        character.parseData(data.getArray("results").getObject(0));
+        ArrayList<Character> characters = new ArrayList<>();
+        DataArray arr = null;
+        try {
+            arr = data.getArray("data");
+        } catch(Exception e) { return null; }
+        for(int i=0; i<arr.length(); i++) {
+            DataObject result = arr.getObject(i);
+            Character character = new Character();
+            character.parseData(result);
+            characters.add(character);
+        }
+        return characters;
+    }
+
+    /**
+     * Load the user profile
+     * @param query String query for username
+     * @return user with parsed info
+     * @throws IOException for BufferedReader
+     */
+    public static User loadSearchUser(String query) throws IOException {
+        URL web = new URL(AConstants.v4API + "/users/" + query + "/full");
+        HttpsURLConnection con = configureConnection(web);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        User user = new User();
+        user.parseData(data.getObject("data"));
+        return user;
+    }
+
+    /**
+     * Load the character components
+     * @param character character to get components
+     * @return character with components filled
+     * @throws IOException for BufferedReader
+     */
+    public static Character loadCharacterInfo(Character character) throws IOException {
+        long id = character.malID;
+        URL web = new URL(AConstants.v4API + "/characters/" + id + "/full");
+        HttpsURLConnection con = configureConnection(web);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        character.parseComponents(data.getObject("data"));
         return character;
     }
 

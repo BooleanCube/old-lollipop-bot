@@ -6,11 +6,14 @@ import awatch.model.Question;
 
 import java.util.ArrayList;
 
-
 public interface AListener {
 
     void sendSearchAnime(ArrayList<Anime> animes);
-    void sendSearchCharacter(Character character);
+    void sendSearchCharacter(ArrayList<Character> character);
+    void sendSearchUser(User user);
+    void sendCharacterAnimes(Character character);
+    void sendCharacterMangas(Character character);
+    void sendCharacterVoices(Character character);
     void sendRandomQuote(Quote quote);
     void sendEpisodes(ArrayList<Episode> episodes);
     void sendCharacterList(ArrayList<Character> characters);
@@ -25,6 +28,5 @@ public interface AListener {
     void sendRandomAnime(Anime random);
     void sendRandomGIF(GIF gif);
     void sendTrivia(Question question);
-
 
 }

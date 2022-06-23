@@ -13,14 +13,23 @@ import java.util.stream.Collectors;
  */
 public class Character implements ModelData {
 
+    // search
     public String art;
     public String name;
+    public String nameKanji;
     public int malID;
-    public String alternativeNames = "None";
+    public String nickNames = "None";
+    public int favorites;
     public String url;
-    public String anime = "None";
-    public String manga = "None";
+    public String about;
+
+    // character list
     public String role = "Unknown";
+
+    // components
+    public String animes;
+    public String mangas;
+    public String voiceActors;
 
     /**
      * Returns a string with all the data
@@ -36,20 +45,55 @@ public class Character implements ModelData {
      */
     @Override
     public void parseData(DataObject data) {
-        this.art = data.getString("image_url");
-        this.name = data.getString("name");
-        if(data.getArray("manga").length() > 0)
-            this.manga = "[" + data.getArray("manga").getObject(0).get("name") + "](" + data.getArray("manga").getObject(0).get("url") + ")";
-        this.malID = data.getInt("mal_id");
-        if(data.getArray("alternative_names").length() > 0)
-            this.alternativeNames = data.getArray("alternative_names")
+        this.art = data.getObject("images").getObject("jpg").getString("image_url");
+        this.name = data.getString("name", "Unknown");
+        this.nameKanji = data.getString("name_kanji", "Unknown");
+        this.favorites = data.getInt("favorites", -1);
+        this.about = data.getString("about", "No description found!");
+        this.malID = data.getInt("mal_id", -1);
+        if(data.getArray("nicknames").length() > 0)
+            this.nickNames = data.getArray("nicknames")
                     .toList()
                     .stream()
                     .map(a -> Objects.toString(a, null))
                     .collect(Collectors.joining(", "));
+        else this.nickNames = "None found";
         this.url = data.getString("url");
-        if(data.getArray("anime").length() > 0)
-            this.anime = "[" + data.getArray("anime").getObject(0).get("name") + "](" + data.getArray("anime").getObject(0).get("url") + ")";
+    }
+
+    /**
+     * Parse the data for the componenets
+     * @param data data object to parse from
+     */
+    public void parseComponents(DataObject data) {
+        this.animes = ""; this.mangas = ""; this.voiceActors = "";
+        DataArray arr = data.getArray("anime");
+        for(int i=0; i<arr.length(); i++) {
+            DataObject res = arr.getObject(i);
+            String role = res.getString("role", "Unknown");
+            String anime = res.getObject("anime").getString("title", "Unknown");
+            String url = res.getObject("anime").getString("url", "https://myanimelist.net/");
+            this.animes += "> [" + anime + "](" + url + ")\n> Role: " + role + " character\n\n";
+        }
+        if(arr.length() == 0) this.animes = "No animes found with this character!";
+        arr = data.getArray("manga");
+        for(int i=0; i<arr.length(); i++) {
+            DataObject res = arr.getObject(i);
+            String role = res.getString("role", "Unknown");
+            String manga = res.getObject("manga").getString("title", "Unknown");
+            String url = res.getObject("manga").getString("url", "https://myanimelist.net/");
+            this.mangas += "> [" + manga + "](" + url + ")\n> Role: " + role + " character\n\n";
+        }
+        if(arr.length() == 0) this.mangas = "No mangas found with this character!";
+        arr = data.getArray("voices");
+        for(int i=0; i<arr.length(); i++) {
+            DataObject res = arr.getObject(i);
+            String language = res.getString("language", "Unknown");
+            String person = res.getObject("person").getString("name", "Unknown");
+            String url = res.getObject("person").getString("url", "https://myanimelist.net/");
+            this.voiceActors += "> [" + person + "](" + url + ")\n> Language: " + language + "\n\n";
+        }
+        if(arr.length() == 0) this.voiceActors = "No voice actors found for this character!";
     }
 
     /**
@@ -80,10 +124,9 @@ public class Character implements ModelData {
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()
                 .setAuthor("ID: " + this.malID, this.url)
-                .setTitle(this.name)
-                .addField("Alternative Names", this.alternativeNames, false)
-                .addField("Latest Anime", this.anime, false)
-                .addField("Latest Manga", this.manga, false)
+                .setTitle(this.name + " (" + this.nameKanji + ")")
+                .setDescription(this.about)
+                .addField("Nicknames", this.nickNames, false)
                 .setImage(this.art);
     }
 
