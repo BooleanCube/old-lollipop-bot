@@ -3,3 +3,4 @@ out/
 target/
 /src/main/java/lollipop/Secret.java
 /src/main/java/database/database.db
+*.txt

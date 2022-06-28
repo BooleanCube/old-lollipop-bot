@@ -6,7 +6,7 @@ import awatch.model.*;
 import awatch.model.Character;
 import lollipop.commands.Latest;
 import lollipop.commands.Popular;
-import lollipop.commands.RandomAnime;
+import lollipop.commands.Random;
 import lollipop.commands.Top;
 import lollipop.commands.search.Search;
 import lollipop.commands.search.animecomps.Characters;
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Contacts awatch and readm libraries to retrieve data
@@ -62,8 +63,36 @@ public class API implements RListener, AListener {
      * @param message message
      */
     public void searchMangas(String query, InteractionHook message) {
-        mangaClient.search(query);
+        mangaClient.searchManga(query);
         messageToEdit.push(message);
+    }
+
+    /**
+     * Get popular mangas
+     * @param message message
+     */
+    public void getPopularManga(InteractionHook message) {
+        mangaClient.getPopularManga();
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Get top rated mangas
+     * @param message message
+     */
+    public void getTopManga(InteractionHook message) {
+        mangaClient.getTopManga();
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Get latest mangas
+     * @param message message
+     */
+    public void getLatestManga(InteractionHook message) {
+        mangaClient.getLatestManga();
+        messageToEdit.push(message);
+
     }
 
     /**
@@ -152,6 +181,118 @@ public class API implements RListener, AListener {
                         manga.chapters = null;
                     }
                 });
+    }
+
+    @Override
+    public void sendPopularManga(ArrayList<Manga> popular) {
+//        InteractionHook message = messageToEdit.removeFirst();
+//        Message msg = message.retrieveOriginal().complete();
+//        if(popular == null) return;
+//        MangaPage page = Popular.messageToMangaPage.get(msg.getIdLong());
+//        page.timeout.cancel(false);
+//        message.editOriginalEmbeds(popular.get(0).toRankEmbed().setFooter("Page 1/" + popular.size()).build()).setActionRow(
+//                Button.secondary("left", Emoji.fromUnicode("⬅")),
+//                Button.secondary("right", Emoji.fromUnicode("➡"))
+//        ).complete();
+//        page.mangas = popular;
+//        message.editOriginalComponents()
+//                .setActionRow(
+//                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+//                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+//                )
+//                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToMangaPage.remove(msg.getIdLong()));
+//
+        InteractionHook message = messageToEdit.removeFirst();
+        try {
+            if(popular == null) return;
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("Most Popular Mangas");
+            for(Manga manga : popular)
+                builder.appendDescription(String.format("Rank #%d - [%s](%s) (%s views)\n", manga.rank, manga.title, manga.url, manga.views));
+            message.editOriginalEmbeds(builder.build()).complete();
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get the top rated mangas, please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
+        }
+    }
+
+    @Override
+    public void sendTopManga(ArrayList<Manga> top) {
+//        InteractionHook message = messageToEdit.removeFirst();
+//        Message msg = message.retrieveOriginal().complete();
+//        if(popular == null) return;
+//        MangaPage page = Popular.messageToMangaPage.get(msg.getIdLong());
+//        page.timeout.cancel(false);
+//        message.editOriginalEmbeds(popular.get(0).toRankEmbed().setFooter("Page 1/" + popular.size()).build()).setActionRow(
+//                Button.secondary("left", Emoji.fromUnicode("⬅")),
+//                Button.secondary("right", Emoji.fromUnicode("➡"))
+//        ).complete();
+//        page.mangas = popular;
+//        message.editOriginalComponents()
+//                .setActionRow(
+//                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+//                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+//                )
+//                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToMangaPage.remove(msg.getIdLong()));
+        InteractionHook message = messageToEdit.removeFirst();
+        try {
+            if(top == null) return;
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("Top Rated Mangas");
+            for(Manga manga : top)
+                builder.appendDescription(String.format("Rank #%d - [%s](%s) (%s/10)\n", manga.rank, manga.title, manga.url, manga.score));
+            message.editOriginalEmbeds(builder.build()).complete();
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get the top rated mangas, please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
+        }
+    }
+
+    @Override
+    public void sendLatestManga(ArrayList<Manga> latest) {
+//        InteractionHook message = messageToEdit.removeFirst();
+//        Message msg = message.retrieveOriginal().complete();
+//        if(popular == null) return;
+//        MangaPage page = Popular.messageToMangaPage.get(msg.getIdLong());
+//        page.timeout.cancel(false);
+//        message.editOriginalEmbeds(popular.get(0).toRankEmbed().setFooter("Page 1/" + popular.size()).build()).setActionRow(
+//                Button.secondary("left", Emoji.fromUnicode("⬅")),
+//                Button.secondary("right", Emoji.fromUnicode("➡"))
+//        ).complete();
+//        page.mangas = popular;
+//        message.editOriginalComponents()
+//                .setActionRow(
+//                        Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
+//                        Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
+//                )
+//                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToMangaPage.remove(msg.getIdLong()));
+        InteractionHook message = messageToEdit.removeFirst();
+        try {
+            if(latest == null) return;
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("Latest Manga Releases");
+            for(Manga manga : latest)
+                builder.addField(manga.title,
+                        manga.chapters.chapters.stream()
+                                .map(Chapter::toString)
+                                .collect(Collectors.joining("\n")), true);
+            message.editOriginalEmbeds(builder.build()).complete();
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get the latest manga releases, please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
+        }
     }
 
     /**
@@ -284,7 +425,7 @@ public class API implements RListener, AListener {
                                     Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                                     Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                             )
-                    ).queueAfter(25, TimeUnit.MINUTES, i -> Chapters.messageToPage.remove(message.getIdLong()));
+                    ).queueAfter(60, TimeUnit.MINUTES, i -> Chapters.messageToPage.remove(message.getIdLong()));
         } catch (Exception e) {
             e.printStackTrace();
             event.replyEmbeds(
@@ -334,6 +475,22 @@ public class API implements RListener, AListener {
                             .setColor(Color.red)
                             .build()
             ).setEphemeral(true).queue();
+        }
+    }
+
+    @Override
+    public void sendRandomManga(Manga random) {
+        InteractionHook message = messageToEdit.removeFirst();
+        try {
+            if(random == null) throw new Exception();
+            message.editOriginalEmbeds(random.toMALEmbed().build()).queue();
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get any random mangas... Please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
         }
     }
 
@@ -501,7 +658,7 @@ public class API implements RListener, AListener {
      * Retrieves the top 25 ranked animes in terms of score
      * @param message message
      */
-    public void getTop(InteractionHook message) {
+    public void getTopAnime(InteractionHook message) {
         animeClient.getTop();
         messageToEdit.push(message);
     }
@@ -519,7 +676,7 @@ public class API implements RListener, AListener {
      * Retrieves the latest anime of the current season
      * @param message message
      */
-    public void getLatest(InteractionHook message) {
+    public void getLatestAnime(InteractionHook message) {
         animeClient.getLatest();
         messageToEdit.push(message);
     }
@@ -531,6 +688,26 @@ public class API implements RListener, AListener {
      */
     public void randomAnime(InteractionHook message, boolean nsfw) {
         animeClient.randomAnime(nsfw);
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Generates a randomly chosen manga from MALs database
+     * @param message message
+     * @param nsfw nsfw allowed
+     */
+    public void randomManga(InteractionHook message, boolean nsfw) {
+        mangaClient.randomManga(nsfw);
+        messageToEdit.push(message);
+    }
+
+    /**
+     * Generates a randomly chosen character from MALs database
+     * @param message message
+     * @param nsfw nsfw allowed
+     */
+    public void randomCharacter(InteractionHook message, boolean nsfw) {
+        animeClient.randomCharacter(nsfw);
         messageToEdit.push(message);
     }
 
@@ -1319,11 +1496,11 @@ public class API implements RListener, AListener {
      * @param top top anime list
      */
     @Override
-    public void sendTop(ArrayList<Anime> top) {
+    public void sendTopAnime(ArrayList<Anime> top) {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if(top == null) return;
-        AnimePage page = Top.messageToPage.get(msg.getIdLong());
+        AnimePage page = Top.messageToAnimePage.get(msg.getIdLong());
         page.timeout.cancel(false);
         message.editOriginalEmbeds(top.get(0).toEmbed().setFooter("Page 1/" + top.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
@@ -1337,7 +1514,7 @@ public class API implements RListener, AListener {
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, i -> Top.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Top.messageToAnimePage.remove(msg.getIdLong()));
     }
 
     /**
@@ -1349,7 +1526,7 @@ public class API implements RListener, AListener {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if(popular == null) return;
-        AnimePage page = Popular.messageToPage.get(msg.getIdLong());
+        AnimePage page = Popular.messageToAnimePage.get(msg.getIdLong());
         page.timeout.cancel(false);
         message.editOriginalEmbeds(popular.get(0).toEmbed().setFooter("Page 1/" + popular.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
@@ -1363,7 +1540,7 @@ public class API implements RListener, AListener {
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Popular.messageToAnimePage.remove(msg.getIdLong()));
     }
 
     /**
@@ -1375,21 +1552,21 @@ public class API implements RListener, AListener {
         InteractionHook message = messageToEdit.removeFirst();
         Message msg = message.retrieveOriginal().complete();
         if(latest == null) return;
-        AnimePage page = Latest.messageToPage.get(msg.getIdLong());
+        AnimePage page = Latest.messageToAnimePage.get(msg.getIdLong());
         page.timeout.cancel(false);
         message.editOriginalEmbeds(latest.get(0).toEmbed().setFooter("Page 1/" + latest.size()).build()).setActionRow(
                 Button.secondary("left", Emoji.fromUnicode("⬅")),
                 Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer"),
                 Button.secondary("right", Emoji.fromUnicode("➡"))
         ).complete();
-        Latest.messageToPage.get(msg.getIdLong()).animes = latest;
+        Latest.messageToAnimePage.get(msg.getIdLong()).animes = latest;
         message.editOriginalComponents()
                 .setActionRow(
                         Button.secondary("left", Emoji.fromUnicode("⬅")).asDisabled(),
                         Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer").asDisabled(),
                         Button.secondary("right", Emoji.fromUnicode("➡")).asDisabled()
                 )
-                .queueAfter(3, TimeUnit.MINUTES, i -> Latest.messageToPage.remove(msg.getIdLong()));
+                .queueAfter(3, TimeUnit.MINUTES, i -> Latest.messageToAnimePage.remove(msg.getIdLong()));
     }
 
     /**
@@ -1399,20 +1576,42 @@ public class API implements RListener, AListener {
     @Override
     public void sendRandomAnime(Anime random) {
         InteractionHook message = messageToEdit.removeFirst();
-        Message msg = message.retrieveOriginal().complete();
-        if(random == null) return;
-        AnimePage page = RandomAnime.messageToPage.get(msg.getIdLong());
-        page.timeout.cancel(false);
-        page.animes.add(random);
-        message.editOriginalEmbeds(random.toEmbed().build()).setActionRow(
-                Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
-        ).queue();
-        message.editOriginalComponents()
-                .queueAfter(3, TimeUnit.MINUTES, i -> RandomAnime.messageToPage.remove(msg.getIdLong()));
         try {
-            Cache.addTitleToCache(random.title);
+            Message msg = message.retrieveOriginal().complete();
+            if(random == null) throw new Exception();
+            AnimePage page = Random.messageToPage.get(msg.getIdLong());
+            page.timeout.cancel(false);
+            page.animes.add(random);
+            message.editOriginalEmbeds(random.toEmbed().build()).setActionRow(
+                    Button.primary("trailer", Emoji.fromUnicode("▶")).withLabel("Trailer")
+            ).queue();
+            message.editOriginalComponents()
+                    .queueAfter(3, TimeUnit.MINUTES, i -> Random.messageToPage.remove(msg.getIdLong()));
+            try { Cache.addTitleToCache(random.title); } catch(IOException ignored) {}
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get any random animes... Please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
         }
-        catch(IOException ignored) {}
+    }
+
+    @Override
+    public void sendRandomCharacter(Character random) {
+        InteractionHook message = messageToEdit.removeFirst();
+        try {
+            if(random == null) throw new Exception();
+            message.editOriginalEmbeds(random.toEmbed().build()).queue();
+        } catch(Exception e) {
+            message.editOriginalEmbeds(
+                    new EmbedBuilder()
+                            .setDescription("Could not get any random characters... Please try again later!")
+                            .setColor(Color.red)
+                            .build()
+            ).queue();
+        }
     }
 
     /**

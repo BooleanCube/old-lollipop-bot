@@ -7,6 +7,7 @@ import lollipop.BotStatistics;
 import lollipop.Constant;
 import lollipop.Database;
 import lollipop.commands.*;
+import lollipop.commands.Random;
 import lollipop.commands.search.*;
 import lollipop.commands.search.animecomps.*;
 import lollipop.commands.search.charactercomps.Animes;
@@ -248,8 +249,8 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
-        if(Top.messageToPage.containsKey(id)) {
-            AnimePage page = Top.messageToPage.get(id);
+        if(Top.messageToAnimePage.containsKey(id)) {
+            AnimePage page = Top.messageToAnimePage.get(id);
             if(event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
@@ -283,8 +284,39 @@ public class PageListener extends ListenerAdapter {
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
             }
         }
-        if(Popular.messageToPage.containsKey(id)) {
-            AnimePage page = Popular.messageToPage.get(id);
+        if(Top.messageToMangaPage.containsKey(id)) {
+            MangaPage page = Top.messageToMangaPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(page.pageNumber>1)
+                    event.editMessageEmbeds(
+                            page.mangas.get(--page.pageNumber-1).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                else {
+                    int loop = page.mangas.size()-1;
+                    page.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(loop).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if (page.pageNumber < page.mangas.size()) {
+                    event.editMessageEmbeds(
+                            page.mangas.get(++page.pageNumber - 1).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                } else {
+                    page.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(0).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            }
+        }
+        if(Popular.messageToAnimePage.containsKey(id)) {
+            AnimePage page = Popular.messageToAnimePage.get(id);
             if(event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `popular` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
@@ -318,8 +350,40 @@ public class PageListener extends ListenerAdapter {
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
             }
         }
-        if(Latest.messageToPage.containsKey(id)) {
-            AnimePage page = Latest.messageToPage.get(id);
+        if(Popular.messageToMangaPage.containsKey(id)) {
+            MangaPage page = Popular.messageToMangaPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `popular` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(page.pageNumber>1)
+                    event.editMessageEmbeds(
+                            page.mangas.get(--page.pageNumber-1).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                else {
+                    int loop = page.mangas.size()-1;
+                    page.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(loop).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if(page.pageNumber<page.mangas.size()) {
+                    event.editMessageEmbeds(
+                            page.mangas.get(++page.pageNumber - 1).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+                else {
+                    page.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(0).toRankEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            }
+        }
+        if(Latest.messageToAnimePage.containsKey(id)) {
+            AnimePage page = Latest.messageToAnimePage.get(id);
             if(event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `latest` command to be able to use buttons!").setEphemeral(true).queue();
                 return;
@@ -351,6 +415,38 @@ public class PageListener extends ListenerAdapter {
             } else if(Objects.equals(event.getButton().getId(), "trailer")) {
                 Anime a = page.animes.get(page.pageNumber-1);
                 event.reply(a.trailer.equals("Unkown") || a.trailer.trim().equals("") ? "I could not find a trailer for this anime!" : a.trailer).setEphemeral(true).complete();
+            }
+        }
+        if(Latest.messageToMangaPage.containsKey(id)) {
+            MangaPage page = Latest.messageToMangaPage.get(id);
+            if(event.getUser() != page.user) {
+                event.reply("You can't use the buttons because you didn't use this command! Use the `latest` command to be able to use buttons!").setEphemeral(true).queue();
+                return;
+            }
+            if(Objects.equals(event.getButton().getId(), "left")) {
+                if(page.pageNumber>1)
+                    event.editMessageEmbeds(
+                            page.mangas.get(--page.pageNumber-1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                else {
+                    int loop = page.mangas.size()-1;
+                    page.pageNumber = loop+1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(loop).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+            } else if(Objects.equals(event.getButton().getId(), "right")) {
+                if(page.pageNumber<page.mangas.size()) {
+                    event.editMessageEmbeds(
+                            page.mangas.get(++page.pageNumber - 1).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
+                else {
+                    page.pageNumber = 1;
+                    event.editMessageEmbeds(
+                            page.mangas.get(0).toEmbed().setFooter("Page " + page.pageNumber + "/" + page.mangas.size()).build()
+                    ).queue();
+                }
             }
         }
         if(ChapterList.messageToChapter.containsKey(id)) {
@@ -417,8 +513,8 @@ public class PageListener extends ListenerAdapter {
                 }
             }
         }
-        if(RandomAnime.messageToPage.containsKey(id)) {
-            AnimePage page = RandomAnime.messageToPage.get(id);
+        if(Random.messageToPage.containsKey(id)) {
+            AnimePage page = Random.messageToPage.get(id);
             if(event.getUser() != page.user) {
                 event.reply("You can't use the buttons because you didn't use this command! Use the `top` command to be able to use buttons!").setEphemeral(true).queue();
                 return;

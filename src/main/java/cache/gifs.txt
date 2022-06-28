@@ -224,3 +224,6 @@ https://api.kawaii.red/gif/punch/punch2.gif
 https://api.kawaii.red/gif/tickle/tickle1.gif
 https://api.kawaii.red/gif/laugh/laugh9.gif
 https://api.kawaii.red/gif/shrug/shrug3.gif
+https://api.kawaii.red/gif/die/die6.gif
+https://api.kawaii.red/gif/sit/sit14.gif
+https://api.kawaii.red/gif/coffee/coffee4.gif

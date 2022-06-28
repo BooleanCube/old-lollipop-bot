@@ -19,7 +19,7 @@ public class DuelsListener extends ListenerAdapter {
 
     /**
      * Triggered when a button is pressed
-     * @param event
+     * @param event button interaction event
      */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
@@ -41,9 +41,9 @@ public class DuelsListener extends ListenerAdapter {
             DGame.switchTurns();
         }
         else if(Duel.memberToGame.containsKey(event.getMember().getIdLong())) {
-            DGame DGame = Duel.memberToGame.get(event.getMember().getIdLong());
-            if(event.getMessage().getIdLong() != DGame.lastDisplay.get(DGame.lastDisplay.size()-1).getIdLong()) return;
-            if(event.getMember() != DGame.playerTurn.member) {
+            DGame game = Duel.memberToGame.get(event.getMember().getIdLong());
+            if(event.getMessage().getIdLong() != game.lastDisplay.get(game.lastDisplay.size()-1).getIdLong()) return;
+            if(event.getMember() != game.playerTurn.member) {
                 event.replyEmbeds(new EmbedBuilder()
                         .setDescription("**It is not your turn! Please wait for the other player to finish his turn!**")
                         .setColor(Color.red)
@@ -54,141 +54,141 @@ public class DuelsListener extends ListenerAdapter {
             }
             String move = null;
             if(Objects.requireNonNull(event.getButton().getId()).startsWith("ff")) {
-                if(DGame.timeout != null) DGame.timeout.cancel(false);
-                if(DGame.editTimeout != null) DGame.editTimeout.cancel(false);
-                DGame.surrender(event.getChannel(), DGame.playerTurn);
-                DGame.deleteDisplayMessagesFull();
+                if(game.timeout != null) game.timeout.cancel(false);
+                if(game.editTimeout != null) game.editTimeout.cancel(false);
+                game.surrender(event.getChannel(), game.playerTurn);
+                game.deleteDisplayMessagesFull();
                 return;
             }
             else if(event.getButton().getId().startsWith("attack")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    String name = DGame.playerNotTurn.member != null ? DGame.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + DGame.playerTurn.member.getAsMention() + "'s attack!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
+                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s attack!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+5+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = DGame.playerTurn.member.getAsMention() + " attacked their opponent and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*6)+5+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = game.playerTurn.member.getAsMention() + " attacked their opponent and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("defend")) {
-                move = DGame.playerTurn.member.getAsMention() + " is defending himself!";
-                DGame.playerTurn.isDefending = true;
+                move = game.playerTurn.member.getAsMention() + " is defending himself!";
+                game.playerTurn.isDefending = true;
             }
             else if(event.getButton().getId().startsWith("heal")) {
                 int health = (int)(Math.random()*11)+20;
-                DGame.playerTurn.HP += health;
-                move = DGame.playerTurn.member.getAsMention() + " healed himself and gained `" + health + " HP`!";
+                game.playerTurn.HP += health;
+                move = game.playerTurn.member.getAsMention() + " healed himself and gained `" + health + " HP`!";
             }
             else if(event.getButton().getId().startsWith("strength")) {
-                DGame.playerTurn.strengthGain += (int)(Math.random()*3)+3;
-                move = DGame.playerTurn.member.getAsMention() + " took a deep breath and became much stronger! They're attacks will do more damage..";
+                game.playerTurn.strengthGain += (int)(Math.random()*3)+3;
+                move = game.playerTurn.member.getAsMention() + " took a deep breath and became much stronger! They're attacks will do more damage..";
             }
             else if(event.getButton().getId().startsWith("ora")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    String name = DGame.playerNotTurn.member != null ? DGame.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + DGame.playerTurn.member.getAsMention() + "'s ORA!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
+                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s ORA!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+15+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "ORA ORA ORA ORA ORRAAAA\n" + DGame.playerTurn.member.getAsMention() + " pounded their opponent and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*6)+15+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "ORA ORA ORA ORA ORRAAAA\n" + game.playerTurn.member.getAsMention() + " pounded their opponent and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("seriouspunch")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    int damage = (int)(Math.random()*11)+20+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "Anybody in my way... gets punched.\n" + DGame.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    int damage = (int)(Math.random()*11)+20+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*11)+40+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "Anybody in my way... gets punched.\n" + DGame.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*11)+40+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "Anybody in my way... gets punched.\n" + game.playerTurn.member.getAsMention() + " punched their opponent and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("zawarudo")) {
-                DGame.playerNotTurn.timeoutStart = System.currentTimeMillis();
-                DGame.playerNotTurn.timeoutDuration = Math.random()+6;
-                move = "ZA WARUDO!\n" + DGame.playerTurn.member.getAsMention() + " stopped time. Their opponent is frozen for `5 seconds`.";
+                game.playerNotTurn.timeoutStart = System.currentTimeMillis();
+                game.playerNotTurn.timeoutDuration = Math.random()+6;
+                move = "ZA WARUDO!\n" + game.playerTurn.member.getAsMention() + " stopped time. Their opponent is frozen for `5 seconds`.";
             }
             else if(event.getButton().getId().startsWith("rasengan")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    String name = DGame.playerNotTurn.member != null ? DGame.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + DGame.playerTurn.member.getAsMention() + "'s Rasengan!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
+                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s Rasengan!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+14+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "RASENGAN!\n" + DGame.playerTurn.member.getAsMention() + " hit their opponent with a rasengan and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*6)+14+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "RASENGAN!\n" + game.playerTurn.member.getAsMention() + " hit their opponent with a rasengan and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("4thgear")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    String name = DGame.playerNotTurn.member != null ? DGame.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + DGame.playerTurn.member.getAsMention() + "'s Gum-Gum Kong Gun!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
+                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s Gum-Gum Kong Gun!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+13+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "*boing* 4th GEAR *boing*\n" + DGame.playerTurn.member.getAsMention() + " blasted their opponents away with Gum-Gum Kong Gun and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*6)+13+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "*boing* 4th GEAR *boing*\n" + game.playerTurn.member.getAsMention() + " blasted their opponents away with Gum-Gum Kong Gun and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("hinokami")) {
-                if(DGame.playerNotTurn.isDefending) {
-                    String name = DGame.playerNotTurn.member != null ? DGame.playerNotTurn.member.getAsMention() : "`Computer`";
-                    move = name + " blocked " + DGame.playerTurn.member.getAsMention() + "'s hinokami attack!";
-                    DGame.playerNotTurn.isDefending = false;
+                if(game.playerNotTurn.isDefending) {
+                    String name = game.playerNotTurn.member != null ? game.playerNotTurn.member.getAsMention() : "`Computer`";
+                    move = name + " blocked " + game.playerTurn.member.getAsMention() + "'s hinokami attack!";
+                    game.playerNotTurn.isDefending = false;
                 } else {
-                    int damage = (int)(Math.random()*6)+13+ DGame.playerTurn.strengthGain;
-                    DGame.playerNotTurn.HP -= damage;
-                    move = "HINOKAMI KAGURA!\n" + DGame.playerTurn.member.getAsMention() + " sliced the opponent's head off and did `" + damage + " HP` damage!";
+                    int damage = (int)(Math.random()*6)+13+ game.playerTurn.strengthGain;
+                    game.playerNotTurn.HP -= damage;
+                    move = "HINOKAMI KAGURA!\n" + game.playerTurn.member.getAsMention() + " sliced the opponent's head off and did `" + damage + " HP` damage!";
                 }
             }
             else if(event.getButton().getId().startsWith("yare")) {
-                int damage = (int)(Math.random()*6)+15+ DGame.playerTurn.strengthGain;
-                DGame.playerNotTurn.HP -= damage;
-                DGame.playerNotTurn.strengthGain -= (int)(Math.random()*16)+5;
-                if(DGame.playerNotTurn.strengthGain < -5) DGame.playerNotTurn.strengthGain = -5;
-                move = "yare yare daze...\nORA! " + DGame.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
+                int damage = (int)(Math.random()*6)+15+ game.playerTurn.strengthGain;
+                game.playerNotTurn.HP -= damage;
+                game.playerNotTurn.strengthGain -= (int)(Math.random()*16)+5;
+                if(game.playerNotTurn.strengthGain < -5) game.playerNotTurn.strengthGain = -5;
+                move = "yare yare daze...\nORA! " + game.playerTurn.member.getAsMention() + " did `" + damage + " HP` damage and made the opponent weaker! Their attacks will do less damage..";
             }
 
-            DGame.timeout.cancel(false);
-            if(DGame.playerNotTurn.isTimedOut()) {
-                if(DGame.playerNotTurn.member == null) DGame.setupTimeout(event.getChannel());
-                DGame.switchTurns();
-                if(DGame.playerTurn.member != null) DGame.setupTimeout(event.getChannel());
-                DGame.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
+            game.timeout.cancel(false);
+            if(game.playerNotTurn.isTimedOut()) {
+                if(game.playerNotTurn.member == null) game.setupTimeout(event.getChannel());
+                game.switchTurns();
+                if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
+                game.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
             } else {
-                DGame.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
-                if(DGame.playerTurn.member == null) DGame.setupTimeout(event.getChannel());
-                DGame.switchTurns();
-                if(DGame.playerTurn.member != null) DGame.setupTimeout(event.getChannel());
+                game.sendSelectMove(event, move, DGame.gifMap.get(event.getButton().getId()));
+                if(game.playerTurn.member == null) game.setupTimeout(event.getChannel());
+                game.switchTurns();
+                if(game.playerTurn.member != null) game.setupTimeout(event.getChannel());
             }
 
-            if(DGame.playerTurn.isTimedOut()) {
-                DGame.switchTurns();
-                DGame.timeout.cancel(false);
-                DGame.setupTimeout(event.getChannel());
-            } else if(DGame.playerTurn.member == null) {
+            if(game.playerTurn.isTimedOut()) {
+                game.switchTurns();
+                game.timeout.cancel(false);
+                game.setupTimeout(event.getChannel());
+            } else if(game.playerTurn.member == null) {
                 //AI
-                String moveId = DGame.AIMove(DGame.playerTurn, DGame.playerNotTurn);
+                String moveId = game.AIMove(game.playerTurn, game.playerNotTurn);
                 String gif = DGame.gifMap.get(moveId);
-                StringBuilder aiMove = new StringBuilder("> " + DGame.getMoveString(moveId) + "\n\n");
-                DGame.sendSelectMove(event, aiMove.toString(), gif);
-                if(DGame.playerNotTurn.isTimedOut()) {
+                StringBuilder aiMove = new StringBuilder("> " + game.getMoveString(moveId) + "\n\n");
+                game.sendSelectMove(event, aiMove.toString(), gif);
+                if(game.playerNotTurn.isTimedOut()) {
                     int turns = (int)(Math.random()*3)+2;
-                    for(int i=0; i<turns; i++) aiMove.append("> ").append(DGame.AIMove(DGame.playerTurn, DGame.playerNotTurn)).append("\n");
-                    DGame.sendSelectMove(event, aiMove.toString(), gif);
-                    DGame.playerNotTurn.timeoutDuration = 0;
-                    DGame.playerTurn.isZaWarudo = false;
-                    DGame.switchTurns();
+                    for(int i=0; i<turns; i++) aiMove.append("> ").append(game.getMoveString(game.AIMove(game.playerTurn, game.playerNotTurn))).append("\n");
+                    game.sendSelectMove(event, aiMove.toString(), gif);
+                    game.playerNotTurn.timeoutDuration = 0;
+                    game.playerTurn.isZaWarudo = false;
+                    game.switchTurns();
                     int x = (int)(Math.random()*3);
                     int y = x + (int)(Math.random()*3)+1;
                     int z = y + (int)(Math.random()*9)+1;
 
-                    DGame.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
-                            .setAuthor(DGame.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", DGame.playerTurn.member.getEffectiveAvatarUrl())
+                    game.lastDisplay.get(1).editMessageEmbeds(new EmbedBuilder()
+                            .setAuthor(game.playerTurn.member.getEffectiveName() + "'s turn", "https://github.com/BooleanCube/lollipop-bot", game.playerTurn.member.getEffectiveAvatarUrl())
                             .setDescription("What is your move?")
                             .setFooter("Quick! You have 30 seconds to react!")
                             .build()
@@ -198,18 +198,18 @@ public class DuelsListener extends ListenerAdapter {
                             DGame.moveButtons[z].asDisabled(),
                             DGame.surrenderButton.asDisabled()
                     ).queue();
-                    DGame.lastDisplay.get(1).editMessageComponents().setActionRow(
+                    game.lastDisplay.get(1).editMessageComponents().setActionRow(
                             DGame.moveButtons[x],
                             DGame.moveButtons[y],
                             DGame.moveButtons[z],
                             DGame.surrenderButton
                     ).queueAfter(1, TimeUnit.SECONDS);
-                } else DGame.switchTurns();
+                } else game.switchTurns();
             }
 
-            if(DGame.checkWin(event.getChannel())) {
-                DGame.timeout.cancel(false);
-                DGame.editTimeout.cancel(false);
+            if(game.checkWin(event.getChannel())) {
+                game.timeout.cancel(false);
+                game.editTimeout.cancel(false);
             }
         }
     }

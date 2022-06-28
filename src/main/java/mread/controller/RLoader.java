@@ -1,11 +1,16 @@
 package mread.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import awatch.controller.AConstants;
+import awatch.model.Anime;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jsoup.Jsoup;
@@ -14,12 +19,21 @@ import org.jsoup.nodes.Element;
 import mread.model.Chapter;
 import mread.model.Manga;
 
+import javax.management.BadAttributeValueExpException;
+import javax.net.ssl.HttpsURLConnection;
+
 public class RLoader {
 
     // Manga Cache
     public static HashMap<String, ArrayList<Manga>> mangaCache = new HashMap<>();
 
-	public static ArrayList<Manga> browse(int page, String genre) {
+    /**
+     * Browse for mangas
+     * @param page page number
+     * @param genre genre
+     * @return list of mangas
+     */
+	public static ArrayList<Manga> browseManga(int page, String genre) {
 		ArrayList<Manga> mangaList = new ArrayList<>();
 		try {
 			String pageUrl;
@@ -45,6 +59,11 @@ public class RLoader {
 		return mangaList;
 	}
 
+    /**
+     * get chapters for a specific manga
+     * @param manga manga
+     * @return list of chapters
+     */
 	public static ArrayList<Chapter> getChapters(Manga manga) {
 		ArrayList<Chapter> chapterList = new ArrayList<>();
 		String author = null, status = null;
@@ -71,12 +90,17 @@ public class RLoader {
 		return chapterList;
 	}
 
+    /**
+     * get pages for chapter
+     * @param chapter chapter
+     * @return list of pages
+     */
 	public static ArrayList<String> getPages(Chapter chapter) {
 		ArrayList<String> pages = new ArrayList<>();
 		try {
 			Element doc = Jsoup.connect(RApiBuilder.buildCombo(chapter.url)).userAgent(RConstants.USER_AGENT).get().body();
 			for (Element pg : doc.select("img[class=img-responsive scroll-down]")) {
-				String page = pg.attr("src");
+				String page = RConstants.BASE_URL + pg.attr("src");
 				pages.add(page);
 			}
 		} catch (IOException e) {
@@ -85,7 +109,12 @@ public class RLoader {
 		return pages;
     }
 
-	public static ArrayList<Manga> search(String query) {
+    /**
+     * search for mangas
+     * @param query query
+     * @return list of mangas
+     */
+	public static ArrayList<Manga> searchManga(String query) {
         if(mangaCache.containsKey(query)) return mangaCache.get(query);
 		ArrayList<Manga> mangaList = new ArrayList<>();
 		try {
@@ -105,8 +134,8 @@ public class RLoader {
 				String title = "Unkown", url = null, art = null;
 				ArrayList<String> tokens = new ArrayList<>();
 				if(obj.hasKey("title")) title = obj.getString("title");
-				if(obj.hasKey("url")) url = obj.getString("url");
-				if(obj.hasKey("image")) art = obj.getString("image");
+				if(obj.hasKey("url")) url = RConstants.BASE_URL + obj.getString("url");
+				if(obj.hasKey("image")) art = RConstants.BASE_URL + obj.getString("image");
 				if(obj.hasKey("tokens")) {
 					DataArray tokensArr = obj.getArray("tokens");
 					for(int j=0; j<tokensArr.length(); j++) tokens.add(tokensArr.getString(j));
@@ -115,7 +144,7 @@ public class RLoader {
 				mangaList.add(m);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
 
 		for(Manga manga : mangaList) {
@@ -127,9 +156,112 @@ public class RLoader {
 				e.printStackTrace();
 			}
 		}
+
         mangaList.sort(Comparator.comparingInt(m -> -(int)(m.score*10+m.views)));
 		mangaCache.put(query, mangaList);
 		return mangaList;
 	}
+
+    /**
+     * Loads the most popular mangas
+     * @return list of popular mangas
+     */
+    public static ArrayList<Manga> getPopularManga() {
+        ArrayList<Manga> popular = new ArrayList<>();
+
+        try {
+            Element doc = Jsoup.connect("https://readm.org/popular-manga/").timeout(RConstants.TIMEOUT)
+                    .userAgent(RConstants.USER_AGENT).get().body();
+            for(Element result : doc.select("div[class=ui mb-lg mt-0]").select("ul[class=filter-results]").select("li[class=mb-lg]")) {
+                if(popular.size() >= 20) break;
+                Manga manga = new Manga();
+                manga.parseRankData(result);
+                popular.add(manga);
+            }
+        } catch(Exception e) {
+            return null;
+        }
+
+        return popular;
+    }
+
+    /**
+     * Loads the top rated mangas
+     * @return list of top mangas
+     */
+    public static ArrayList<Manga> getTopManga() {
+        ArrayList<Manga> top = new ArrayList<>();
+
+        try {
+            Element doc = Jsoup.connect("https://readm.org/popular-manga/rating/").timeout(RConstants.TIMEOUT)
+                    .userAgent(RConstants.USER_AGENT).get().body();
+            for(Element result : doc.select("div[class=ui mb-lg mt-0]").select("ul[class=filter-results]").select("li[class=mb-lg]")) {
+                if(top.size() >= 20) break;
+                Manga manga = new Manga();
+                manga.parseRankData(result);
+                top.add(manga);
+            }
+        } catch(Exception e) {
+            return null;
+        }
+
+        return top;
+    }
+
+    /**
+     * Loads the most popular mangas
+     * @return list of popular mangas
+     */
+    public static ArrayList<Manga> getLatestManga() {
+        ArrayList<Manga> latest = new ArrayList<>();
+
+        try {
+            Element doc = Jsoup.connect("https://readm.org/latest-releases/").timeout(RConstants.TIMEOUT)
+                    .userAgent(RConstants.USER_AGENT).get().body();
+            for(Element result : doc.select("div[class=dark-segment]").select("ul[class=clearfix latest-updates]").select("li[class=segment-poster-sm]")) {
+                if(latest.size() >= 25) break;
+                Manga manga = new Manga();
+                manga.parseLatestData(result);
+                latest.add(manga);
+            }
+        } catch(Exception e) {
+            return null;
+        }
+
+        return latest;
+    }
+
+    public static Manga getRandomManga(boolean nsfw) {
+        try {
+            String extension = !nsfw ? "?sfw" : "";
+            URL web = new URL(AConstants.v4API+"/random/manga" + extension);
+            HttpsURLConnection con = configureConnection(web);
+            BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            DataObject data = DataObject.fromJson(bf.readLine());
+            Manga manga = new Manga();
+            DataObject result;
+            try {
+                result = data.getObject("data");
+                manga.parseMALData(result);
+            } catch(Exception e) { return null; }
+            return manga;
+        } catch(Exception e) { return null; }
+    }
+
+    /**
+     * Declare the HttpsURLConnection and configure for REST API
+     * @param web rest api url object
+     * @return {@link HttpsURLConnection} for the REST API
+     * @throws IOException for declaring and configuring {@link HttpsURLConnection}
+     */
+    public static HttpsURLConnection configureConnection(URL web) throws IOException{
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(5000); // Sets Connection Timeout to 5 seconds
+        con.setReadTimeout(5000); // Sets Read Timeout to 5 seconds
+        return con;
+    }
 
 }

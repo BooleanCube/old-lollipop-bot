@@ -49,6 +49,7 @@ public class User implements ModelData {
         this.picture = data.getObject("images").getObject("jpg").getString("image_url", "");
         this.gender = data.getString("gender", "Unknown");
         this.birthday = data.getString("birthday", "Unknown");
+        if(!this.birthday.equals("Unknown")) this.birthday = OffsetDateTime.parse(this.birthday).format(dateTimeFormatter);
         this.location = data.getString("location", "Unknown");
         this.joined = OffsetDateTime.parse(data.getString("joined")).format(dateTimeFormatter);
         this.about = data.getString("about", "No biography found!");

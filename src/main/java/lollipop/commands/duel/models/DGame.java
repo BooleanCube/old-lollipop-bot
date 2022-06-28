@@ -458,9 +458,9 @@ public class DGame {
 
         // Decides move
         if(h.HP < 15-o.strengthGain) return first;
-        if(h.HP-o.HP > 40 && (second.startsWith("heal") || (second.startsWith("defend") && !o.isDefending))) return second;
-        if(!o.isDefending && Math.random()<0.5) return second;
-        if(o.HP > h.HP && second.startsWith("strength")) return second;
+        if((h.HP-o.HP > 40 || o.HP<40) && (second.startsWith("heal") || (second.startsWith("defend") && !o.isDefending))) return second;
+        if(!o.isDefending && Math.random()<0.3 && second.startsWith("defend")) return second;
+        if(o.HP > h.HP-15 && second.startsWith("strength")) return second;
         if(h.isDefending && Math.random()<0.5) return first;
         return third;
 

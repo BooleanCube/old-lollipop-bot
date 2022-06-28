@@ -29,12 +29,17 @@ public class ChapterList {
      * @param u user
      */
     public ChapterList(ArrayList<Chapter> cs, ArrayList<SelectMenu> ms, int pn, int ps, Message m, User u) {
-        chapters = cs;
-        menus = ms;
-        pageNumber = pn;
-        msg = m;
-        user = u;
-        pages = ps;
+        this.chapters = cs;
+        this.menus = ms;
+        this.pageNumber = pn;
+        this.msg = m;
+        this.user = u;
+        this.pages = ps;
+    }
+
+    // default constructor
+    public ChapterList() {
+        this.chapters = new ArrayList<>();
     }
 
 }

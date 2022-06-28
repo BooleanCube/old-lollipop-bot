@@ -5,6 +5,7 @@ import lollipop.Command;
 import lollipop.Constant;
 import lollipop.Tools;
 import lollipop.pages.AnimePage;
+import lollipop.pages.MangaPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
 
 public class Popular implements Command {
 
-    public static HashMap<Long, AnimePage> messageToPage = new HashMap<>();
+    public static HashMap<Long, AnimePage> messageToAnimePage = new HashMap<>();
+    public static HashMap<Long, MangaPage> messageToMangaPage = new HashMap<>();
 
     @Override
     public String[] getAliases() {
@@ -58,24 +60,31 @@ public class Popular implements Command {
         if(args.get(0).equals("anime")) {
             InteractionHook msg = event.replyEmbeds(
                     new EmbedBuilder()
-                            .setDescription("Getting the `25 Most Popular` anime...")
+                            .setDescription("Getting the `Most Popular` anime...")
                             .build()
             ).complete();
             Message message = msg.retrieveOriginal().complete();
             ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                     .setColor(Color.red)
-                    .setDescription("Could not get the 25 most popular animes! Please try again later!")
+                    .setDescription("Could not get the most popular animes! Please try again later!")
                     .build()
-            ).queueAfter(5, TimeUnit.SECONDS, me -> messageToPage.remove(message.getIdLong()));
-            messageToPage.put(message.getIdLong(), new AnimePage(null, message, 1, event.getUser(), timeout));
+            ).queueAfter(5, TimeUnit.SECONDS, me -> messageToAnimePage.remove(message.getIdLong()));
+            messageToAnimePage.put(message.getIdLong(), new AnimePage(null, message, 1, event.getUser(), timeout));
             api.getPopularAnime(msg);
         } else if(args.get(0).equals("manga")) {
-            event.replyEmbeds(
+            InteractionHook msg = event.replyEmbeds(
                     new EmbedBuilder()
-                            .setDescription("This feature has not been implemented yet, please wait patiently!")
-                            .setColor(Color.red)
+                            .setDescription("Getting the `Most Popular` mangas...")
                             .build()
-            ).queue();
+            ).complete();
+//            Message message = msg.retrieveOriginal().complete();
+//            ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
+//                    .setColor(Color.red)
+//                    .setDescription("Could not get the most popular mangas! Please try again later!")
+//                    .build()
+//            ).queueAfter(5, TimeUnit.SECONDS, me -> messageToMangaPage.remove(message.getIdLong()));
+//            messageToMangaPage.put(message.getIdLong(), new MangaPage(null, message, 1, event.getUser(), timeout));
+            api.getPopularManga(msg);
         }
     }
 

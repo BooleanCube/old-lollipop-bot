@@ -1,6 +1,6 @@
 package lollipop;
 
-import lollipop.commands.RandomAnime;
+import lollipop.commands.Random;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
@@ -52,7 +52,7 @@ public class Manager {
                 new Ping().getSlashCmd(),
                 new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
-                new RandomAnime().getSlashCmd(),
+                new Random().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Search().getSlashCmd(),
                 new Support().getSlashCmd(),
@@ -90,7 +90,7 @@ public class Manager {
                 new Ping().getSlashCmd(),
                 new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
-                new RandomAnime().getSlashCmd(),
+                new Random().getSlashCmd(),
                 new RandomQuote().getSlashCmd(),
                 new Search().getSlashCmd(),
                 new Support().getSlashCmd(),
@@ -141,7 +141,7 @@ public class Manager {
         addCommand(new BitesTheDust());
         addCommand(new Pat());
         addCommand(new Eat());
-        addCommand(new RandomAnime());
+        addCommand(new Random());
         addCommand(new Top());
         addCommand(new Duel());
         addCommand(new Move());

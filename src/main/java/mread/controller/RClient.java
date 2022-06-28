@@ -15,14 +15,33 @@ public class RClient {
 	}
 
 	// genre can be null
-	public void browse(int page, String genre) {
-        ThreadManagement.execute(() -> listener.sendMangas(RLoader.browse(page, genre)));
+	public void browseManga(int page, String genre) {
+        ThreadManagement.execute(() -> listener.sendMangas(RLoader.browseManga(page, genre)));
 	}
 
 	// search for manga by keyword
-	public void search(String query) {
-		ThreadManagement.execute(() -> listener.sendMangas(RLoader.search(query)));
+	public void searchManga(String query) {
+		ThreadManagement.execute(() -> listener.sendMangas(RLoader.searchManga(query)));
 	}
+
+    // get popular mangas
+    public void getPopularManga() {
+        ThreadManagement.execute(() -> listener.sendPopularManga(RLoader.getPopularManga()));
+    }
+
+    // get top rated mangas
+    public void getTopManga() {
+        ThreadManagement.execute(() -> listener.sendTopManga(RLoader.getTopManga()));
+    }
+
+    // get latest mangas
+    public void getLatestManga() {
+        ThreadManagement.execute(() -> listener.sendLatestManga(RLoader.getLatestManga()));
+    }
+
+    public void randomManga(boolean nsfw) {
+        ThreadManagement.execute(() -> listener.sendRandomManga(RLoader.getRandomManga(nsfw)));
+    }
 
 	// get chapters
 	public void chapters(Manga manga) {

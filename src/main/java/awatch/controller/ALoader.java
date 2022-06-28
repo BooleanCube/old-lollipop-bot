@@ -11,7 +11,6 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -279,7 +278,7 @@ public class ALoader {
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
-        int size = Math.min(25, arr.length());
+        int size = Math.min(20, arr.length());
         for(int i=0; i<size; i++) {
             DataObject result = arr.getObject(i);
             Anime anime = new Anime();
@@ -304,7 +303,7 @@ public class ALoader {
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
-        int size = Math.min(25, arr.length());
+        int size = Math.min(20, arr.length());
         for(int i=0; i<size; i++) {
             DataObject result = arr.getObject(i);
             Anime anime = new Anime();
@@ -329,7 +328,7 @@ public class ALoader {
         try {
             arr = data.getArray("data");
         } catch(Exception e) { return null; }
-        int size = Math.min(25, arr.length());
+        int size = Math.min(20, arr.length());
         for(int i=0; i<size; i++) {
             DataObject result = arr.getObject(i);
             Anime anime = new Anime();
@@ -345,7 +344,7 @@ public class ALoader {
      * @return anime
      * @throws IOException for BufferedReader
      */
-    public static Anime loadRandom(boolean nsfw) throws IOException {
+    public static Anime loadRandomAnime(boolean nsfw) throws IOException {
         String extension = !nsfw ? "?sfw" : "";
         URL web = new URL(AConstants.v4API+"/random/anime" + extension);
         HttpsURLConnection con = configureConnection(web);
@@ -358,6 +357,27 @@ public class ALoader {
         } catch(Exception e) { return null; }
         anime.parseData(result);
         return anime;
+    }
+
+    /**
+     * Load a random anime
+     * @param nsfw nsfw allowed
+     * @return anime
+     * @throws IOException for BufferedReader
+     */
+    public static Character loadRandomCharacter(boolean nsfw) throws IOException {
+        String extension = !nsfw ? "?sfw" : "";
+        URL web = new URL(AConstants.v4API+"/random/characters" + extension);
+        HttpsURLConnection con = configureConnection(web);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        DataObject data = DataObject.fromJson(bf.readLine());
+        Character character = new Character();
+        DataObject result;
+        try {
+            result = data.getObject("data");
+        } catch(Exception e) { return null; }
+        character.parseData(result);
+        return character;
     }
 
     /**

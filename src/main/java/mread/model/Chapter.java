@@ -1,5 +1,6 @@
 package mread.model;
 
+import awatch.controller.AConstants;
 import mread.ModelData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -18,7 +19,7 @@ public class Chapter implements ModelData {
     public User user;
     public int pageNumber = 1;
 
-    private static final String BASE_URL = "https://www.readm.org/";
+    private static final String BASE_URL = "https://www.readm.org";
 
     /**
      * Initialize variables in the constructor
@@ -30,10 +31,16 @@ public class Chapter implements ModelData {
 	public Chapter(String title, String url, String publication, List<String> pages) {
 		super();
 		this.title = ifNull(title);
-		this.url = ifNull(url);
+		this.url = BASE_URL + ifNull(url);
 		this.publication = ifNull(publication);
 		this.pages = pages;
 	}
+
+    public Chapter() {
+        this.title = "Chapter ";
+        this.url = "";
+        this.publication = "";
+    }
 
     /**
      * Compressed data into string
@@ -41,7 +48,7 @@ public class Chapter implements ModelData {
      */
 	@Override
 	public String toString() {
-		return "Chapter [title=" + title + ", url=" + url + ", publication=" + publication + ", pages=" + pages + "]";
+		return String.format("[%s](%s)", this.title, this.url);
 	}
 
     /**
@@ -70,9 +77,9 @@ public class Chapter implements ModelData {
     @Override
     public EmbedBuilder toEmbed() {
         return new EmbedBuilder()
-                .setTitle(this.title, BASE_URL + this.url)
+                .setTitle(this.title, this.url)
                 .setDescription(this.publication + " ago")
-                .setImage(BASE_URL + this.pages.get(pageNumber-1))
+                .setImage(this.pages.get(pageNumber-1))
                 .setFooter("Page " + pageNumber + "/" + pages.size());
     }
 
@@ -83,9 +90,9 @@ public class Chapter implements ModelData {
      */
     public EmbedBuilder embedPage(int page) {
         return new EmbedBuilder()
-                .setTitle(this.title, BASE_URL + this.url)
+                .setTitle(this.title, this.url)
                 .setDescription(this.publication + " ago")
-                .setImage(BASE_URL + this.pages.get(page))
+                .setImage(this.pages.get(page))
                 .setFooter("Page " + pageNumber + "/" + pages.size());
     }
 

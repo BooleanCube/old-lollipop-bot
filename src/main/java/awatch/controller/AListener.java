@@ -22,10 +22,11 @@ public interface AListener {
     void sendThemes(Themes themes);
     void sendRecommendation(Recommendation recommendation);
     void sendReview(Review review);
-    void sendTop(ArrayList<Anime> top);
+    void sendTopAnime(ArrayList<Anime> top);
     void sendPopularAnime(ArrayList<Anime> popular);
     void sendLatestAnime(ArrayList<Anime> latest);
     void sendRandomAnime(Anime random);
+    void sendRandomCharacter(Character random);
     void sendRandomGIF(GIF gif);
     void sendTrivia(Question question);
 

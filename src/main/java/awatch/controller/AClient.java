@@ -195,7 +195,7 @@ public class AClient {
     public void getTop() {
         ThreadManagement.execute(() -> {
             try {
-                listener.sendTop(ALoader.loadTop());
+                listener.sendTopAnime(ALoader.loadTop());
             } catch (IOException e) { throw new RuntimeException(e); }
         });
     }
@@ -229,7 +229,19 @@ public class AClient {
     public void randomAnime(boolean nsfw) {
         ThreadManagement.execute(() -> {
             try {
-                listener.sendRandomAnime(ALoader.loadRandom(nsfw));
+                listener.sendRandomAnime(ALoader.loadRandomAnime(nsfw));
+            } catch (IOException e) { throw new RuntimeException(e); }
+        });
+    }
+
+    /**
+     * Runs a thread to get a randomly chosen anime from MALs database
+     * @param nsfw nsfw allowed
+     */
+    public void randomCharacter(boolean nsfw) {
+        ThreadManagement.execute(() -> {
+            try {
+                listener.sendRandomCharacter(ALoader.loadRandomCharacter(nsfw));
             } catch (IOException e) { throw new RuntimeException(e); }
         });
     }

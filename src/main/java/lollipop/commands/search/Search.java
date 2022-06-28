@@ -72,7 +72,7 @@ public class Search implements Command {
 
         if(args.get(0).equalsIgnoreCase("character")) {
             try {
-                String query = String.join(" ", args.subList(1, args.size()));
+                String query = String.join(" ", args.subList(1, args.size())).toLowerCase();
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
@@ -91,7 +91,7 @@ public class Search implements Command {
 
         else if(args.get(0).equalsIgnoreCase("anime")) {
             try {
-                String query = String.join(" ", args.subList(1, args.size()));
+                String query = String.join(" ", args.subList(1, args.size())).toLowerCase();
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
@@ -110,7 +110,7 @@ public class Search implements Command {
         }
 
         else if(args.get(0).equalsIgnoreCase("manga")) {
-            String query = String.join(" ", args.subList(1, args.size()));
+            String query = String.join(" ", args.subList(1, args.size())).toLowerCase();
             InteractionHook msg = event.replyEmbeds(
                     new EmbedBuilder()
                             .setDescription("Searching for `" + query + "`...")
@@ -133,11 +133,11 @@ public class Search implements Command {
 
         else if(args.get(0).equalsIgnoreCase("user")) {
             try {
-                String query = String.join(" ", args.subList(1, args.size()));
+                String query = String.join(" ", args.subList(1, args.size())).toLowerCase();
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
-                        .setDescription("Could not find a user with that username on MAL!")
+                        .setDescription("Could not find a user with that username on [MAL](https://myanimelist.net/)!")
                         .build()
                 ).queueAfter(5, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();
