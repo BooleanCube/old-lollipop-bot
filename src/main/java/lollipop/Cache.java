@@ -15,7 +15,7 @@ public class Cache {
 
     static {
         BufferedReader bf = null;
-        try { bf = new BufferedReader(new FileReader(ABSPATH + TITLECACHE)); }
+        try { bf = new BufferedReader(new FileReader(TITLECACHE)); }
         catch (FileNotFoundException e) { /* continue */}
         String input;
         while (true) {
@@ -33,13 +33,13 @@ public class Cache {
      * @throws IOException for BufferedReader
      */
     public static void addGifToCache(String gif) throws IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(ABSPATH + GIFCACHE));
+        BufferedReader bf = new BufferedReader(new FileReader(GIFCACHE));
         StringBuilder file = new StringBuilder();
         String line;
         while((line=bf.readLine()) != null) file.append(line).append("\n");
         file.append(gif).append("\n");
         bf.close();
-        FileWriter fw = new FileWriter(ABSPATH + GIFCACHE);
+        FileWriter fw = new FileWriter(GIFCACHE);
         fw.write(file.toString());
         fw.close();
     }
@@ -52,13 +52,13 @@ public class Cache {
     public static void addTitleToCache(String title) throws IOException {
         if(titles.contains(title)) return;
         titles.add(title);
-        BufferedReader bf = new BufferedReader(new FileReader(ABSPATH + TITLECACHE));
+        BufferedReader bf = new BufferedReader(new FileReader(TITLECACHE));
         StringBuilder file = new StringBuilder();
         String line;
         while((line=bf.readLine()) != null) file.append(line).append("\n");
         file.append(title).append("\n");
         bf.close();
-        FileWriter fw = new FileWriter(ABSPATH + TITLECACHE);
+        FileWriter fw = new FileWriter(TITLECACHE);
         fw.write(file.toString());
         fw.close();
     }

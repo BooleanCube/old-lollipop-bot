@@ -17,14 +17,11 @@ public class Constant {
     // slash command prefix
     public static String PREFIX = "/";
 
-    // Base directory
-    public static String ABSPATH = System.getProperty("user.dir");
-
     // GIF file cache directory
-    public static String GIFCACHE = "/src/main/java/cache/gifs.txt";
+    public static String GIFCACHE = "cache/gifs.txt";
 
     // Anime Title file cache directory
-    public static String TITLECACHE = "/src/main/java/cache/titles.txt";
+    public static String TITLECACHE = "cache/titles.txt";
 
     // Multiplier value
     public static double MULTIPLIER = 1.5d;

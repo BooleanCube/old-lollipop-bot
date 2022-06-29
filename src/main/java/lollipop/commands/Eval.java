@@ -1,4 +1,4 @@
-package lollipop.commands.eval;
+package lollipop.commands;
 
 import groovy.lang.GroovyShell;
 import lollipop.Constant;
@@ -98,7 +98,7 @@ public class Eval implements Command {
             String response = out.toString();
             if(response.length() <= 2000) event.reply(response).queue();
             else {
-                File file = new File(Constant.ABSPATH + "/src/main/java/lollipop/commands/eval/archive/response.txt");
+                File file = new File("archive/response.txt");
                 if(file.exists()) {
                     file.delete();
                     file.createNewFile();

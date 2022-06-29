@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class DatabaseManager {
 
     private static final HashMap<String, DatabaseObject> databases;
-    private static final String directory = Paths.get("").toAbsolutePath() + "/src/main/java/discorddb/files/";
+    private static final String directory = "files/";
 
     /*
       Static block to init all the current databases and caches

@@ -4,7 +4,7 @@ import lollipop.commands.Random;
 import lollipop.commands.*;
 import lollipop.commands.duel.Duel;
 import lollipop.commands.duel.Move;
-import lollipop.commands.eval.Eval;
+import lollipop.commands.Eval;
 import lollipop.commands.search.Search;
 import lollipop.commands.trivia.Trivia;
 import net.dv8tion.jda.api.JDA;
