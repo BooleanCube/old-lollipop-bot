@@ -36,8 +36,8 @@ public class DuelsListener extends ListenerAdapter {
             }
             DGame.timeout.cancel(false);
             DGame.deleteDisplayMessagesFull();
-            DGame.sendStartSelectMove(event, null);
             DGame.setupTimeout(event.getChannel());
+            DGame.sendStartSelectMove(event, null);
             DGame.switchTurns();
         }
         else if(Duel.memberToGame.containsKey(event.getMember().getIdLong())) {
@@ -171,7 +171,7 @@ public class DuelsListener extends ListenerAdapter {
                 game.timeout.cancel(false);
                 game.setupTimeout(event.getChannel());
             } else if(game.playerTurn.member == null) {
-                //AI
+                // ZA WARUDO AI
                 String moveId = game.AIMove(game.playerTurn, game.playerNotTurn);
                 String gif = DGame.gifMap.get(moveId);
                 StringBuilder aiMove = new StringBuilder("> " + game.getMoveString(moveId) + "\n\n");

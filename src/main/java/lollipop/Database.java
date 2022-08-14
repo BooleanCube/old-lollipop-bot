@@ -10,13 +10,10 @@ import net.dv8tion.jda.api.entities.User;
 
 import javax.naming.LimitExceededException;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Static database class to manage all of lollipop's databases
@@ -44,9 +41,7 @@ public class Database {
      */
     public static int getUserBalance(String id) {
         if(currency.getValue(id) == null) {
-            try {
-                currency.addKey(id, "0");
-            } catch (IOException ignored) {}
+            currency.addKey(id, "0");
             return 0;
         }
         return currency.getValueInt(id);
@@ -109,9 +104,7 @@ public class Database {
      */
     public static void addToUserBalance(String id, int increment) {
         int balance = getUserBalance(id) + increment;
-        try {
-            currency.updateValue(id, String.valueOf(Math.max(0, balance)));
-        } catch (IOException ignored) {}
+        currency.updateValue(id, String.valueOf(Math.max(0, balance)));
     }
 
     /**

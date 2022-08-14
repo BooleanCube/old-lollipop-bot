@@ -47,7 +47,7 @@ public class DGame {
     };
     public static HashMap<String, String> gifMap;
     public static Button surrenderButton = Button.danger("ff", "surrender");
-    public static boolean hasEnded = false;
+    public boolean hasEnded = false;
 
     static {
         gifMap = new HashMap<>();
@@ -289,6 +289,12 @@ public class DGame {
      * @param move move phrase
      */
     public void sendSelectMove(ButtonInteractionEvent event, String move, String gif) {
+        if(hasEnded) {
+            if(timeout!=null && !timeout.isCancelled()) timeout.cancel(false);
+            if(editTimeout!=null && !editTimeout.isCancelled()) editTimeout.cancel(false);
+            return;
+        }
+
         if(homePlayer.HP < 0) homePlayer.HP = 0;
         if(opposingPlayer.HP < 0) opposingPlayer.HP = 0;
         if(playerTurn.member == null) {
@@ -655,6 +661,7 @@ public class DGame {
             hasEnded = true;
             if(!timeout.isCancelled()) timeout.cancel(false);
             deleteDisplayMessagesFull();
+            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
             EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type /duel to start another duel with me!");
             if(opposingPlayer.member == null) {
@@ -699,12 +706,12 @@ public class DGame {
                 };
                 BotStatistics.sendMultiplier(opposingPlayer.member.getId(), success, failure);
             }
-            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             return true;
         } else if(opposingPlayer.HP <= 0) {
             editTimeout.cancel(false);
             if(!timeout.isCancelled()) timeout.cancel(false);
             hasEnded = true;
+            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
             if(opposingPlayer.member != null) {
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
@@ -756,7 +763,6 @@ public class DGame {
                 };
                 BotStatistics.sendMultiplier(homePlayer.member.getId(), success, failure);
             }
-            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
             return true;
         }
         return false;

@@ -21,7 +21,8 @@ import javax.security.auth.login.LoginException;
 public class Main {
 
     /**
-     * Executed on application execution
+     * Runs both discord bot clients
+     * For testing and the real product
      * @param args string[] args
      * @throws LoginException for ShardMangerBuilder and JDABuilder
      */
@@ -35,7 +36,7 @@ public class Main {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .setActivity(Activity.watching("anime | " + Constant.PREFIX + "help"))
+                .setActivity(Activity.streaming("anime | " + Constant.PREFIX + "help", "https://booleancube.github.io/projects/lollipop/home"))
                 .setShardsTotal(4)
                 .addEventListeners(new Listener())
                 .addEventListeners(new DuelsListener())
