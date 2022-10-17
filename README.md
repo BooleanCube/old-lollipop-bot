@@ -43,6 +43,11 @@ Typing `/help` in a server will send you a list of the commands that lollipop pr
 
 ----
 
+### Credits
+BooleanCube. (2022). DiscordDB (Version v1.0.7) [Computer software]. https://github.com/BooleanCube/DiscordDB
+
+----
+
 **Developed by BooleanCube**
 
 *Powered by Awatch, Readm, and JDA*
