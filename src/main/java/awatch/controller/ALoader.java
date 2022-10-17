@@ -85,7 +85,12 @@ public class ALoader {
      */
     public static User loadSearchUser(String query) throws IOException {
         URL web = new URL(AConstants.v4API + "/users/" + query + "/full");
-        HttpsURLConnection con = configureConnection(web);
+        HttpsURLConnection con = (HttpsURLConnection) web.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+        con.setConnectTimeout(8000); // Sets Connection Timeout to 8 seconds
+        con.setReadTimeout(8000); // Sets Read Timeout to 8 seconds
         BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
         DataObject data = DataObject.fromJson(bf.readLine());
         User user = new User();

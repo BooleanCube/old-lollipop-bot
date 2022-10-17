@@ -27,8 +27,8 @@ public class Search implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Anime";
+    public CommandType getCategory() {
+        return CommandType.ANIME;
     }
 
     @Override
@@ -137,9 +137,10 @@ public class Search implements Command {
                 InteractionHook msg = event.replyEmbeds(new EmbedBuilder().setDescription("Searching for `" + query + "`...").build()).complete();
                 ScheduledFuture<?> timeout = msg.editOriginalEmbeds(new EmbedBuilder()
                         .setColor(Color.red)
-                        .setDescription("Could not find a user with that username on [MAL](https://myanimelist.net/)!")
+                        .setDescription("Could not find a user with that username on [MAL](https://myanimelist.net/), in which case you can try again with a valid username" +
+                                " or we are having connection problems, in which case run the command again!")
                         .build()
-                ).queueAfter(5, TimeUnit.SECONDS);
+                ).queueAfter(8, TimeUnit.SECONDS);
                 Message m = msg.retrieveOriginal().complete();
                 messageToUserTimeout.put(m.getIdLong(), timeout);
                 api.searchUser(msg, query);
