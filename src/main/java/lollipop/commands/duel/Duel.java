@@ -1,5 +1,6 @@
 package lollipop.commands.duel;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -28,8 +29,8 @@ public class Duel implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override
@@ -45,10 +46,11 @@ public class Duel implements Command {
 
     // Game Settings and Occupancy
     public static HashMap<Long, DGame> memberToGame = new HashMap<>();
-    public static ArrayList<Integer> occupiedShards = new ArrayList<>();
+    public static int[] occupiedShards;
 
     @Override
     public void run(SlashCommandInteractionEvent event) {
+        if(occupiedShards == null) occupiedShards = new int[event.getJDA().getShardManager().getShardsTotal()];
         if(!event.getInteraction().isFromGuild()) {
             event.replyEmbeds(
                     new EmbedBuilder()
@@ -68,7 +70,7 @@ public class Duel implements Command {
             return;
         }
         int shardId = event.getJDA().getShardInfo().getShardId();
-        if(occupiedShards.contains(shardId)) {
+        if(occupiedShards[shardId] >= 3) {
             event.replyEmbeds(new EmbedBuilder()
                             .setDescription("There is a concurrent duel in this shard! Please wait until the current duel ends...")
                             .setFooter("There is a limit of 1 duel per shard to prevent the players from having a laggy experience. Please be patient!")
@@ -77,7 +79,7 @@ public class Duel implements Command {
             ).setEphemeral(true).queue();
             return;
         }
-        else occupiedShards.add(shardId);
+        else occupiedShards[shardId]++;
         if(options.isEmpty()) {
             DGame DGame = new DGame();
             DGame.homePlayer.member = event.getMember();
@@ -143,7 +145,7 @@ public class Duel implements Command {
                     DGame.deleteDisplayMessagesFull();
                     Duel.memberToGame.remove(event.getMember().getIdLong());
                     Duel.memberToGame.remove(target.getIdLong());
-                    occupiedShards.remove(Integer.valueOf(event.getJDA().getShardInfo().getShardId()));
+                    occupiedShards[event.getJDA().getShardInfo().getShardId()]--;
                 });
                 Duel.memberToGame.put(event.getMember().getIdLong(), DGame);
                 Duel.memberToGame.put(target.getIdLong(), DGame);

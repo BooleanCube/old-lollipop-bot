@@ -34,7 +34,7 @@ public class DuelsListener extends ListenerAdapter {
                 ).setEphemeral(true).queue();
                 return;
             }
-            DGame.timeout.cancel(false);
+            DGame.timeout.cancel(true);
             DGame.deleteDisplayMessagesFull();
             DGame.setupTimeout(event.getChannel());
             DGame.sendStartSelectMove(event, null);

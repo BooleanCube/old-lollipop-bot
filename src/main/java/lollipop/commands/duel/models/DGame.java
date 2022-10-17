@@ -428,7 +428,7 @@ public class DGame {
     }
 
     /**
-     * Deletes ALL of the display messages for the duels game
+     * Deletes ALL the display messages for the duels game
      */
     public void deleteDisplayMessagesFull() {
         lastDisplay.forEach(msg -> msg.delete().queue());
@@ -572,6 +572,9 @@ public class DGame {
      * @param c channel
      */
     public void setupTimeout(MessageChannel c) {
+        // Delete any previously created timeouts if there are any
+        if(this.timeout != null && !this.timeout.isCancelled()) this.timeout.cancel(false);
+
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "You are a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) {
@@ -585,7 +588,7 @@ public class DGame {
                 this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                     Database.addToUserBalance(playerTurn.member.getId(), xp);
                     Duel.memberToGame.remove(playerTurn.member.getIdLong());
-                    Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                    Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
                     if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
                     deleteDisplayMessagesFull();
                 });
@@ -601,7 +604,7 @@ public class DGame {
                 this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                     Database.addToUserBalance(playerTurn.member.getId(), xp);
                     Duel.memberToGame.remove(playerTurn.member.getIdLong());
-                    Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                    Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
                     if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
                     deleteDisplayMessagesFull();
                 });
@@ -620,7 +623,7 @@ public class DGame {
                     this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                         Database.addToUserBalance(playerNotTurn.member.getId(), xp);
                         Duel.memberToGame.remove(playerTurn.member.getIdLong());
-                        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                        Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
                         if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
                         deleteDisplayMessagesFull();
                     });
@@ -638,7 +641,7 @@ public class DGame {
                     this.timeout = c.sendMessageEmbeds(e.build()).queueAfter(30, TimeUnit.SECONDS, me -> {
                         Database.addToUserBalance(playerNotTurn.member.getId(), xp);
                         Duel.memberToGame.remove(playerTurn.member.getIdLong());
-                        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+                        Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
                         if(playerNotTurn.member != null) Duel.memberToGame.remove(playerNotTurn.member.getIdLong());
                         deleteDisplayMessagesFull();
                     });
@@ -661,7 +664,7 @@ public class DGame {
             hasEnded = true;
             if(!timeout.isCancelled()) timeout.cancel(false);
             deleteDisplayMessagesFull();
-            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+            Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
             EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type /duel to start another duel with me!");
             if(opposingPlayer.member == null) {
@@ -711,7 +714,7 @@ public class DGame {
             editTimeout.cancel(false);
             if(!timeout.isCancelled()) timeout.cancel(false);
             hasEnded = true;
-            Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+            Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
             Duel.memberToGame.remove(homePlayer.member.getIdLong());
             if(opposingPlayer.member != null) {
                 Duel.memberToGame.remove(opposingPlayer.member.getIdLong());
@@ -769,14 +772,14 @@ public class DGame {
     }
 
     /**
-     * Runs the surrender procedures when a player surrenders the duel
+     * Runs the surrender procedures when a player surrenders the duel.
      * @param c channel
      * @param p player
      */
     public void surrender(MessageChannel c, Player p) {
         String[] victoryMsg = {"You are too strong...", "That kind of power should be illegal!", "He is a god amongst men!", "How did you get so much power?", "Nobody dares to duel with you!"};
         Duel.memberToGame.remove(playerTurn.member.getIdLong());
-        Duel.occupiedShards.remove(Integer.valueOf(c.getJDA().getShardInfo().getShardId()));
+        Duel.occupiedShards[c.getJDA().getShardInfo().getShardId()]--;
         EmbedBuilder e = new EmbedBuilder().setColor(Color.green).setFooter("Type " + Constant.PREFIX + "duel to start another duel with me!");
         if(playerNotTurn.member == null) {
             e.setAuthor("Computer won the duel!", "https://github.com/BooleanCube/lollipop-bot", "https://www.pngkey.com/png/full/0-8970_open-my-computer-icon-circle.png");
