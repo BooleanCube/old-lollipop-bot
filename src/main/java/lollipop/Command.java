@@ -15,10 +15,10 @@ public interface Command {
     String[] getAliases();
 
     /**
-     * Get command category for help command
-     * @return String for the command category
+     * Get command category for command
+     * @return CommandType for the command category
      */
-    String getCategory();
+    CommandType getCategory();
 
     /**
      * Get command description and help

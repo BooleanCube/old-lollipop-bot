@@ -1,9 +1,6 @@
 package lollipop.commands;
 
-import lollipop.API;
-import lollipop.Command;
-import lollipop.Constant;
-import lollipop.Tools;
+import lollipop.*;
 import lollipop.pages.AnimePage;
 import lollipop.pages.MangaPage;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,8 +30,8 @@ public class Popular implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Anime";
+    public CommandType getCategory() {
+        return CommandType.ANIME;
     }
 
     @Override

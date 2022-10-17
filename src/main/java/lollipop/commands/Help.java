@@ -1,9 +1,6 @@
 package lollipop.commands;
 
-import lollipop.Constant;
-import lollipop.Command;
-import lollipop.Manager;
-import lollipop.Tools;
+import lollipop.*;
 import net.bytebuddy.matcher.CollectionOneToOneMatcher;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -33,7 +30,9 @@ public class Help implements Command {
     }
 
     @Override
-    public String getCategory() { return "Miscellaneous"; }
+    public CommandType getCategory() {
+        return CommandType.MISCELLANEOUS;
+    }
 
     @Override
     public String getHelp() {
@@ -57,27 +56,27 @@ public class Help implements Command {
         }
         if(args.isEmpty()) {
             StringBuilder anime = new StringBuilder();
-            manager.getCommands("Anime").forEach(command -> anime.append("**`").append(command.getAliases()[0]).append("`**, "));
+            manager.getCommands(CommandType.ANIME).forEach(command -> anime.append("**`").append(command.getAliases()[0]).append("`**, "));
             StringBuilder fun = new StringBuilder();
-            manager.getCommands("Fun").forEach(command -> fun.append("**`").append(command.getAliases()[0]).append("`**, "));
+            manager.getCommands(CommandType.FUN).forEach(command -> fun.append("**`").append(command.getAliases()[0]).append("`**, "));
             StringBuilder roleplay = new StringBuilder();
-            manager.getCommands("Roleplay").forEach(command -> roleplay.append("**`").append(command.getAliases()[0]).append("`**, "));
+            manager.getCommands(CommandType.ROLEPLAY).forEach(command -> roleplay.append("**`").append(command.getAliases()[0]).append("`**, "));
             StringBuilder misc = new StringBuilder();
-            manager.getCommands("Miscellaneous").forEach(command -> misc.append("**`").append(command.getAliases()[0]).append("`**, "));
+            manager.getCommands(CommandType.MISCELLANEOUS).forEach(command -> misc.append("**`").append(command.getAliases()[0]).append("`**, "));
             EmbedBuilder e = new EmbedBuilder()
                     .setAuthor(event.getUser().getName(), event.getUser().getAvatarUrl(), event.getUser().getEffectiveAvatarUrl())
                     .setFooter("Use " + Constant.PREFIX + "help [command] to get more information about a command!")
                     .setTitle("Lollipop Commands");
-            //lmao
-            if(event.getJDA().getSelfUser().getIdLong() != Constant.TEST_ID)
-                e.setImage("https://user-images.githubusercontent.com/47650058/147891305-58aa09b6-2053-4180-9a9a-8c09826567f1.png");
-            e.addField("Anime/Manga", anime.substring(0, anime.length()-2), true);
+            e.setImage("https://user-images.githubusercontent.com/47650058/147891305-58aa09b6-2053-4180-9a9a-8c09826567f1.png");
+            e.addField("Anime", anime.substring(0, anime.length()-2), true);
             e.addField("Fun", fun.substring(0, fun.length()-2), true);
             e.addField("Misc", misc.substring(0, misc.length()-2), true);
             e.addField("Roleplay", roleplay.substring(0, roleplay.length()-2), true);
+            e.setDescription("Visit the [lollipop bot website](https://booleancube.github.io/projects/lollipop/lollipop.html) or use `/botinfo` to learn more about the lollipop!\n" +
+                    "Use `/support` to join a support server if you have bugs to report and features to suggest!");
             if(event.getUser().getIdLong() == Constant.OWNER_ID) {
                 StringBuilder owner = new StringBuilder();
-                manager.getCommands("Owner").forEach(command -> owner.append("**`").append(command.getAliases()[0]).append("`**, "));
+                manager.getCommands(CommandType.OWNER).forEach(command -> owner.append("**`").append(command.getAliases()[0]).append("`**, "));
                 e.addField("Owner", owner.substring(0, owner.length()-2), false);
             }
             event.replyEmbeds(e.build()).queue();

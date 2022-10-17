@@ -1,6 +1,7 @@
 package lollipop.commands;
 
 import lollipop.Command;
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -21,8 +22,8 @@ public class Attack implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Roleplay";
+    public CommandType getCategory() {
+        return CommandType.ROLEPLAY;
     }
 
     @Override

@@ -20,8 +20,8 @@ public class Janken implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override

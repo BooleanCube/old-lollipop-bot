@@ -30,8 +30,8 @@ public class Top implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Anime";
+    public CommandType getCategory() {
+        return CommandType.ANIME;
     }
 
     @Override

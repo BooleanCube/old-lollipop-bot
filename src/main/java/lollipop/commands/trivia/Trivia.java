@@ -20,8 +20,8 @@ public class Trivia implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override

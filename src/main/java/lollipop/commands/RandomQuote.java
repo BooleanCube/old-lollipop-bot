@@ -1,9 +1,6 @@
 package lollipop.commands;
 
-import lollipop.API;
-import lollipop.Constant;
-import lollipop.Command;
-import lollipop.Tools;
+import lollipop.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -23,8 +20,8 @@ public class RandomQuote implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Anime";
+    public CommandType getCategory() {
+        return CommandType.ANIME;
     }
 
     @Override

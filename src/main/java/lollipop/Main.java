@@ -36,7 +36,7 @@ public class Main {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .setActivity(Activity.streaming("anime | " + Constant.PREFIX + "help", "https://booleancube.github.io/projects/lollipop/home"))
+                .setActivity(Activity.streaming("anime | " + Constant.PREFIX + "help", "https://www.twitch.tv/lollipopbot1"))
                 .setShardsTotal(4)
                 .addEventListeners(new Listener())
                 .addEventListeners(new DuelsListener())

@@ -1,5 +1,6 @@
 package lollipop.commands;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -22,8 +23,8 @@ public class BitesTheDust implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override

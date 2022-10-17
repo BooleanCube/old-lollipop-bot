@@ -20,8 +20,8 @@ public class Profile implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Profile implements Command {
         if(target.isBoosting()) title += ", Booster";
         if(target.isOwner()) title += ", Owner";
         builder.setAuthor(target.getEffectiveName() + "'s profile", "https://top.gg/bot/919061572649910292");
-        builder.setThumbnail(target.getEffectiveAvatarUrl());
+        builder.setThumbnail(target.getEffectiveAvatarUrl() + "?size=512");
         builder.setColor(target.getColor());
         String banner = target.getUser().retrieveProfile().complete().getBannerUrl();
         if(banner != null) {
@@ -97,7 +97,7 @@ public class Profile implements Command {
         else builder.setImage("https://user-images.githubusercontent.com/47650058/147891305-58aa09b6-2053-4180-9a9a-8c09826567f1.png");
         builder.setDescription("**Title:** `" + title + "`\n");
         builder.addField("Level", level + " \uD83E\uDE99", true);
-        builder.addField("Rank", "**Guild:** " + ranks[0] + " / " + guildSize + "\n**Global:** " + ranks[1] + " / " + globalSize, true);
+        builder.addField("Rank", "**Guild:** " + ranks[0] + "/" + guildSize + "\n**Global:** " + ranks[1] + "/" + globalSize, true);
         builder.addField("Lollipops", lollipops + " \uD83C\uDF6D", true);
         builder.addField("Misc",
                 target.getEffectiveName() + " | " + target.getAsMention() + " | " + target.getUser().getAsTag() + "\n" +
@@ -109,7 +109,7 @@ public class Profile implements Command {
             event.replyEmbeds(builder.build()).queue();
         };
         Runnable failure = () -> {
-            builder.appendDescription("**Multiplier:** `1.0x`");
+            builder.appendDescription("**Multiplier:** `1x`");
             event.replyEmbeds(builder.build()).queue();
         };
         BotStatistics.sendMultiplier(target.getId(), success, failure);

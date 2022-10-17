@@ -1,6 +1,7 @@
 package lollipop.commands;
 
 import lollipop.Command;
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,8 +17,8 @@ public class Vote implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Miscellaneous";
+    public CommandType getCategory() {
+        return CommandType.MISCELLANEOUS;
     }
 
     @Override

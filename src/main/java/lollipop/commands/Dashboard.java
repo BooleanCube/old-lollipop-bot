@@ -1,5 +1,6 @@
 package lollipop.commands;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -27,8 +28,8 @@ public class Dashboard implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Owner";
+    public CommandType getCategory() {
+        return CommandType.OWNER;
     }
 
     @Override

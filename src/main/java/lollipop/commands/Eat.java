@@ -1,5 +1,6 @@
 package lollipop.commands;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -17,8 +18,8 @@ public class Eat implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Roleplay";
+    public CommandType getCategory() {
+        return CommandType.ROLEPLAY;
     }
 
     @Override

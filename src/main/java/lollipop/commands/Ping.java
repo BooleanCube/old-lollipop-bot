@@ -1,5 +1,6 @@
 package lollipop.commands;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -19,8 +20,8 @@ public class Ping implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Miscellaneous";
+    public CommandType getCategory() {
+        return CommandType.MISCELLANEOUS;
     }
 
     @Override

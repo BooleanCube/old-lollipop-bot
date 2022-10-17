@@ -1,10 +1,7 @@
 package lollipop.commands;
 
 import com.beust.ah.A;
-import lollipop.Command;
-import lollipop.Constant;
-import lollipop.Database;
-import lollipop.Tools;
+import lollipop.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -27,8 +24,8 @@ public class Leaderboard implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override

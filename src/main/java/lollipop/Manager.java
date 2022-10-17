@@ -168,11 +168,11 @@ public class Manager {
      * @param category command category
      * @return collection of commands
      */
-    public Collection<Command> getCommands(String category) {
-        ArrayList<Command> r = new ArrayList<>();
-        List<Command> values = commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
-        for(Command c : values) if(!r.contains(c)) r.add(c);
-        return r;
+    public Collection<Command> getCommands(CommandType category) {
+        ArrayList<Command> commands = new ArrayList<>();
+        List<Command> values = this.commands.values().stream().filter(c -> c.getCategory() == category).collect(Collectors.toList());
+        for(Command c : values) if(!commands.contains(c)) commands.add(c);
+        return commands;
     }
 
     /**
@@ -180,10 +180,10 @@ public class Manager {
      * @return list of commands
      */
     public Collection<Command> getCommands() {
-        ArrayList<Command> r = new ArrayList<>();
-        List<Command> values = new ArrayList<>(commands.values());
-        for(Command c : values) if(!r.contains(c)) r.add(c);
-        return r;
+        ArrayList<Command> commands = new ArrayList<>();
+        List<Command> values = new ArrayList<>(this.commands.values());
+        for(Command c : values) if(!commands.contains(c)) commands.add(c);
+        return commands;
     }
 
     /**
@@ -203,6 +203,7 @@ public class Manager {
      */
     void run(SlashCommandInteractionEvent event) {
         final String msg = event.getCommandString();
+        if(event.getMember() == null) return;
         if(event.getInteraction().isFromGuild()) {
             if(!event.getGuild().getSelfMember().hasPermission(event.getGuildChannel(), Permission.MESSAGE_SEND))
                 return;

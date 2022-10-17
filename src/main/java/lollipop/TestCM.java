@@ -25,9 +25,9 @@ public class TestCM {
         if (!commands.containsKey(c.getAliases()[0])) for(String cmd : c.getAliases()) commands.put(cmd, c);
     }
 
-    public Collection<Command> getCommands(String category) {
+    public Collection<Command> getCommands(CommandType category) {
         ArrayList<Command> r = new ArrayList<>();
-        List<Command> values = commands.values().stream().filter(c -> c.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+        List<Command> values = commands.values().stream().filter(c -> c.getCategory() == category).collect(Collectors.toList());
         for(Command c : values) if(!r.contains(c)) r.add(c);
         return r;
     }

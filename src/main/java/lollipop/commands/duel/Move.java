@@ -1,5 +1,6 @@
 package lollipop.commands.duel;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -21,8 +22,8 @@ public class Move implements Command {
     }
 
     @Override
-    public String getCategory() {
-        return "Fun";
+    public CommandType getCategory() {
+        return CommandType.FUN;
     }
 
     @Override

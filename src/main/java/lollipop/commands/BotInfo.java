@@ -1,5 +1,6 @@
 package lollipop.commands;
 
+import lollipop.CommandType;
 import lollipop.Constant;
 import lollipop.Command;
 import lollipop.Tools;
@@ -15,8 +16,8 @@ public class BotInfo implements Command {
     public String[] getAliases() { return new String[] {"botinfo"}; }
 
     @Override
-    public String getCategory() {
-        return "Miscellaneous";
+    public CommandType getCategory() {
+        return CommandType.MISCELLANEOUS;
     }
 
     @Override
@@ -36,16 +37,17 @@ public class BotInfo implements Command {
                         .setTitle("Bot Information")
                         .setDescription("""
                                 Lollipop is an anime/manga discord bot which allows any user to search for an anime or a manga from the web and get the results on discord and has many features like fun roleplay commands, useful utility commands and other fun commands.
+                                > [Bot Website](https://booleancube.github.io/projects/lollipop/lollipop.html)
                                 > [Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=919061572649910292&permissions=1515854359872&scope=bot%20applications.commands)
                                 > [Github Repository](https://github.com/BooleanCube/lollipop-bot)
                                 > [Discord Bot List](https://discordbotlist.com/bots/lollipop-4786)
                                 > [Top.gg](https://top.gg/bot/919061572649910292)
                                 > [Infinity Bot List](https://infinitybots.gg/bots/919061572649910292)
                                 """)
-                        .addField("Developer", "**BooleanCube** (" + event.getJDA().getUserById(Constant.OWNER_ID).getAsTag() + ")\n[MyAnimeList](https://myanimelist.net/profile/BooleanCube) - [Playlist](https://open.spotify.com/playlist/4KnWT1hszQuBi4IaKdm8Pk?si=91e0fe7e73b54853) - [Discord](https://discord.gg/3ZDpPyR) - [Github](https://github.com/BooleanCube) - [Youtube](https://www.youtube.com/channel/UCsivrachJyFVLi7V60lrd6g)", false)
+                        .addField("Developer", "**BooleanCube** (" + event.getJDA().getUserById(Constant.OWNER_ID).getAsTag() + ")\n[MyAnimeList](https://myanimelist.net/profile/BooleanCube) - [Playlist](https://open.spotify.com/playlist/4KnWT1hszQuBi4IaKdm8Pk?si=91e0fe7e73b54853) - [Portfolio](https://booleancube.github.io/) - [Github](https://github.com/BooleanCube) - [Youtube](https://www.youtube.com/channel/UCsivrachJyFVLi7V60lrd6g)", false)
                         .addField("Lollipop Version", Constant.VERSION, false)
                         .setFooter("konnichiwa, watashi wa lollipop desu")
-                        .setThumbnail(event.getJDA().getSelfUser().getEffectiveAvatarUrl())
+                        .setThumbnail(event.getJDA().getSelfUser().getEffectiveAvatarUrl() + "?size=512")
                         .build()
         ).queue();
     }
