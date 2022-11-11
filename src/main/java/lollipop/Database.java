@@ -42,11 +42,7 @@ public class Database {
      */
     public static int getUserBalance(String id) {
         if(currency.getValue(id) == null) {
-            try {
-                currency.addKey(id, "0");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            currency.addKey(id, "0");
             return 0;
         }
         return currency.getValueInt(id);
@@ -109,11 +105,7 @@ public class Database {
      */
     public static void addToUserBalance(String id, int increment) {
         int balance = getUserBalance(id) + increment;
-        try {
-            currency.updateValue(id, String.valueOf(Math.max(0, balance)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        currency.updateValue(id, String.valueOf(Math.max(0, balance)));
     }
 
     /**
