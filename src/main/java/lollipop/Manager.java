@@ -50,6 +50,7 @@ public class Manager {
                 new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
+                new Policy().getSlashCmd(),
                 new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
                 new Random().getSlashCmd(),
@@ -88,6 +89,7 @@ public class Manager {
                 new Leaderboard().getSlashCmd(),
                 new Pat().getSlashCmd(),
                 new Ping().getSlashCmd(),
+                new Policy().getSlashCmd(),
                 new Popular().getSlashCmd(),
                 new Profile().getSlashCmd(),
                 new Random().getSlashCmd(),
@@ -153,6 +155,7 @@ public class Manager {
         addCommand(new Defend());
         addCommand(new Vote());
         addCommand(new Popular());
+        addCommand(new Policy());
     }
 
     /**
