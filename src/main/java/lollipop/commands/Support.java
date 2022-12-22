@@ -35,7 +35,7 @@ public class Support implements Command {
         event.replyEmbeds(
                 new EmbedBuilder()
                         .setTitle("Encountering issues with lollipop?")
-                        .setDescription("> Join this [server](https://discord.gg/tEWqCY2fCz)\n> Explain what your issues are in <#984455456464453662>")
+                        .setDescription("> Join this [server](https://discord.gg/mfpAz66aNa)\n> Explain what your issues are in <#984455456464453662>")
                         .setThumbnail("https://cdn-icons-png.flaticon.com/512/2057/2057748.png")
                         .build()
         ).queue();
